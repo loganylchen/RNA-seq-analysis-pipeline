@@ -7,6 +7,7 @@ rule sratools_fetchfastq:
 	    "logs/raw_fastq/{sample}_fetchfastq.log"
 	params:
 		extra = config['params']['sratools_fetchfastq'],
+		sample_id = "{sample}"
 	benchmark:
 	    "benchmarks/{sample}.sratools_fetchfastq.benchmark.txt"
 	conda:
@@ -14,6 +15,6 @@ rule sratools_fetchfastq:
 	shell:
 		"fastq-dump "
 		"{params.extra} "
-		"--outdir {output.outdir} 2>{log}"
+		"--outdir {output.outdir} {params.sample_id} 2>{log}"
 
 
