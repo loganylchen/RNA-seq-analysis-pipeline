@@ -1,0 +1,2 @@
+params:
+  sratools_fetchfastq: "--gzip --split-3 "
