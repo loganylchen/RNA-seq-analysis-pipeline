@@ -10,7 +10,7 @@ rule sratools_fetchfastq:
 	benchmark:
 	    "benchmarks/{sample}.sratools_fetchfastq.benchmark.txt"
 	conda:
-		"envs/sratools.yaml"
+		"../envs/sratools.yaml"
 	shell:
 		"fastq-dump "
 		"{params.extra} "
