@@ -1,2 +1,15 @@
 params:
   sratools_fetchfastq: "--gzip --split-3 "
+  fastp: "-c "
+  star: ""
+threads:
+  fastp: 12
+  star: 12
+
+ref:
+  # Ensembl species name
+  species: mus_musculus
+  # Ensembl release (make sure to take one where snpeff data is available, check 'snpEff databases' output)
+  release: 100
+  # Genome build
+  build: GRCm38

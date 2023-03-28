@@ -27,11 +27,12 @@ report: "report/workflow.rst"
 
 include: "rules/common.smk"
 include: "rules/fetchfastq.smk"
+include: "rules/fastqc.smk"
 
 ##### target rules #####
 
 
 rule all:
     input:
-        fq1=expand("results/raw_fastq/{sample}/{sample}_1.fastq.gz",sample=samples),
-        fq2=expand("results/raw_fastq/{sample}/{sample}_2.fastq.gz",sample=samples)
+        fq1=expand("results/clean_fastq/{sample}/{sample}_1.fastq.gz",sample=samples),
+        fq2=expand("results/clean_fastq/{sample}/{sample}_2.fastq.gz",sample=samples)
