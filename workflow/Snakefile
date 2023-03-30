@@ -34,5 +34,5 @@ include: "rules/fastqc.smk"
 
 rule all:
     input:
-        fq1=expand("results/clean_fastq/{sample}/{sample}_1.fastq.gz",sample=samples),
-        fq2=expand("results/clean_fastq/{sample}/{sample}_2.fastq.gz",sample=samples)
+        aln = expand("results/star/{sample}/Aligned.sortedByCoord.out.bam",sample=samples),
+        reads_per_gene = expand("results/star/{sample}/ReadsPerGene.out.tab",sample=samples),
