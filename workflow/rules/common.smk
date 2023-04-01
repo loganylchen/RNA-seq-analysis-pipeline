@@ -30,10 +30,12 @@ def get_fq(wildcards):
         }
     else:
         return {
-            'fq1':f"results/raw_fastq/{wildcards.sample}/{data[0]}_1.fastq.gz",
-            'fq2':f"results/raw_fastq/{wildcards.sample}/{data[0]}_2.fastq.gz"
+            'fq1':f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}_1.fastq.gz",
+            'fq2':f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}_2.fastq.gz"
         }
 
+def get_sra(sample):
+    return samples.loc[sample,'raw_data']
 # def get_final_output():
 #     final_output = expand(
 #         "results/diffexp/{contrast}.diffexp.symbol.tsv",
