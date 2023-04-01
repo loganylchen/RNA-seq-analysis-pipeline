@@ -72,7 +72,7 @@ r_u = -u_r
 r_s = strandedness_sum - reverse_sum
 s_r = -r_s
 
-print(f'U-S:{u_s},S-U:{s_u}',file=sys.stderr)
+print(f'U-S:{u_s},S-U:{s_u},{(s_u > 0).count()}',file=sys.stderr)
 print(f'U-R:{u_r},R-U:{r_u}',file=sys.stderr)
 print(f'R-S:{r_s},S-R:{s_r}',file=sys.stderr)
 
