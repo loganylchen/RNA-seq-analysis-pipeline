@@ -72,18 +72,16 @@ r_u = -u_r
 r_s = strandedness_sum - reverse_sum
 s_r = -r_s
 
-print(f'U-S:{u_s},S-U:{s_u},{(s_u > 0).count()},{(s_u > 0).sum()}',file=sys.stderr)
-print(f'U-R:{u_r},R-U:{r_u}',file=sys.stderr)
-print(f'R-S:{r_s},S-R:{s_r}',file=sys.stderr)
 
-if ((u_s>0).count() > (s_u > 0).count()) and ((u_r>0).count() > (r_u > 0).count()):
+
+if ((u_s>0).sum() > (s_u > 0).sum()) and ((u_r>0).sum() > (r_u > 0).sum()):
     unstrandedness_matrix.to_csv(snakemake.output[0], sep="\t")
-elif ((s_u>0).count() > (u_s > 0).count()) and ((s_r>0).count() > (r_s < 0).count()):
+elif ((s_u>0).sum() > (u_s > 0).sum()) and ((s_r>0).sum() > (r_s < 0).sum()):
     strandedness_matrix.to_csv(snakemake.output[0], sep="\t")
-elif ((r_u>0).count() > (u_r > 0).count()) and ((r_s>0).count() > (s_r < 0).count()):
+elif ((r_u>0).sum() > (u_r > 0).sum()) and ((r_s>0).sum() > (s_r < 0).sum()):
     reverse_matrix.to_csv(snakemake.output[0], sep="\t")
-# else:
-#     raise ValueError("Can't decide the strandedness of the RNA-seq, please check by yourself")
+else:
+    raise ValueError("Can't decide the strandedness of the RNA-seq, please check by yourself")
 # collapse technical replicates
 # matrix = matrix.groupby(matrix.columns, axis=1, sort=False).sum()
 
