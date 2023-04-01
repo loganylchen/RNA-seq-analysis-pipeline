@@ -7,7 +7,7 @@ rule sratools_fetchfastq:
         "logs/raw_fastq/{sample}_fetchfastq.log"
     params:
         extra=config['params']['sratools_fetchfastq'],
-        sra=get_sra(wildcards.sample)
+        sra=get_sra
     benchmark:
         "benchmarks/{sample}.sratools_fetchfastq.benchmark.txt"
     conda:

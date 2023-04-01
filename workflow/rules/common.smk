@@ -34,8 +34,8 @@ def get_fq(wildcards):
             'fq2':f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}_2.fastq.gz"
         }
 
-def get_sra(sample):
-    return samples.loc[sample,'raw_data']
+def get_sra(wildcards):
+    return samples.loc[wildcards.sample,'raw_data']
 # def get_final_output():
 #     final_output = expand(
 #         "results/diffexp/{contrast}.diffexp.symbol.tsv",
