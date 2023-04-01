@@ -29,6 +29,7 @@ include: "rules/common.smk"
 include: "rules/fetchfastq.smk"
 include: "rules/fastqc.smk"
 include: "rules/align.smk"
+include: "rules/generatematrix.smk"
 include: "rules/ref.smk"
 
 ##### target rules #####
