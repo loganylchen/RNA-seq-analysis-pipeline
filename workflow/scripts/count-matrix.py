@@ -82,8 +82,8 @@ elif ((s_u>0).count() > (u_s > 0).count()) and ((s_r>0).count() > (r_s < 0).coun
     strandedness_matrix.to_csv(snakemake.output[0], sep="\t")
 elif ((r_u>0).count() > (u_r > 0).count()) and ((r_s>0).count() > (s_r < 0).count()):
     reverse_matrix.to_csv(snakemake.output[0], sep="\t")
-else:
-    raise ValueError("Can't decide the strandedness of the RNA-seq, please check by yourself")
+# else:
+#     raise ValueError("Can't decide the strandedness of the RNA-seq, please check by yourself")
 # collapse technical replicates
 # matrix = matrix.groupby(matrix.columns, axis=1, sort=False).sum()
 
