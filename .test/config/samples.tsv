@@ -1,0 +1,3 @@
+sample_name	condition	raw_data	time_label	description
+GSM6928932	KFC1	SRR23054392	t0	GSM6928932: kfc1-- t0 rep 1; Saccharomyces cerevisiae; RNA-Seq
+GSM6928972	WT	SRR23054352	t0	GSM6928972: Wild type t0 rep 1_re-used; Saccharomyces cerevisiae; RNA-Seq
