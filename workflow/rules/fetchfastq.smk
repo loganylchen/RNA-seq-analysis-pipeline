@@ -15,4 +15,6 @@ rule sratools_fetchfastq:
     shell:
         "fastq-dump "
         "{params.extra} "
-        "--outdir {output.outdir} {params.sra} 2>{log}"
+        "--outdir {output.outdir} {params.sra} 2>{log} && "
+        "mv {output.outdir}/{params.sra}_1.fastq.gz {output.fq1} && "
+        "mv {output.outdir}/{params.sra}_2.fastq.gz {output.fq2} "
