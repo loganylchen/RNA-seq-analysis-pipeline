@@ -72,9 +72,9 @@ r_u = -u_r
 r_s = strandedness_sum - reverse_sum
 s_r = -r_s
 
-print(f'U-S:{(u_s>0).count()},S-U:{(s_u > 0).count()}',file=sys.stderr)
-print(f'U-R:{(u_r>0).count()},R-U:{(r_u > 0).count()}',file=sys.stderr)
-print(f'R-S:{(r_s>0).count()},S-R:{(s_r > 0).count()}',file=sys.stderr)
+print(f'U-S:{u_s},S-U:{s_u}',file=sys.stderr)
+print(f'U-R:{u_r},R-U:{r_u}',file=sys.stderr)
+print(f'R-S:{r_s},S-R:{s_r}',file=sys.stderr)
 
 if ((u_s>0).count() > (s_u > 0).count()) and ((u_r>0).count() > (r_u > 0).count()):
     unstrandedness_matrix.to_csv(snakemake.output[0], sep="\t")
