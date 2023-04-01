@@ -82,6 +82,5 @@ elif ((r_u>0).sum() > (u_r > 0).sum()) and ((r_s>0).sum() > (s_r < 0).sum()):
     reverse_matrix.to_csv(snakemake.output[0], sep="\t")
 else:
     raise ValueError("Can't decide the strandedness of the RNA-seq, please check by yourself")
-# collapse technical replicates
-# matrix = matrix.groupby(matrix.columns, axis=1, sort=False).sum()
+
 
