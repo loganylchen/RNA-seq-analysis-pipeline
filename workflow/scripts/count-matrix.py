@@ -54,12 +54,26 @@ unstrandedness_sum = unstrandedness_matrix.sum(axis=0)
 strandedness_sum = strandedness_matrix.sum(axis=0)
 reverse_sum = reverse_matrix.sum(axis=0)
 
+
+fig,ax = plt.subplots(1,1,figsize=(15,7))
+ax.plot(unstrandedness_sum,label='unstrandedness')
+ax.plot(strandedness_sum,label='strandedness')
+ax.plot(reverse_sum,label='reverse')
+ax.set_title('RNA-seq strandedness check')
+ax.legend()
+ax.set_xticklabels(ax.get_xticklabels(),rotation=75)
+fig.savefig(snakemake.output[4],dpi=300)
+
+
 u_s = unstrandedness_sum - strandedness_sum
 s_u = -u_s
 u_r = unstrandedness_sum - reverse_sum
 r_u = -u_r
 r_s = strandedness_sum - reverse_sum
 s_r = -r_s
+
+
+
 
 if ((u_s>0).count() > (s_u > 0).count()) and ((u_r>0).count() > (r_u > 0).count()):
     unstrandedness_matrix.to_csv(snakemake.output[0], sep="\t")
@@ -71,11 +85,4 @@ else:
     raise ValueError("Can't decide the strandedness of the RNA-seq, please check by yourself")
 # collapse technical replicates
 # matrix = matrix.groupby(matrix.columns, axis=1, sort=False).sum()
-fig,ax = plt.subplots(1,1,figsize=(15,7))
-ax.plot(unstrandedness_matrix.sum(),label='unstrandedness')
-ax.plot(strandedness_matrix.sum(),label='strandedness')
-ax.plot(reverse_matrix.sum(),label='reverse')
-ax.set_title('RNA-seq strandedness check')
-ax.legend()
-ax.set_xticklabels(ax.get_xticklabels(),rotation=75)
-fig.savefig(snakemake.output[4],dpi=300)
+
