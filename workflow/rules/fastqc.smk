@@ -1,7 +1,6 @@
 rule fastp_fastqc:
     input:
-        fq1="results/raw_fastq/{sample}/{sample}_1.fastq.gz",
-        fq2="results/raw_fastq/{sample}/{sample}_2.fastq.gz",
+        unpack(get_fq)
     output:
         fq1="results/clean_fastq/{sample}/{sample}_1.fastq.gz",
         fq2="results/clean_fastq/{sample}/{sample}_2.fastq.gz",
