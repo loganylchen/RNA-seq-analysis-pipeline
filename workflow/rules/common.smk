@@ -37,14 +37,12 @@ def get_fq(wildcards):
 
 def get_sra(wildcards):
     return samples.loc[wildcards.sample].loc['raw_data']
-# def get_final_output():
-#     final_output = expand(
-#         "results/diffexp/{contrast}.diffexp.symbol.tsv",
-#         contrast=config["diffexp"]["contrasts"],
-#     )
-#     final_output.append("results/deseq2/normcounts.symbol.tsv")
-#     final_output.append("results/counts/all.symbol.tsv")
-#     return final_output
+
+def get_final_output():
+    final_output = expand("results/star/{sample.sample_name}/ReadsPerGene.out.tab",sample=samples.itertuples())
+    # final_output.append("results/deseq2/normcounts.symbol.tsv")
+    # final_output.append("results/counts/all.symbol.tsv")
+    return final_output
 #
 #
 #

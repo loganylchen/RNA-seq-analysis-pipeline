@@ -36,5 +36,4 @@ include: "rules/ref.smk"
 
 rule all:
     input:
-        aln = expand("results/star/{sample}/Aligned.sortedByCoord.out.bam",sample=samples),
-        reads_per_gene = expand("results/star/{sample}/ReadsPerGene.out.tab",sample=samples),
+        get_final_output()
