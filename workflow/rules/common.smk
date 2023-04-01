@@ -21,7 +21,7 @@ def check_raw_data(raw_data_string:str):
     else:
         raise ValueError(f'{raw_data_string} is not a valide datatype')
 def get_fq(wildcards):
-    raw_data = samples.loc[wildcards.sample,'raw_data']
+    raw_data = samples.loc[wildcards.sample].loc['raw_data']
     data_type , *data = check_raw_data(raw_data)
     print(data_type, data)
     if data_type == 'fastq':
@@ -36,7 +36,7 @@ def get_fq(wildcards):
         }
 
 def get_sra(wildcards):
-    return samples.loc[wildcards.sample,'raw_data']
+    return samples.loc[wildcards.sample].loc['raw_data']
 # def get_final_output():
 #     final_output = expand(
 #         "results/diffexp/{contrast}.diffexp.symbol.tsv",
