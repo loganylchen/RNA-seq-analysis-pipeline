@@ -38,14 +38,16 @@ def get_sra(wildcards):
     return samples.loc[wildcards.sample].loc['raw_data']
 
 def get_final_output():
+    contrasts = config['diffexp']['contrast']
     final_output = expand("results/star/{sample.sample_name}/ReadsPerGene.out.tab",sample=samples.itertuples())
     final_output.append("results/deseq2/count_matrix.rds")
+    for key in contrasts:
+        final_output.append(f"results/diffexp/{key}.diffexp.tsv")
     # final_output.append("results/counts/all.symbol.tsv")
     return final_output
-#
-#
-#
-#
+
+def get_contrast(wildcards):
+    return config["diffexp"]["contrasts"][wildcards.contrast]
 # units = (
 #     pd.read_csv(config["units"], sep="\t", dtype={"sample_name": str, "unit_name": str})
 #     .set_index(["sample_name", "unit_name"], drop=False)
