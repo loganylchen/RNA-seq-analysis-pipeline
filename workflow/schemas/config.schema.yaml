@@ -61,9 +61,13 @@ properties:
     type: object
     properties:
       contrasts:
-        type: string
+        type: object
+
       model:
         type: string
+    required:
+      - contrasts
+      - model
 required:
   - samples
   - ref
