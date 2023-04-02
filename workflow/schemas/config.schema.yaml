@@ -44,6 +44,19 @@ properties:
       star:
         type: string
 
+  thresholds:
+    type: object
+    properties:
+      deseq2:
+        type: object
+        properties:
+          count:
+            type: integer
+          log2foldchange:
+            type: number
+          padj:
+            type: number
+
   diffexp:
     type: object
     properties:

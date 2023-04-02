@@ -9,6 +9,13 @@ threads:
   star: 12
   deseq2: 12
 
+thresholds:
+  deseq2:
+    count: 10
+    log2foldchange: 1
+    padj: 0.05
+
+
 ref:
   # Ensembl species name
   species: saccharomyces_cerevisiae

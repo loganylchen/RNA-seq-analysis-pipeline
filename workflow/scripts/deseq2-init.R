@@ -25,7 +25,7 @@ dds <- DESeqDataSetFromMatrix(countData=cts,
                               design=as.formula(snakemake@params[["model"]]))
 
 # remove uninformative columns
-dds <- dds[ rowSums(counts(dds)) > 1, ]
+dds <- dds[ rowSums(counts(dds)) > snakemake@params[["count_threshold"]], ]
 # normalization and preprocessing
 dds <- DESeq(dds, parallel=parallel)
 
