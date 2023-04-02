@@ -30,6 +30,8 @@ properties:
         type: integer
       star:
         type: integer
+      deseq2:
+        type: integer
 
 
   params:

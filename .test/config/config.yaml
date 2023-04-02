@@ -7,6 +7,7 @@ params:
 threads:
   fastp: 12
   star: 12
+  deseq2: 12
 
 ref:
   # Ensembl species name
@@ -15,3 +16,11 @@ ref:
   release: 100
   # Genome build
   build: R64-1-1
+
+diffexp:
+  # contrasts for the deseq2 results method
+  contrasts:
+    KFC1-vs-WT:
+      - KFC1
+      - WT
+  model: ~time_label + condition
