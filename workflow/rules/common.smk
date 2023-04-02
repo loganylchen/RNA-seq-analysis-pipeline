@@ -43,6 +43,7 @@ def get_final_output():
     final_output.append("results/deseq2/count_matrix.rds")
     for key in contrasts:
         final_output.append(f"results/diffexp/{key}.diffexp.tsv")
+        final_output.append(directory(f"results/enrichment/{key}"))
     # final_output.append("results/counts/all.symbol.tsv")
     return final_output
 
