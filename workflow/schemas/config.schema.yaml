@@ -43,12 +43,18 @@ properties:
         type: string
       star:
         type: string
-    required:
-      - star
 
+  diffexp:
+    type: object
+    properties:
+      contrasts:
+        type: string
+      model:
+        type: string
 required:
   - samples
   - ref
   - params
   - threads
+  - diffexp
 
