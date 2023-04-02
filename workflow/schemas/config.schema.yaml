@@ -17,10 +17,16 @@ properties:
         type: integer
       build:
         type: string
+      go_name:
+        type: string
+      kegg_name:
+        type: string
     required:
       - species
       - release
       - build
+      - go_name
+      - kegg_name
 
 
   threads:
