@@ -39,7 +39,7 @@ def get_sra(wildcards):
 
 def get_final_output():
     final_output = expand("results/star/{sample.sample_name}/ReadsPerGene.out.tab",sample=samples.itertuples())
-    final_output.append("results/counts/count_matrix.tsv")
+    final_output.append("results/deseq2/count_matrix.rds")
     # final_output.append("results/counts/all.symbol.tsv")
     return final_output
 #
