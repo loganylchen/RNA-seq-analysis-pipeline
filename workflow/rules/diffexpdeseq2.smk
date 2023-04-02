@@ -7,7 +7,7 @@ rule deseq2_init:
     params:
         samples=config["samples"],
         model=config["diffexp"]["model"],
-        count_threshold=config['threshold']['deseq2']['count']
+        count_threshold=config['thresholds']['deseq2']['count']
     conda:
         "../envs/deseq2.yaml"
     log:
