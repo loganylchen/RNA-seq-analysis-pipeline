@@ -26,6 +26,8 @@ deg_df <- df %>%
 
 outdir <- snakemake@output[[1]]
 
+if (!dir.exists(outdir)) {dir.create(outdir)}
+
 up_enrich_mf <- genORA(rownames(deg_df %>% filter(log2FoldChange > 0)), geneset = mf_set)
 write.table(up_enrich_mf, paste0(outdir,"/up_enrich_mf.tsv"), sep = "\t", quote = F, row.names = F)
 down_enrich_mf <- genORA(rownames(deg_df %>% filter(log2FoldChange < 0)), geneset = mf_set)
