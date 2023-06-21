@@ -1,4 +1,4 @@
-# Snakemake workflow: `<name>`
+# Snakemake workflow: `RNA-seq-analysis-pipeline`
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥6.3.0-brightgreen.svg)](https://snakemake.github.io)
 [![GitHub actions status](https://github.com/loganylchen/RNA-seq-analysis-pipeline/workflows/Tests/badge.svg?branch=main)](https://github.com/loganylchen/RNA-seq-analysis-pipeline/actions?query=branch%3Amain+workflow%3ATests)
