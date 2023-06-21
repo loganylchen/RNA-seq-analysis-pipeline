@@ -33,6 +33,7 @@ include: "rules/generatematrix.smk"
 include: "rules/diffexpdeseq2.smk"
 include: "rules/enrichment.smk"
 include: "rules/ref.smk"
+include: "rules/vis_volcano.smk"
 
 ##### target rules #####
 

@@ -44,8 +44,12 @@ def get_final_output():
     for key in contrasts:
         final_output.append(f"results/diffexp/{key}.diffexp.tsv")
         final_output.append(directory(f"results/enrichment/{key}"))
+        final_output.append(directory(f"results/visualization/Volcano.{key}.diffexp.pdf"))
+        final_output.append(directory(f"results/visualization/Volcano.{key}.diffexp.png"))
     # final_output.append("results/counts/all.symbol.tsv")
     return final_output
+
+
 
 def get_contrast(wildcards):
     return config["diffexp"]["contrasts"][wildcards.contrast]
