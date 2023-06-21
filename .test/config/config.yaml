@@ -23,8 +23,8 @@ ref:
   release: 100
   # Genome build
   build: R64-1-1
-  go_name: saccharomyces_cerevisiae
-  kegg_name: saccharomyces_cerevisiae
+  go_name: yeast
+  kegg_name: sce
 
 diffexp:
   # contrasts for the deseq2 results method
