@@ -13,6 +13,6 @@ rule genekitr_enrichment:
     log:
         "logs/enrichment/{contrast}.log",
     script:
-        "../scripts/enrichment.R"
+        "../scripts/genekitr.R"
 
 

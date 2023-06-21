@@ -5,6 +5,7 @@ sink(log, type="message")
 library(geneset)
 library(genekitr)
 library(dplyr)
+library(ggplot2)
 
 mf_set <- geneset::getGO(org = snakemake@params[["go_name"]], ont = "mf")
 cc_set <- geneset::getGO(org = snakemake@params[["go_name"]], ont = "cc")
@@ -49,16 +50,49 @@ expoSheet(
     dir = outdir
 )
 
+go_mf_plot<-plotEnrichAdv(head(up_enrich_mf,10), head(down_enrich_mf,10),
+              plot_type = "one",
+              term_metric = "FoldEnrich",
+              stats_metric = "qvalue",
+              xlim_left = 25, xlim_right = 15) +
+  theme(legend.position = c(0.15, 0.9))
+
+go_bp_plot<-plotEnrichAdv(head(up_enrich_bp,10), head(down_enrich_bp,10),
+              plot_type = "one",
+              term_metric = "FoldEnrich",
+              stats_metric = "qvalue",
+              xlim_left = 25, xlim_right = 15) +
+  theme(legend.position = c(0.15, 0.9))
+
+go_cc_plot<-plotEnrichAdv(head(up_enrich_cc,10), head(down_enrich_cc,10),
+              plot_type = "one",
+              term_metric = "FoldEnrich",
+              stats_metric = "qvalue",
+              xlim_left = 25, xlim_right = 15) +
+  theme(legend.position = c(0.15, 0.9))
 
 
 
+ggsave(paste0(outdir,"/enrich_bp.pdf"),go_bp_plot,width=10,height=10)
+ggsave(paste0(outdir,"/enrich_bp.png"),go_bp_plot,width=10,height=10)
+ggsave(paste0(outdir,"/enrich_cc.pdf"),go_cc_plot,width=10,height=10)
+ggsave(paste0(outdir,"/enrich_cc.png"),go_cc_plot,width=10,height=10)
+ggsave(paste0(outdir,"/enrich_mf.pdf"),go_mf_plot,width=10,height=10)
+ggsave(paste0(outdir,"/enrich_mf.png"),go_mf_plot,width=10,height=10)
 
 
+pathways <- rownames(gse$gsea_df %>% arrange(desc(abs(NES))))[1:3]
+gsea_plot <- plotGSEA(gse, plot_type = "classic", show_pathway = pathways)
 
+ggsave(paste0(outdir,"/enrich_gsea_kegg.png"),gsea_plot,width=10,height=10)
+ggsave(paste0(outdir,"/enrich_gsea_kegg.pdf"),gsea_plot,width=10,height=10)
 
+gsea_volcano_plot <- plotGSEA(gse, plot_type = "volcano", show_pathway = 5)
 
+ggsave(paste0(outdir,"/enrich_gsea_kegg_volcano.png"),gsea_volcano_plot,width=10,height=10)
+ggsave(paste0(outdir,"/enrich_gsea_kegg_volcano.pdf"),gsea_volcano_plot,width=10,height=10)
 
+gsea_bar_plot <- plotGSEA(gse, plot_type = "bar", colour = c("navyblue", "orange"))
 
-
-
-
+ggsave(paste0(outdir,"/enrich_gsea_kegg_bar.png"),gsea_bar_plot,width=10,height=10)
+ggsave(paste0(outdir,"/enrich_gsea_kegg_bar.pdf"),gsea_bar_plot,width=10,height=10)
