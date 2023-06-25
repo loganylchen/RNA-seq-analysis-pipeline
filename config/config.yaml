@@ -14,6 +14,9 @@ thresholds:
     count: 10
     log2foldchange: 1
     padj: 0.05
+  volcano:
+    log2foldchange: 1
+    padj: 0.05
 
 
 ref:

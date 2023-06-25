@@ -9,10 +9,10 @@ rule genekitr_enrichment:
         go_name=config['ref']['go_name'],
         kegg_name=config['ref']['kegg_name']
     container:
-        "docker://btrspg/genekitr:main"
+        "docker://btrspg/genekitr:latest"
     log:
         "logs/enrichment/{contrast}.log",
     script:
-        "../scripts/enrichment.R"
+        "../scripts/genekitr.R"
 
 
