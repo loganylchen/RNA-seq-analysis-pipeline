@@ -5,7 +5,7 @@ rule volcano_vis:
         png="results/visualization/Volcano.{contrast}.diffexp.png",
         pdf="results/visualization/Volcano.{contrast}.diffexp.pdf",
     params:
-        contrast=get_contrast,
+        contrast='{contrast}',
         fc_threshold=config['thresholds']['volcano']['log2foldchange'],
         p_threshold=config['thresholds']['volcano']['padj']
 
