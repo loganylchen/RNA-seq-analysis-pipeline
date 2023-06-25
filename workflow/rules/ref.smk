@@ -56,3 +56,23 @@ rule star_index:
     cache: True
     wrapper:
         "v1.21.4/bio/star/index"
+
+rule get_vep_cache:
+    output:
+        directory("resources/vep/cache"),
+    params:
+        species=config["ref"]["species"],
+        build=config["ref"]["build"],
+        release=config["ref"]["release"],
+    log:
+        "logs/vep/cache.log",
+    wrapper:
+        "v1.25.0/bio/vep/cache"
+
+rule download_vep_plugins:
+    output:
+        directory("resources/vep/plugins")
+    params:
+        release=100
+    wrapper:
+        "v1.25.0/bio/vep/plugins"
