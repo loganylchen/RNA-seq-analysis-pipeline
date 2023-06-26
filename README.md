@@ -4,7 +4,7 @@
 [![GitHub actions status](https://github.com/loganylchen/RNA-seq-analysis-pipeline/workflows/Tests/badge.svg?branch=main)](https://github.com/loganylchen/RNA-seq-analysis-pipeline/actions?query=branch%3Amain+workflow%3ATests)
 
 
-A Snakemake workflow for `<description>`
+A Snakemake workflow for `General RNA-seq data analysis`
 
 
 ## Usage
@@ -15,7 +15,13 @@ If you use this workflow in a paper, don't forget to give credits to the authors
 
 # TODO
 
-* Replace `<owner>` and `<repo>` everywhere in the template (also under .github/workflows) with the correct `<repo>` name and owning user or organization.
-* Replace `<name>` with the workflow name (can be the same as `<repo>`).
-* Replace `<description>` with a description of what the workflow does.
-* The workflow will occur in the snakemake-workflow-catalog once it has been made public. Then the link under "Usage" will point to the usage instructions if `<owner>` and `<repo>` were correctly set.
+* [ ] add WGCNA in the analysis, including such settings:
+  * [ ] Using all the gene
+  * [ ] Using proportion highly various gene
+  * [ ] Using DEGs
+* [ ] add ANNOTATION for un-annotated species.
+  * [ ] Enrichment analysis.
+* [ ] Visualization:
+  * [ ] Heatmap for DEGs
+* [ ] QC
+* [ ] Reports
