@@ -33,11 +33,10 @@ if(snakemake@params[["go_name"]] != "UNKNOWN"){
 
     up_regulated_gene <- rownames(deg_df %>% filter(log2FoldChange > 0))
     down_regulated_gene <- rownames(deg_df %>% filter(log2FoldChange < 0))
-    up_go<-FALSE
-    down_go<-FALSE
+
 
     if(length(up_regulated_gene)>0){
-        up_go <- TRUE
+
         up_enrich_mf <- genORA(up_regulated_gene, geneset = mf_set)
         if(dim(up_enrich_mf)[1]>0){
             write.table(up_enrich_mf, paste0(outdir,"/up_enrich_mf.tsv"), sep = "\t", quote = F, row.names = F)
@@ -52,7 +51,7 @@ if(snakemake@params[["go_name"]] != "UNKNOWN"){
         }
     }
     if(length(down_regulated_gene)>0){
-        down_go <- TRUE
+
         down_enrich_mf <- genORA(down_regulated_gene, geneset = mf_set)
         if(dim(down_enrich_mf)[1]>0){
             write.table(down_enrich_mf, paste0(outdir,"/down_enrich_mf.tsv"), sep = "\t", quote = F, row.names = F)
@@ -65,6 +64,44 @@ if(snakemake@params[["go_name"]] != "UNKNOWN"){
         if(dim(down_enrich_bp)[1]>0){
             write.table(down_enrich_bp, paste0(outdir,"/down_enrich_bp.tsv"), sep = "\t", quote = F, row.names = F)
         }
+    }
+    if(down_go & up_go){
+        if((dim(up_enrich_mf)[1]>0)&(dim(down_enrich_mf)[1]>0)){
+            go_mf_plot<-plotEnrichAdv(head(up_enrich_mf,10), head(down_enrich_mf,10),
+                          plot_type = "one",
+                          term_metric = "FoldEnrich",
+                          stats_metric = "qvalue",
+                          xlim_left = 25, xlim_right = 15) +
+              theme(legend.position = c(0.15, 0.9))
+            ggsave(paste0(outdir,"/enrich_mf.pdf"),go_mf_plot,width=10,height=10)
+            ggsave(paste0(outdir,"/enrich_mf.png"),go_mf_plot,width=10,height=10)
+
+        }
+        if((dim(up_enrich_bp)[1]>0)&(dim(down_enrich_bp)[1]>0)){
+            go_bp_plot<-plotEnrichAdv(head(up_enrich_bp,10), head(down_enrich_bp,10),
+                          plot_type = "one",
+                          term_metric = "FoldEnrich",
+                          stats_metric = "qvalue",
+                          xlim_left = 25, xlim_right = 15) +
+              theme(legend.position = c(0.15, 0.9))
+            ggsave(paste0(outdir,"/enrich_bp.pdf"),go_bp_plot,width=10,height=10)
+            ggsave(paste0(outdir,"/enrich_bp.png"),go_bp_plot,width=10,height=10)
+        }
+        if((dim(up_enrich_cc)[1]>0)&(dim(down_enrich_cc)[1]>0)){
+            go_cc_plot<-plotEnrichAdv(head(up_enrich_cc,10), head(down_enrich_cc,10),
+                          plot_type = "one",
+                          term_metric = "FoldEnrich",
+                          stats_metric = "qvalue",
+                          xlim_left = 25, xlim_right = 15) +
+              theme(legend.position = c(0.15, 0.9))
+            ggsave(paste0(outdir,"/enrich_cc.pdf"),go_cc_plot,width=10,height=10)
+            ggsave(paste0(outdir,"/enrich_cc.png"),go_cc_plot,width=10,height=10)
+        }
+
+
+
+
+
     }
 }
 
@@ -80,37 +117,7 @@ if(snakemake@params[["kegg_name"]] != "UNKNOWN"){
         filename = "gsea_result.xlsx",
         dir = outdir
     )
-    if(down_go & up_go){
-        go_mf_plot<-plotEnrichAdv(head(up_enrich_mf,10), head(down_enrich_mf,10),
-                      plot_type = "one",
-                      term_metric = "FoldEnrich",
-                      stats_metric = "qvalue",
-                      xlim_left = 25, xlim_right = 15) +
-          theme(legend.position = c(0.15, 0.9))
 
-        go_bp_plot<-plotEnrichAdv(head(up_enrich_bp,10), head(down_enrich_bp,10),
-                      plot_type = "one",
-                      term_metric = "FoldEnrich",
-                      stats_metric = "qvalue",
-                      xlim_left = 25, xlim_right = 15) +
-          theme(legend.position = c(0.15, 0.9))
-
-        go_cc_plot<-plotEnrichAdv(head(up_enrich_cc,10), head(down_enrich_cc,10),
-                      plot_type = "one",
-                      term_metric = "FoldEnrich",
-                      stats_metric = "qvalue",
-                      xlim_left = 25, xlim_right = 15) +
-          theme(legend.position = c(0.15, 0.9))
-
-
-
-        ggsave(paste0(outdir,"/enrich_bp.pdf"),go_bp_plot,width=10,height=10)
-        ggsave(paste0(outdir,"/enrich_bp.png"),go_bp_plot,width=10,height=10)
-        ggsave(paste0(outdir,"/enrich_cc.pdf"),go_cc_plot,width=10,height=10)
-        ggsave(paste0(outdir,"/enrich_cc.png"),go_cc_plot,width=10,height=10)
-        ggsave(paste0(outdir,"/enrich_mf.pdf"),go_mf_plot,width=10,height=10)
-        ggsave(paste0(outdir,"/enrich_mf.png"),go_mf_plot,width=10,height=10)
-    }
 
     pathways <- rownames(gse$gsea_df %>% arrange(desc(abs(NES))))[1:3]
     gsea_plot <- plotGSEA(gse, plot_type = "classic", show_pathway = pathways)
