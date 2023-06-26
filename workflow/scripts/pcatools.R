@@ -36,7 +36,8 @@ dds <- DESeq(dds, parallel=parallel)
 
 vst_data <- assay(vst(dds))
 p <- pca(vst_data, metadata = coldata, removeVar = 0.1)
-
+horn <- parallelPCA(vst_data)
+elbow <- findElbowPoint(p$variance)
 color_by <- snakemake@params[["color_by"]]
 shape_by <- snakemake@params[["shape_by"]]
 
@@ -45,10 +46,13 @@ shape_by <- snakemake@params[["shape_by"]]
 vline <- as.numeric(which(cumsum(p$variance) > 80)[1])
 
 
-pscree <- screeplot(p, components = getComponents(p, 1:30),
-hline = 80, vline = vline, axisLabSize = 14, titleLabSize = 20,
-returnPlot = FALSE) +
-geom_label(aes(20, 80, label = '80% explained variation', vjust = -1, size = 8))
+pscree <- screeplot(p,
+    components = getComponents(p, 1:20),
+    vline = c(horn$n, elbow)) +
+    geom_label(aes(x = horn$n + 1, y = 50,
+      label = 'Horn\'s', vjust = -1, size = 8)) +
+    geom_label(aes(x = elbow + 1, y = 50,
+      label = 'Elbow method', vjust = -1, size = 8))
 
 ppairs <- pairsplot(p, components = getComponents(p, c(1:5)),
 triangle = TRUE, trianglelabSize = 12,
@@ -89,7 +93,7 @@ drawConnectors = FALSE,
 returnPlot = FALSE)
 
 peigencor <- eigencorplot(p,
-components = getComponents(p, 1:10),
+components = getComponents(p, c(1:max(horn$n, elbow))),
 metavars = colnames(coldata),
 col = c('white', 'cornsilk1', 'gold', 'forestgreen', 'darkgreen'),
 cexCorval = 1.0,
