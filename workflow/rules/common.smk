@@ -46,6 +46,8 @@ def get_final_output():
         final_output.append(directory(f"results/enrichment/{key}"))
         final_output.append(directory(f"results/visualization/Volcano.{key}.diffexp.pdf"))
         final_output.append(directory(f"results/visualization/Volcano.{key}.diffexp.png"))
+    final_output.append(directory(f"results/visualization/PCA.pdf"))
+    final_output.append(directory(f"results/visualization/PCA.png"))
     # final_output.append("results/counts/all.symbol.tsv")
     return final_output
 

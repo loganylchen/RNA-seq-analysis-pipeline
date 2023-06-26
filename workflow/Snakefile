@@ -34,6 +34,7 @@ include: "rules/diffexpdeseq2.smk"
 include: "rules/enrichment_genekitr.smk"
 include: "rules/ref.smk"
 include: "rules/vis_volcano.smk"
+include: "rules/vis_pcaplot.smk"
 
 ##### target rules #####
 

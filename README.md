@@ -23,5 +23,6 @@ If you use this workflow in a paper, don't forget to give credits to the authors
   * [ ] Enrichment analysis.
 * [ ] Visualization:
   * [ ] Heatmap for DEGs
+  * [ ] PCA plots
 * [ ] QC
 * [ ] Reports

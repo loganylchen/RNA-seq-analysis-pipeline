@@ -74,10 +74,21 @@ properties:
     required:
       - contrasts
       - model
+  vis:
+    type: object
+    properties:
+      pcatools:
+        type: object
+        properties:
+          color_by:
+            type: string
+          shape_by:
+            type: string
 required:
   - samples
   - ref
   - params
   - threads
   - diffexp
+  - vis
 

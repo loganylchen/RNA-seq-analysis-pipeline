@@ -36,3 +36,8 @@ diffexp:
       - KFC1
       - WT
   model: ~time_label + condition
+
+vis:
+  pcatools:
+    color_by: 'condition'
+    shape_by: 'time_label'
