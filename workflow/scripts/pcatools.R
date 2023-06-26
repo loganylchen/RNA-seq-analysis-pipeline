@@ -51,7 +51,7 @@ pscree <- screeplot(p,
     vline = c(horn$n, elbow)) +
     geom_label(aes(x = horn$n + 1, y = 50,
       label = 'Horn\'s', vjust = -1, size = 8)) +
-    geom_label(aes(x = elbow + 1, y = 50,
+    geom_label(aes(x = elbow + 1, y = 60,
       label = 'Elbow method', vjust = -1, size = 8))
 
 ppairs <- pairsplot(p, components = getComponents(p, c(1:5)),
@@ -78,7 +78,7 @@ pbiplot <- biplot(p,
   legendLabSize = 16, legendIconSize = 8.0,
   shape = shape_by,
   drawConnectors = FALSE,
-  title = 'PCA bi-plot',
+  title = 'PCA',
   subtitle = 'PC1 versus PC2',
   returnPlot = FALSE)
 
@@ -88,7 +88,6 @@ subtitle = 'PC1, PC2, PC3, PC4, PC5',
 caption = 'Top 1% variables',
 shape = 24, shapeSizeRange = c(4, 8),
 col = c('limegreen', 'black', 'red3'),
-legendPosition = 'none',
 drawConnectors = FALSE,
 returnPlot = FALSE)
 
