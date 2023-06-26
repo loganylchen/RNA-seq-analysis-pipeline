@@ -137,5 +137,5 @@ final_plot <- plot_grid(top_row, bottom_row, ncol = 1,
 png_out = snakemake@output[['png']]
 pdf_out = snakemake@output[['pdf']]
 
-ggsave(png_out,g,width=20,height=15)
-ggsave(pdf_out,g,width=20,height=15)
+ggsave(png_out,final_plot,width=20,height=15)
+ggsave(pdf_out,final_plot,width=20,height=15)
