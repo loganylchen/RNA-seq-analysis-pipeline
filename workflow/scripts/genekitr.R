@@ -34,9 +34,10 @@ if(snakemake@params[["go_name"]] != "UNKNOWN"){
     up_regulated_gene <- rownames(deg_df %>% filter(log2FoldChange > 0))
     down_regulated_gene <- rownames(deg_df %>% filter(log2FoldChange < 0))
 
-
+    down_go<-FALSE
+    up_go<-FALSE
     if(length(up_regulated_gene)>0){
-
+        up_go<-TRUE
         up_enrich_mf <- genORA(up_regulated_gene, geneset = mf_set)
         if(dim(up_enrich_mf)[1]>0){
             write.table(up_enrich_mf, paste0(outdir,"/up_enrich_mf.tsv"), sep = "\t", quote = F, row.names = F)
@@ -51,7 +52,7 @@ if(snakemake@params[["go_name"]] != "UNKNOWN"){
         }
     }
     if(length(down_regulated_gene)>0){
-
+        down_go<-TRUE
         down_enrich_mf <- genORA(down_regulated_gene, geneset = mf_set)
         if(dim(down_enrich_mf)[1]>0){
             write.table(down_enrich_mf, paste0(outdir,"/down_enrich_mf.tsv"), sep = "\t", quote = F, row.names = F)
