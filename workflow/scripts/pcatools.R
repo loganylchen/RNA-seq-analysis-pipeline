@@ -42,7 +42,7 @@ shape_by <- snakemake@params[["shape_by"]]
 
 # Different plots
 
-vline <- as.numeric(which(cumsum(p$variance) > 80)[1]))
+vline <- as.numeric(which(cumsum(p$variance) > 80)[1])
 
 
 pscree <- screeplot(p, components = getComponents(p, 1:30),
