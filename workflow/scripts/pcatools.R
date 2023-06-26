@@ -46,15 +46,17 @@ shape_by <- snakemake@params[["shape_by"]]
 vline <- as.numeric(which(cumsum(p$variance) > 80)[1])
 
 
+
+
 pscree <- screeplot(p,
-    components = getComponents(p, 1:20),
+    components = getComponents(p, 1:min(20,length(p$components))),
     vline = c(horn$n, elbow)) +
     geom_label(aes(x = horn$n + 1, y = 50,
       label = 'Horn\'s', vjust = -1, size = 8)) +
     geom_label(aes(x = elbow + 1, y = 60,
       label = 'Elbow method', vjust = -1, size = 8))
 
-ppairs <- pairsplot(p, components = getComponents(p, c(1:5)),
+ppairs <- pairsplot(p, components = getComponents(p,  1:min(5,length(p$components))),
 triangle = TRUE, trianglelabSize = 12,
 hline = 0, vline = 0,
 pointSize = 0.8, gridlines.major = FALSE, gridlines.minor = FALSE,
