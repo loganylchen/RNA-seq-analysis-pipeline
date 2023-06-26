@@ -8,7 +8,8 @@ rule pca_vis:
         samples=config["samples"],
         model=config["diffexp"]["model"],
         count_threshold=config['thresholds']['deseq2']['count'],
-        color_by=config['']
+        color_by=config['vis']['pcatools']['color_by'],
+        shape_by=config['vis']['pcatools']['shape_by'],
     conda:
         "../envs/pcatools.yaml"
     log:
