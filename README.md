@@ -13,6 +13,15 @@ The usage of this workflow is described in the [Snakemake Workflow Catalog](http
 
 If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) <repo>sitory and its DOI (see above).
 
+## Analysis
+
+- QC:
+  - fastq trimming
+- Alignment
+- Quantification
+- Differential expressed gene identification
+- Enrichment for general species
+
 # TODO
 
 * [ ] add WGCNA in the analysis, including such settings:
@@ -23,6 +32,6 @@ If you use this workflow in a paper, don't forget to give credits to the authors
   * [ ] Enrichment analysis.
 * [ ] Visualization:
   * [ ] Heatmap for DEGs
-  * [ ] PCA plots
+  * [x] PCA plots
 * [ ] QC
 * [ ] Reports
