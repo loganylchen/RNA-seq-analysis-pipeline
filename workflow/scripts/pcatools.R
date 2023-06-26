@@ -35,7 +35,7 @@ dds <- dds[ rowSums(counts(dds)) > snakemake@params[["count_threshold"]], ]
 dds <- DESeq(dds, parallel=parallel)
 
 vst_data <- assay(vst(dds))
-p <- pca(vst, metadata = coldata, removeVar = 0.1)
+p <- pca(vst_data, metadata = coldata, removeVar = 0.1)
 
 color_by <- snakemake@params[["color_by"]]
 shape_by <- snakemake@params[["shape_by"]]
