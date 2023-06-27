@@ -36,4 +36,8 @@ res <- res[order(res$padj),]
 # plotMA(res, ylim=c(-2,2))
 # dev.off()
 
+outdir <- dirname(snakemake@output[["table"]])
+
+if (!dir.exists(outdir)) {dir.create(outdir)}
+
 write.table(data.frame("gene"=rownames(res),res), file=snakemake@output[["table"]], row.names=FALSE, sep='\t',quote=FALSE)
