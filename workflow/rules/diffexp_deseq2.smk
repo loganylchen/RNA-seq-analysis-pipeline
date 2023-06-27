@@ -25,7 +25,7 @@ rule deseq2:
         # ma_plot=report("results/diffexp/{contrast}.ma-plot.svg", "../report/ma.rst"),
     params:
         subclass_column=config['diffexp']['subclass'],
-        subclass='{subclass}'
+        subclass='{subclass}',
         model=config["diffexp"]["model"],
         contrast=get_contrast,
     conda:
