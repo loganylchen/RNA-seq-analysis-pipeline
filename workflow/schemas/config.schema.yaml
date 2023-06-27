@@ -71,7 +71,10 @@ properties:
 
       model:
         type: string
+      subclass:
+        type: string
     required:
+      - subclass
       - contrasts
       - model
   vis:
