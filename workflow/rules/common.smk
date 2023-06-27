@@ -46,10 +46,10 @@ def get_final_output():
         for subclass in subclasses:
             final_output.append(f"results/diffexp/{key}/{subclass}.diffexp.tsv")
             final_output.append(directory(f"results/enrichment/{key}_{subclass}"))
-            final_output.append(directory(f"results/visualization/Volcano.{key}_{subclass}.diffexp.pdf"))
-            final_output.append(directory(f"results/visualization/Volcano.{key}_{subclass}.diffexp.png"))
-    final_output.append(directory(f"results/visualization/PCA.pdf"))
-    final_output.append(directory(f"results/visualization/PCA.png"))
+            final_output.append(f"results/visualization/Volcano.{key}_{subclass}.diffexp.pdf")
+            final_output.append(f"results/visualization/Volcano.{key}_{subclass}.diffexp.png")
+    final_output.append(f"results/visualization/PCA.pdf")
+    final_output.append(f"results/visualization/PCA.png")
     # final_output.append("results/counts/all.symbol.tsv")
     return final_output
 
