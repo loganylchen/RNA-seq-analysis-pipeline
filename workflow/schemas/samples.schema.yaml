@@ -14,4 +14,4 @@ properties:
 required:
   - sample_name
   - condition
-  - raw_data
+#  - raw_data
