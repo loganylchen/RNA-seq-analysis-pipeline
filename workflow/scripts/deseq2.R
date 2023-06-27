@@ -14,12 +14,17 @@ if (snakemake@threads > 1) {
 
 dds <- readRDS(snakemake@input[[1]])
 
+
+
+
+dds_sub <- subset(dds, select= `snakemake@params[["subclass_column"]]` == snakemake@params[["subclass"]])
+dds_sub <- DESeqDataSet(dds_sub, design = as.formula(snakemake@params[["model"]]))
 contrast <- c("condition", snakemake@params[["contrast"]])
-res <- results(dds, contrast=contrast, parallel=parallel)
+res <- results(dds_sub, contrast=contrast, parallel=parallel)
 # shrink fold changes for lowly expressed genes
 # use ashr so we can use `contrast` as conversion to coef is not trivial
 # see https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#extended-section-on-shrinkage-estimators
-res <- lfcShrink(dds, contrast=contrast, res=res, type="ashr")
+res <- lfcShrink(dds_sub, contrast=contrast, res=res, type="ashr")
 
 # sort by p-value
 res <- res[order(res$padj),]

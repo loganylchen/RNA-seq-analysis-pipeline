@@ -1,8 +1,8 @@
 rule genekitr_enrichment:
     input:
-        "results/diffexp/{contrast}.diffexp.tsv",
+        "results/diffexp/{contrast}/{subclass}.diffexp.tsv",
     output:
-        directory("results/enrichment/{contrast}"),
+        directory("results/enrichment/{contrast}_{subclass}"),
     params:
         log2foldchange_threshold=config['thresholds']['deseq2']['log2foldchange'],
         padj_threshold=config['thresholds']['deseq2']['padj'],
@@ -11,7 +11,9 @@ rule genekitr_enrichment:
     container:
         "docker://btrspg/genekitr:latest"
     log:
-        "logs/enrichment/{contrast}.log",
+        "logs/enrichment/{contrast}_{subclass}.log",
+    benchmark:
+        "benchmarks/{contrast}_{subclass}.enrichment.genekitr.benchmark.txt",
     script:
         "../scripts/genekitr.R"
 

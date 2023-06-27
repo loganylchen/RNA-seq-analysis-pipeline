@@ -1,9 +1,9 @@
 rule volcano_vis:
     input:
-        "results/diffexp/{contrast}.diffexp.tsv",
+        "results/diffexp/{contrast}/{subclass}.diffexp.tsv",
     output:
-        png="results/visualization/Volcano.{contrast}.diffexp.png",
-        pdf="results/visualization/Volcano.{contrast}.diffexp.pdf",
+        png="results/visualization/Volcano.{contrast}_{subclass}.diffexp.png",
+        pdf="results/visualization/Volcano.{contrast}_{subclass}.diffexp.pdf",
     params:
         contrast='{contrast}',
         fc_threshold=config['thresholds']['volcano']['log2foldchange'],
@@ -12,6 +12,6 @@ rule volcano_vis:
     conda:
         "../envs/enhancedvolcano.yaml"
     log:
-        "logs/visualization/Volcano.{contrast}.diffexp.log",
+        "logs/visualization/Volcano.{contrast}_{subclass}.diffexp.log",
     script:
         "../scripts/volcano.R"

@@ -21,14 +21,17 @@ rule deseq2:
     input:
         "results/deseq2/count_matrix.rds",
     output:
-        table="results/diffexp/{contrast}.diffexp.tsv",
+        table="results/diffexp/{contrast}/{subclass}.diffexp.tsv",
         # ma_plot=report("results/diffexp/{contrast}.ma-plot.svg", "../report/ma.rst"),
     params:
+        subclass_column=config['diffexp']['subclass'],
+        subclass='{subclass}'
+        model=config["diffexp"]["model"],
         contrast=get_contrast,
     conda:
         "../envs/deseq2.yaml"
     log:
-        "logs/deseq2/{contrast}.diffexp.log",
+        "logs/deseq2/{contrast}_{subclass}.diffexp.log",
     threads: config['threads']['deseq2']
     script:
         "../scripts/deseq2.R"

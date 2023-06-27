@@ -31,11 +31,12 @@ ref:
 
 diffexp:
   # contrasts for the deseq2 results method
+  subclass: time_label
   contrasts:
     KFC1-vs-WT:
       - KFC1
       - WT
-  model: ~time_label + condition
+  model: ~condition
 
 vis:
   pcatools:
