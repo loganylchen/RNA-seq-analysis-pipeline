@@ -38,30 +38,30 @@ if(snakemake@params[["go_name"]] != "UNKNOWN"){
     up_go<-FALSE
     if(length(up_regulated_gene)>0){
         up_go<-TRUE
-        up_enrich_mf <- genORA(up_regulated_gene, geneset = mf_set,q_cutoff=1)
+        up_enrich_mf <- genORA(up_regulated_gene, geneset = mf_set,q_cutoff=1,p_cutoff=1)
         if(dim(up_enrich_mf)[1]>0){
             write.table(up_enrich_mf, paste0(outdir,"/up_enrich_mf.tsv"), sep = "\t", quote = F, row.names = F)
         }
-        up_enrich_cc <- genORA(up_regulated_gene, geneset = cc_set,q_cutoff=1)
+        up_enrich_cc <- genORA(up_regulated_gene, geneset = cc_set,q_cutoff=1,p_cutoff=1)
         if(dim(up_enrich_cc)[1]>0){
             write.table(up_enrich_cc, paste0(outdir,"/up_enrich_cc.tsv"), sep = "\t", quote = F, row.names = F)
         }
-        up_enrich_bp <- genORA(up_regulated_gene, geneset = bp_set,q_cutoff=1)
+        up_enrich_bp <- genORA(up_regulated_gene, geneset = bp_set,q_cutoff=1,p_cutoff=1)
         if(dim(up_enrich_bp)[1]>0){
             write.table(up_enrich_bp, paste0(outdir,"/up_enrich_bp.tsv"), sep = "\t", quote = F, row.names = F)
         }
     }
     if(length(down_regulated_gene)>0){
         down_go<-TRUE
-        down_enrich_mf <- genORA(down_regulated_gene, geneset = mf_set,q_cutoff=1)
+        down_enrich_mf <- genORA(down_regulated_gene, geneset = mf_set,q_cutoff=1,p_cutoff=1)
         if(dim(down_enrich_mf)[1]>0){
             write.table(down_enrich_mf, paste0(outdir,"/down_enrich_mf.tsv"), sep = "\t", quote = F, row.names = F)
         }
-        down_enrich_cc <- genORA(down_regulated_gene, geneset = cc_set,q_cutoff=1)
+        down_enrich_cc <- genORA(down_regulated_gene, geneset = cc_set,q_cutoff=1,p_cutoff=1)
         if(dim(down_enrich_cc)[1]>0){
             write.table(down_enrich_cc, paste0(outdir,"/down_enrich_cc.tsv"), sep = "\t", quote = F, row.names = F)
         }
-        down_enrich_bp <- genORA(down_regulated_gene, geneset = bp_set,q_cutoff=1)
+        down_enrich_bp <- genORA(down_regulated_gene, geneset = bp_set,q_cutoff=1,p_cutoff=1)
         if(dim(down_enrich_bp)[1]>0){
             write.table(down_enrich_bp, paste0(outdir,"/down_enrich_bp.tsv"), sep = "\t", quote = F, row.names = F)
         }
