@@ -17,7 +17,9 @@ dds <- readRDS(snakemake@input[[1]])
 
 
 
-dds_sub <- subset(dds, select= snakemake@params[["subclass_column"]] == snakemake@params[["subclass"]])
+dds_sub <- dds[dds[,snakemake@params[["subclass_column"]]] == snakemake@params[["subclass"]],]
+print(dds,dds_sub)
+# subset(dds, select= snakemake@params[["subclass_column"]] == snakemake@params[["subclass"]])
 dds_sub <- DESeqDataSet(dds_sub, design = as.formula(snakemake@params[["model"]]))
 contrast <- c("condition", snakemake@params[["contrast"]])
 res <- results(dds_sub, contrast=contrast, parallel=parallel)
