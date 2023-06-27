@@ -23,6 +23,7 @@ dds
 dds_sub
 # subset(dds, select= snakemake@params[["subclass_column"]] == snakemake@params[["subclass"]])
 dds_sub <- DESeqDataSet(dds_sub, design = as.formula(snakemake@params[["model"]]))
+dds_sub <- DESeq(dds_sub)
 contrast <- c("condition", snakemake@params[["contrast"]])
 res <- results(dds_sub, contrast=contrast, parallel=parallel)
 # shrink fold changes for lowly expressed genes
