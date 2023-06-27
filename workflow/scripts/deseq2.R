@@ -16,8 +16,9 @@ dds <- readRDS(snakemake@input[[1]])
 
 
 
-
-dds_sub <- dds[dds[,snakemake@params[["subclass_column"]]] == snakemake@params[["subclass"]],]
+coldata <- colData(dds)
+keep_samples <- coldata[,snakemake@params[["subclass_column"]]] == snakemake@params[["subclass"]]
+dds_sub <- dds[keep_samples,]
 print(dds,dds_sub)
 # subset(dds, select= snakemake@params[["subclass_column"]] == snakemake@params[["subclass"]])
 dds_sub <- DESeqDataSet(dds_sub, design = as.formula(snakemake@params[["model"]]))
