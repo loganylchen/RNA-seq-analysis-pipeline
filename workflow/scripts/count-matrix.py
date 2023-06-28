@@ -81,6 +81,8 @@ elif ((s_u>0).sum() > (u_s > 0).sum()) and ((s_r>0).sum() > (r_s < 0).sum()):
 elif ((r_u>0).sum() > (u_r > 0).sum()) and ((r_s>0).sum() > (s_r < 0).sum()):
     reverse_matrix.to_csv(snakemake.output[0], sep="\t")
 else:
-    raise ValueError("Can't decide the strandedness of the RNA-seq, please check by yourself")
+    print("Treated as unstrandedness")
+    unstrandedness_matrix.to_csv(snakemake.output[0], sep="\t")
+    print(f"Can't decide the strandedness of the RNA-seq, please check by yourself. refer to {snakemake.output[4]}")
 
 
