@@ -13,6 +13,7 @@ def _parse_attributes(attributes):
     atts = attributes.split(';')
     att_dict = dict()
     for att in atts:
+        print(att,att.strip().split(' '))
         key,value = att.strip().split(' ')
         value = value.replace('"','')
         att_dict[key] = value
