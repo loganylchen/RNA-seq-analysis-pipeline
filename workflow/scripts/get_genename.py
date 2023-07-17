@@ -13,11 +13,10 @@ def _parse_attributes(attributes):
     atts = attributes.split(';')
     att_dict = dict()
     for att in atts:
-        print(att)
-        print(att.strip().split(' '))
-        key,value = att.strip().split(' ')
-        value = value.replace('"','')
-        att_dict[key] = value
+        if att != '':
+            key,value = att.strip().split(' ')
+            value = value.replace('"','')
+            att_dict[key] = value
     return att_dict['gene_id'],att_dict['gene_name']
 
 
