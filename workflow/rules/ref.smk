@@ -74,5 +74,7 @@ rule download_vep_plugins:
         directory("resources/vep/plugins")
     params:
         release=100
+    log:
+        "logs/download_vep_plugins.log"
     wrapper:
         "v1.25.0/bio/vep/plugins"
