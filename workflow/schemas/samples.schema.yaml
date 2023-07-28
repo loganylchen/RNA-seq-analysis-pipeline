@@ -11,7 +11,11 @@ properties:
   raw_data:
     type: string
     description: raw fastq file path or SRA ID
+  seq_type:
+    type: string
+    description: pe or se
 required:
   - sample_name
   - condition
   - raw_data
+  - seq_type

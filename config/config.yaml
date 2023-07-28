@@ -4,6 +4,7 @@ params:
   sratools_fetchfastq: "--gzip --split-3 "
   fastp: "-c "
   star: ""
+  featurecounts: " -O --fracOverlap 0.2 -J −−extraAttributes  gene_name,gene_type "
 threads:
   fastp: 12
   star: 12
@@ -17,6 +18,8 @@ thresholds:
   volcano:
     log2foldchange: 1
     padj: 0.05
+
+
 
 
 ref:

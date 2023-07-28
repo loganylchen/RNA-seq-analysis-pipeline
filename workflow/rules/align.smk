@@ -1,5 +1,6 @@
 rule align:
     input:
+        *get_clean_data(),
         fq1="results/clean_fastq/{sample}/{sample}_1.fastq.gz",
         fq2="results/clean_fastq/{sample}/{sample}_2.fastq.gz",
         index="resources/star_genome",
