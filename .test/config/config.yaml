@@ -4,6 +4,7 @@ params:
   sratools_fetchfastq: "--gzip --split-3 "
   fastp: "-c "
   star: ""
+  featurecounts: " -O --fracOverlap 0.2 -J −−extraAttributes  gene_name,gene_type "
 threads:
   fastp: 12
   star: 12
@@ -19,6 +20,8 @@ thresholds:
     padj: 0.05
 
 
+
+
 ref:
   # Ensembl species name
   species: saccharomyces_cerevisiae
@@ -31,14 +34,14 @@ ref:
 
 diffexp:
   # contrasts for the deseq2 results method
+  subclass: time_label
   contrasts:
     KFC1-vs-WT:
       - KFC1
       - WT
   model: ~condition
-  subclass: time_label
 
 vis:
   pcatools:
-    color_by: 'condition'
-    shape_by: 'time_label'
+    color_by: condition
+    shape_by: time_label
