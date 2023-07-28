@@ -53,7 +53,7 @@ def get_fq(wildcards):
             }
 
 
-def get_clean(wildcards):
+def get_clean_data(wildcards):
     fq1 = glob.glob(f"results/clean_fastq/{wildcards.sample}/{wildcards.sample}_1.fastq.gz")
     fq2 = glob.glob(f"results/clean_fastq/{wildcards.sample}/{wildcards.sample}_2.fastq.gz")
     fq = glob.glob(f"results/clean_fastq/{wildcards.sample}/{wildcards.sample}.fastq.gz")
