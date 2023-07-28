@@ -22,13 +22,8 @@ rule count_matrix:
 
 rule feature_counts:
     input:
-
-        samples=expand(
-            "results/star/{sample.sample_name}/Aligned.sortedByCoord.out.bam",
-            sample=samples.itertuples(),
-        ),
-        annotation="annotation.gtf",
-
+        samples=expand("results/star/{sample.sample_name}/Aligned.sortedByCoord.out.bam",sample=samples.itertuples()),
+        annotation="resources/genome.gtf",
     output:
         multiext(
             "results/counts/count_matrix",
