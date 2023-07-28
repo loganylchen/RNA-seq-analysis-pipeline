@@ -60,11 +60,13 @@ def get_clean_data(wildcards):
     if (len(fq1) > 0) and (len(fq2)) > 0:
         return {
             'fq1': f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}_1.fastq.gz",
-            'fq2': f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}_2.fastq.gz"
+            'fq2': f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}_2.fastq.gz",
+            'index':"resources/star_genome",
         }
     elif len(fq) > 0:
         return {
-            'fq1': f"results/clean_fastq/{wildcards.sample}/{wildcards.sample}.fastq.gz"
+            'fq1': f"results/clean_fastq/{wildcards.sample}/{wildcards.sample}.fastq.gz",
+            'index': "resources/star_genome",
         }
     else:
         raise ValueError(f'{wildcards.sample} is a wired name!')
