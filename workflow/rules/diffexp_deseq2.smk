@@ -38,19 +38,3 @@ rule deseq2:
 
 
 
-
-# rule pca:
-#     input:
-#         "results/deseq2/all.rds",
-#     output:
-#         report("results/pca.svg", "../report/pca.rst"),
-#     params:
-#         pca_labels=config["pca"]["labels"],
-#     conda:
-#         "../envs/deseq2.yaml"
-#     log:
-#         "logs/pca.log",
-#     script:
-#         "../scripts/plot-pca.R"
-#
-#

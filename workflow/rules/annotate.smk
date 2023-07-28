@@ -16,3 +16,13 @@ rule annotate_variants:
     threads: 4
     wrapper:
         "v1.25.0/bio/vep/annotate"
+
+rule geneid_to_genename:
+    input:
+        gtf="resources/genome.gtf",
+    output:
+        tsv="resources/gene_id_to_gene_name.tsv"
+    log:
+        "logs/geneid2genename.log"
+    script:
+        "../scripts/get_genename.py"

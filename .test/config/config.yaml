@@ -35,7 +35,8 @@ diffexp:
     KFC1-vs-WT:
       - KFC1
       - WT
-  model: ~time_label + condition
+  model: ~condition
+  subclass: time_label
 
 vis:
   pcatools:

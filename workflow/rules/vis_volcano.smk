@@ -1,6 +1,8 @@
 rule volcano_vis:
     input:
-        "results/diffexp/{contrast}/{subclass}.diffexp.tsv",
+        deg_exp = "results/diffexp/{contrast}/{subclass}.diffexp.tsv",
+        geneid_to_genename = "resources/gene_id_to_gene_name.tsv"
+
     output:
         png="results/visualization/Volcano.{contrast}_{subclass}.diffexp.png",
         pdf="results/visualization/Volcano.{contrast}_{subclass}.diffexp.pdf",

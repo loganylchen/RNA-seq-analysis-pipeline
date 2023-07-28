@@ -8,10 +8,13 @@ library(ggplot2)
 library(dplyr)
 
 
-df <- read.table(snakemake@input[[1]], header = T, row.names = 1,sep='\t', check.names=FALSE)
+df <- read.table(snakemake@input[["deg_exp"]], header = T, row.names = 1,sep='\t', check.names=FALSE)
+geneid_to_genename <- read.table(snakemake@input[["geneid_to_genename"]], header = T, row.names = 1,sep='\t', check.names=FALSE)
+
+
 
 g <- EnhancedVolcano(df,
-        lab = rownames(df),
+        lab = geneid_to_genename[rownames(df),'gene_name'],
         title=snakemake@params[["contrast"]],
         x = "log2FoldChange",
         y = "padj",
