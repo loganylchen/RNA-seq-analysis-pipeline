@@ -54,16 +54,13 @@ def get_fq(wildcards):
 
 
 def get_clean_data(wildcards):
-    fq1 = glob.glob(f"results/clean_fastq/{wildcards.sample}/{wildcards.sample}_1.fastq.gz")
-    fq2 = glob.glob(f"results/clean_fastq/{wildcards.sample}/{wildcards.sample}_2.fastq.gz")
-    fq = glob.glob(f"results/clean_fastq/{wildcards.sample}/{wildcards.sample}.fastq.gz")
-    if (len(fq1) > 0) and (len(fq2)) > 0:
+    if samples.loc[wildcards.sample].loc['seq_type'] == 'pe':
         return {
             'fq1': f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}_1.fastq.gz",
             'fq2': f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}_2.fastq.gz",
             'index':"resources/star_genome",
         }
-    elif len(fq) > 0:
+    elif samples.loc[wildcards.sample].loc['seq_type'] == 'se':
         return {
             'fq1': f"results/clean_fastq/{wildcards.sample}/{wildcards.sample}.fastq.gz",
             'index': "resources/star_genome",

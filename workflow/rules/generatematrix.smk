@@ -40,3 +40,15 @@ rule feature_counts:
         "logs/count-matrix_featurecounts.log",
     wrapper:
         "v2.2.1/bio/subread/featurecounts"
+
+def tidy_featurecounts_table:
+    input:
+        "results/counts/count_matrix.featureCounts"
+    output:
+        "results/counts/count_matrix.tidy.featureCounts"
+    log:
+        "logs/count-matrix_featurecounts_tidy.log",
+    conda:
+        "../envs/pandas.yaml"
+    script:
+        "../scripts/tidy_featurecounts.py"
