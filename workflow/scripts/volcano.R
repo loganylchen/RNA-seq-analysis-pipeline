@@ -6,7 +6,7 @@ sink(log, type="message")
 library(EnhancedVolcano)
 library(ggplot2)
 library(dplyr)
-source('defaultfunction.R')
+source(file.path(snakemake@scriptdir, "defaultfunction.R"))
 
 df <- read.table(snakemake@input[["deg_exp"]], header = T, row.names = 1,sep='\t', check.names=FALSE)
 geneid_to_genename <- read.table(snakemake@input[["geneid_to_genename"]], header = T, row.names = 1,sep='\t', check.names=FALSE)
