@@ -8,7 +8,7 @@ library(ggplot2)
 library(cowplot)
 library(ggplotify)
 
-source('./defaultfunction.R')
+source('defaultfunction.R')
 
 parallel <- FALSE
 if (snakemake@threads > 1) {

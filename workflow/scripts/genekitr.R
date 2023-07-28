@@ -7,7 +7,7 @@ library(genekitr)
 library(dplyr)
 library(ggplot2)
 
-source('./defaultfunction.R')
+source('defaultfunction.R')
 
 df <- read.table(snakemake@input[[1]], header = T, row.names = 1,sep='\t')
 
