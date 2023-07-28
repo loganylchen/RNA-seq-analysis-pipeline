@@ -45,7 +45,7 @@ rule fastp_fastqc_se:
         config['threads']["fastp"]
     shell:
         "(fastp {params.extra} "
-        "-i {input.fq} "
+        "-i {input.fq1} "
         "-o {output.fq1} "
         "--html {output.qc_html} "
         "--json {output.qc_json}) 2>{log} "
