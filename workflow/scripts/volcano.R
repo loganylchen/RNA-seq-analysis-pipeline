@@ -36,7 +36,7 @@ g <- EnhancedVolcano(df,
 png_out = snakemake@output[['png']]
 pdf_out = snakemake@output[['pdf']]
 
-ggsave(png_out,g+annotation_custom(xmin=-Inf, ymin=-Inf, xmax=Inf, ymax=Inf, watermarkGrob()),width=10,height=10)
+ggsave(png_out,g,width=10,height=10)
 ggsave(pdf_out,g,width=10,height=10)
 
 
