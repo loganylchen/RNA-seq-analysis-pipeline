@@ -12,7 +12,7 @@ source(file.path(snakemake@scriptdir, "defaultfunction.R"))
 df <- read.table(snakemake@input[[1]], header = T, row.names = 1,sep='\t')
 
 geneList <- df$log2FoldChange
-names(geneList) <- rownames(df)
+names(geneList) <- tidy_ensemble_id(rownames(df))
 geneList <- sort(geneList, decreasing = TRUE)
 
 
@@ -32,8 +32,8 @@ if(snakemake@params[["go_name"]] != "UNKNOWN"){
     bp_set <- geneset::getGO(org = snakemake@params[["go_name"]], ont = "bp")
 
 
-    up_regulated_gene <- rownames(deg_df %>% filter(log2FoldChange > 0))
-    down_regulated_gene <- rownames(deg_df %>% filter(log2FoldChange < 0))
+    up_regulated_gene <- tidy_ensemble_id(rownames(deg_df %>% filter(log2FoldChange > 0)))
+    down_regulated_gene <- tidy_ensemble_id(rownames(deg_df %>% filter(log2FoldChange < 0)))
 
     down_go<-FALSE
     up_go<-FALSE

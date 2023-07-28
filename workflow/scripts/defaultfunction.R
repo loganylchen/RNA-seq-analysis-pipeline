@@ -13,3 +13,10 @@
 
  }
 
+
+ tidy_ensemble_id <- function(ids){
+  new_ids <- c()
+  for(eachid in ids){
+   new_ids<-c(new_ids, strsplit(eachid,split = '.')[0])
+  }
+ }
