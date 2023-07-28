@@ -41,7 +41,7 @@ rule feature_counts:
     wrapper:
         "v2.2.1/bio/subread/featurecounts"
 
-def tidy_featurecounts_table:
+rule tidy_featurecounts_table:
     input:
         "results/counts/count_matrix.featureCounts"
     output:
