@@ -13,8 +13,9 @@ df <- read.table(snakemake@input[[1]], header = T, row.names = 1,sep='\t')
 
 geneList <- df$log2FoldChange
 names(geneList) <- tidy_ensemble_id(rownames(df))
-geneList <- sort(geneList, decreasing = TRUE)
 
+geneList <- sort(geneList, decreasing = TRUE)
+print(geneList[1:20])
 
 deg_df <- df %>%
     filter(abs(log2FoldChange) > snakemake@params[["log2foldchange_threshold"]]) %>%
@@ -33,7 +34,9 @@ if(snakemake@params[["go_name"]] != "UNKNOWN"){
 
 
     up_regulated_gene <- tidy_ensemble_id(rownames(deg_df %>% filter(log2FoldChange > 0)))
+    print(up_regulated_gene[1:min(20,length(up_regulated_gene))])
     down_regulated_gene <- tidy_ensemble_id(rownames(deg_df %>% filter(log2FoldChange < 0)))
+    print(down_regulated_gene[1:min(20,length(down_regulated_gene))])
 
     down_go<-FALSE
     up_go<-FALSE
