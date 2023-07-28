@@ -6,7 +6,7 @@ sink(log, type="message")
 library(EnhancedVolcano)
 library(ggplot2)
 library(dplyr)
-
+source('./defaultfunction.R')
 
 df <- read.table(snakemake@input[["deg_exp"]], header = T, row.names = 1,sep='\t', check.names=FALSE)
 geneid_to_genename <- read.table(snakemake@input[["geneid_to_genename"]], header = T, row.names = 1,sep='\t', check.names=FALSE)
@@ -36,7 +36,7 @@ g <- EnhancedVolcano(df,
 png_out = snakemake@output[['png']]
 pdf_out = snakemake@output[['pdf']]
 
-ggsave(png_out,g,width=10,height=10)
+ggsave(png_out,g+annotation_custom(xmin=-Inf, ymin=-Inf, xmax=Inf, ymax=Inf, watermarkGrob()),width=10,height=10)
 ggsave(pdf_out,g,width=10,height=10)
 
 
