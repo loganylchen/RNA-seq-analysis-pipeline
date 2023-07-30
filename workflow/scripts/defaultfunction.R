@@ -19,5 +19,7 @@
   for(eachid in ids){
    new_ids<-c(new_ids, strsplit(eachid,split = '.')[0])
   }
+  print(new_ids[1:min(20,length(new_ids))])
+  print(ids[1:min(20,length(ids))])
   return(new_ids)
  }
