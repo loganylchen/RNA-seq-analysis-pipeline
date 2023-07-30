@@ -19,4 +19,5 @@
   for(eachid in ids){
    new_ids<-c(new_ids, strsplit(eachid,split = '.')[0])
   }
+  return(new_ids)
  }
