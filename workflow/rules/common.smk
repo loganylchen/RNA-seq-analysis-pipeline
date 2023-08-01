@@ -76,6 +76,7 @@ def get_final_output():
     final_output = expand("results/star/{sample.sample_name}/ReadsPerGene.out.tab",sample=samples.itertuples())
     final_output.append("results/deseq2/count_matrix.rds")
     final_output.append("results/counts/count_matrix.tidy.featureCounts")
+    final_output.append("results/deseq2/vst_count_matrix.tsv")
     for key in contrasts:
         for subclass in subclasses:
             final_output.append(f"results/diffexp/{key}/{subclass}.diffexp.tsv")
