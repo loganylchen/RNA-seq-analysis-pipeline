@@ -4,6 +4,7 @@ rule deseq2_init:
     output:
         "results/deseq2/count_matrix.rds",
         "results/deseq2/normalized_count_matrix.tsv",
+        "results/deseq2/vst_count_matrix.tsv"
     params:
         samples=config["samples"],
         model=config["diffexp"]["model"],

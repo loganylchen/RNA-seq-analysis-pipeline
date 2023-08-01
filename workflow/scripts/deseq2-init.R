@@ -34,3 +34,6 @@ saveRDS(dds, file=snakemake@output[[1]])
 # Write normalized counts
 norm_counts = counts(dds, normalized=T)
 write.table(data.frame("gene"=rownames(norm_counts), norm_counts), file=snakemake@output[[2]], sep='\t', row.names=F,quote=FALSE)
+
+vsd <- vst(dds)
+write.table(data.frame("gene"=rownames(norm_counts),vsd),file=snakemake@output[[3]],sep='\t',row.names=F,quote=FALSE)
