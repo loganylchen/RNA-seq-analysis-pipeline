@@ -16,7 +16,12 @@
 
  tidy_ensemble_id <- function(ids){
   new_ids <- c()
-  for(eachid in ids){
-   new_ids<-c(new_ids, strsplit(eachid,split = '.')[0])
+  for(each_id in ids){
+   new_ids<-append(new_ids, unlist(strsplit(each_id,split = '[.]'))[1])
   }
+  print(length(new_ids))
+  print(length(ids))
+  print(new_ids[1:min(20,length(new_ids))])
+  print(ids[1:min(20,length(ids))])
+  return(new_ids)
  }
