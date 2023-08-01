@@ -1,0 +1,6 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-wgcna =1.71
+  - r-dplyr =1.1.2
