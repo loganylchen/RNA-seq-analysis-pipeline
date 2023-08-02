@@ -195,7 +195,7 @@ write.table(gene_module_key,snakemake@output[['gene_module_key']],sep='\t',quote
 
 
 pdf(file.path(fig_outdir,'module_heatmap.pdf'))
-for(moduel_name in unique(gene_module_key$module)){
+for(module_name in unique(gene_module_key$module)){
   make_module_heatmap(module_name = module_name,expression_mat=normalized_counts,
                                 meta_and_moduleeigengenes=merge_df,
                                 gene_module_key_df=gene_module_key,
@@ -228,7 +228,7 @@ ggsave(file.path(fig_outdir,'scale_threshold.pdf'),width=10,height=10)
 ggsave(file.path(fig_outdir,'scale_threshold.png'),width=10,height=10)
 
 
-for(moduel_name in unique(gene_module_key$module)){
+for(module_name in unique(gene_module_key$module)){
   g <- ggplot(merge_df, aes_string(x = phenotype ,y = module_name, color = phenotype )) +
   # a boxplot with outlier points hidden (they will be in the sina plot)
   geom_boxplot(width = 0.2, outlier.shape = NA) +
