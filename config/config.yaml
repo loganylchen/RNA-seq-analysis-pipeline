@@ -5,10 +5,12 @@ params:
   fastp: "-c "
   star: ""
   featurecounts: " -O --fracOverlap 0.2 -J --extraAttributes  gene_name,gene_type "
+  wgcna_phenotype: "condition"
 threads:
   fastp: 12
   star: 12
   deseq2: 12
+  wgcna: 12
 
 thresholds:
   deseq2:

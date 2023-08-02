@@ -2,17 +2,16 @@ rule wgcna:
     input:
         normalized_matrix="results/deseq2/vst_count_matrix.tsv",
     output:
-        "results/deseq2/count_matrix.rds",
-        "results/deseq2/normalized_count_matrix.tsv",
-        "results/deseq2/vst_count_matrix.tsv"
+        bwnet_rds = "results/wgcna/wgcna.rds",
+        gene_module_key = "results/wgcna/gene_module_key.tsv",
     params:
         samples=config["samples"],
-        model=config["diffexp"]["model"],
-        count_threshold=config['thresholds']['deseq2']['count']
+        phenotype=config['params']['wgcna_phenotype'],
+        fig_outdir="results/wgcna/figures/"
     conda:
-        "../envs/deseq2.yaml"
+        "../envs/wgcna.yaml"
     log:
-        "logs/deseq2/init.log",
-    threads: config['threads']['deseq2']
+        "logs/wgcna/init.log",
+    threads: config['threads']['wgcna']
     script:
-        "../scripts/deseq2-init.R"
+        "../scripts/wgcna.R"
