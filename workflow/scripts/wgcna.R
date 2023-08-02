@@ -234,7 +234,7 @@ for(module_name in unique(gene_module_key$module)){
   geom_boxplot(width = 0.2, outlier.shape = NA) +
   # A sina plot to show all of the individual data points
   theme_classic()
-  ggsave(file.path(fig_outdir,paste0('ME_',moduel_name,'.pdf')),width=10,height=10)
-  ggsave(file.path(fig_outdir,paste0('ME_',moduel_name,'.png')),width=10,height=10)
+  ggsave(file.path(fig_outdir,paste0('ME_',module_name,'.pdf')),width=10,height=10)
+  ggsave(file.path(fig_outdir,paste0('ME_',module_name,'.png')),width=10,height=10)
 }
 
