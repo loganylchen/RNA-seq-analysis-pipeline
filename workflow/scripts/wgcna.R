@@ -100,6 +100,34 @@ normalized_counts <- t(read.csv(snakemake@input[['normalized_matrix']],check.nam
 metadata <- read.table(snakemake@params[["samples"]], header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t')
 phenotype <- snakemake@params[['phenotype']]
 
+gsg <- goodSamplesGenes(normalized_counts, verbose = 3);
+print('================================')
+print(gsg$allOK)
+print('================================')
+
+if (!gsg$allOK) {
+# Optionally, print the gene and sample names that were removed:
+  if (sum(!gsg$goodGenes)>0){
+    printFlush(paste("Removing genes:", paste(names(normalized_counts)[!gsg$goodGenes], collapse = ", ")));
+  }
+  if (sum(!gsg$goodSamples)>0){
+    printFlush(paste("Removing samples:", paste(rownames(normalized_counts)[!gsg$goodSamples], collapse = ", ")));
+  }
+# Remove the offending genes and samples from the data:
+  normalized_counts <- normalized_counts[gsg$goodSamples, gsg$goodGenes]
+}
+
+sampleTree <- hclust(dist(normalized_counts), method = "average");
+# Plot the sample tree: Open a graphic output window of size 12 by 9 inches
+# The user should change the dimensions if the window is too large or too small.
+
+pdf(file.path(fig_outdir,'sampleTree.pdf'), width = 12, height = 9);
+plot(sampleTree, main = "Sample clustering to detect outliers", sub="", xlab="", cex.lab = 1.5,
+cex.axis = 1.5, cex.main = 2)
+dev.off()
+
+
+
 sft <- pickSoftThreshold(normalized_counts,
   dataIsExpr = TRUE,
   corFnc = cor,
@@ -125,6 +153,20 @@ saveRDS(bwnet,snakemake@output[["bwnet_rds"]])
 
 
 module_eigengenes <- bwnet$MEs
+
+
+
+# Convert labels to colors for plotting
+mergedColors = labels2colors(bwnet$colors)
+# Plot the dendrogram and the module colors underneath
+pdf(file.path(fig_outdir,'ClusterDendrogram.pdf'), width = 12, height = 9);
+plotDendroAndColors(bwnet$dendrograms[[1]], mergedColors[bwnet$blockGenes[[1]]],"Module colors",dendroLabels = FALSE, hang = 0.03,addGuide = TRUE, guideHang = 0.05)
+dev.off()
+
+
+
+
+
 
 metadata <- metadata[rownames(module_eigengenes),]
 
