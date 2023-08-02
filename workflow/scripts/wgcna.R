@@ -28,8 +28,8 @@ make_module_heatmap <- function(module_name,
   # Create the ComplexHeatmap column annotation object
   col_annot <- HeatmapAnnotation(
     # Supply treatment labels
-    Treatment=meta_and_moduleeigengenes[,treatment],
-    module_eigengene = anno_barplot(dplyr::select(meta_and_moduleeigengenes, module_name)),
+    Treatment = meta_and_moduleeigengenes[,treatment],
+    module_eigengene = anno_barplot(dplyr::select(meta_and_moduleeigengenes, module_name))
   )
 
   # Get a vector of the Ensembl gene IDs that correspond to this module
