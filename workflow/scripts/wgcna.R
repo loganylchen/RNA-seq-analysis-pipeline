@@ -196,10 +196,10 @@ write.table(gene_module_key,snakemake@output[['gene_module_key']],sep='\t',quote
 
 pdf(file.path(fig_outdir,'module_heatmap.pdf'))
 for(module_name in unique(gene_module_key$module)){
-  make_module_heatmap(module_name = module_name,expression_mat=normalized_counts,
+  draw(make_module_heatmap(module_name = module_name,expression_mat=normalized_counts,
                                 meta_and_moduleeigengenes=merge_df,
                                 gene_module_key_df=gene_module_key,
-                                treatment=phenotype)
+                                treatment=phenotype))
 }
 dev.off()
 
