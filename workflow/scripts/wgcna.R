@@ -148,16 +148,16 @@ gene_module_key <- enframe(bwnet$colors, name = "gene", value = "module") %>%
   dplyr::mutate(module = paste0("ME", module))
 
 
-write.csv(gene_module_key,snakemake@output[['gene_module_key']],sep='\t',quote=FALSE)
+write.table(gene_module_key,snakemake@output[['gene_module_key']],sep='\t',quote=FALSE)
 
 
 
 pdf(file.path(fig_outdir,'module_heatmap.pdf'))
 for(moduel_name in unique(gene_module_key$module)){
-  draw(make_module_heatmap(module_name = module_name,expression_mat=normalized_counts,
+  make_module_heatmap(module_name = module_name,expression_mat=normalized_counts,
                                 meta_and_moduleeigengenes=merge_df,
                                 gene_module_key_df=gene_module_key,
-                                treatment=phenotype))
+                                treatment=phenotype)
 }
 dev.off()
 
