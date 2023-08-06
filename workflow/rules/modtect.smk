@@ -4,6 +4,7 @@ rule modtect:
     output:
         outdir=directory('results/hamr/{sample}/'),
         output="results/hamr/{sample}/hamr.mod.txt"
+
     log:
         log='logs/hamr/{sample}.log',
         error='logs/hamr/{sample}.err',
