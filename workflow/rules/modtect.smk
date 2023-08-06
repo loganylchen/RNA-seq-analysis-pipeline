@@ -1,17 +1,17 @@
 rule modtect:
     input:
         bam='results/star/{sample}/split.bam',
-    output:
-        outdir=directory('results/hamr/{sample}/'),
-        output="results/hamr/{sample}/hamr.mod.txt"
-
-    log:
-        log='logs/hamr/{sample}.log',
-        error='logs/hamr/{sample}.err',
-    params:
         genome="resources/genome.fa",
-        extra=config['params']['hamr']
-    threads: config["threads"]["star"]
+    output:
+        output='results/modtect/{sample}/modtect.combined.txt'
+    log:
+        log='logs/modtect/{sample}.log',
+        error='logs/modtect/{sample}.err',
+    params:
+
+        bed="resources/genome.sorted.bed",
+        label='results/modtect/{sample}/modtect',
+    threads: config["threads"]["modtect"]
     shell:
-        "hamr.py {input.bam} {params.genome} {output.outdir} {params.extra} 1>{log.log} 2>{log.error}"
+        "modtect.py {input.bam} {input.genome} 0 0 0 --threads {threads} --label {params.label} 1>{log.log} 2>{log.error}"
 

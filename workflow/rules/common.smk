@@ -80,7 +80,8 @@ def get_final_output():
     contrasts = config['diffexp']['contrasts']
     subclasses = samples.loc[:,config['diffexp']['subclass']].unique()
     final_output = expand("results/star/{sample.sample_name}/ReadsPerGene.out.tab",sample=samples.itertuples())
-    final_output = expand("results/hamr/{sample.sample_name}/hamr.mods.txt",sample=samples.itertuples())
+    final_output += expand("results/hamr/{sample.sample_name}/hamr.mods.txt",sample=samples.itertuples())
+    final_output += expand('results/modtect/{sample}/modtect.combined.txt',sample=samples.itertuples())
     final_output.append("results/deseq2/count_matrix.rds")
     final_output.append("results/counts/count_matrix.tidy.featureCounts")
     final_output.append("results/wgcna/wgcna.rds")
