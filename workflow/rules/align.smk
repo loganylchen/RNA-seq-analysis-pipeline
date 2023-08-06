@@ -18,15 +18,17 @@ rule align:
 rule split_bam:
     input:
         aln = "results/star/{sample}/Aligned.sortedByCoord.out.bam",
-        genome_dict="resources/genome.dict"
+        genome_dict="resources/genome.dict",
+        genome='resources/genome.fasta'
     output:
         split_bam = "results/star/{sample}/split.bam",
     params:
-        genome='resources/genome.fasta'
+        extra=config['params']['gatk']
     log:
         "logs/split_bam/{sample}.log",
     conda:
         "../envs/gatk4.yaml"
     threads: config["threads"]["gatk4"]
     shell:
-        "gatk -Xmx40g SplitNCigarReads --create-output-bam-index -R {params.genome} -I {input.aln} -o {output.split_bam} -U ALLOW_N_CIGAR_READS 2>{log}"
+        "gatk SplitNCigarReads --create-output-bam-index -R {input.genome} -I {input.aln} -o {output.split_bam} -U ALLOW_N_CIGAR_READS {params.extra} 2>{log}"
+
