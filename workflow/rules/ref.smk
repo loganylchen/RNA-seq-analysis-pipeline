@@ -78,3 +78,21 @@ rule download_vep_plugins:
         "logs/download_vep_plugins.log"
     wrapper:
         "v1.25.0/bio/vep/plugins"
+
+rule create_dict:
+    input:
+        "resources/genome.fasta",
+    output:
+        "resources/genome.dict",
+    log:
+        "logs/picard/create_dict.log",
+    params:
+        extra="",  # optional: extra arguments for picard.
+    # optional specification of memory usage of the JVM that snakemake will respect with global
+    # resource restrictions (https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#resources)
+    # and which can be used to request RAM during cluster job submission as `{resources.mem_mb}`:
+    # https://snakemake.readthedocs.io/en/latest/executing/cluster.html#job-properties
+    resources:
+        mem_mb=1024,
+    wrapper:
+        "v2.3.1/bio/picard/createsequencedictionary"

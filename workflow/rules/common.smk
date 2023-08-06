@@ -13,6 +13,12 @@ samples = (
 validate(samples, schema="../schemas/samples.schema.yaml")
 
 
+
+def is_pe(wildcards):
+    if samples.loc[wildcards.sample].loc['seq_type']  == 'pe':
+        return True
+    else:
+        return False
 def check_raw_data(raw_data_string:str,seq_type:str):
     if raw_data_string.endswith('.fq') or raw_data_string.endswith('.fq.gz') or raw_data_string.endswith('.fastq') or raw_data_string.endswith('.fastq.gz'):
         if seq_type == 'se':
@@ -74,6 +80,7 @@ def get_final_output():
     contrasts = config['diffexp']['contrasts']
     subclasses = samples.loc[:,config['diffexp']['subclass']].unique()
     final_output = expand("results/star/{sample.sample_name}/ReadsPerGene.out.tab",sample=samples.itertuples())
+    final_output = expand("results/hamr/{sample.sample_name}/hamr.mods.txt",sample=samples.itertuples())
     final_output.append("results/deseq2/count_matrix.rds")
     final_output.append("results/counts/count_matrix.tidy.featureCounts")
     final_output.append("results/wgcna/wgcna.rds")
