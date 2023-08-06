@@ -1,7 +1,7 @@
 rule hamr:
     input:
         bam='results/star/{sample}/split.bam',
-        genome="resources/genome.fa",
+        genome="resources/genome.fasta",
         bed="resources/genome.merged.bed",
     output:
         outdir=directory('results/hamr/{sample}/'),
