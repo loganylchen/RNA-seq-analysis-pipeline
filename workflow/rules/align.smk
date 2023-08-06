@@ -27,6 +27,6 @@ rule split_bam:
         "logs/split_bam/{sample}.log",
     conda:
         "../envs/gatk4.yaml"
-    threads: config["threads"]["picard"]
+    threads: config["threads"]["gatk4"]
     shell:
         "gatk SplitNCigarReads -R {params.genome} -I {input.aln} -o {output.split_bam} -U ALLOW_N_CIGAR_READS 2>{log}"
