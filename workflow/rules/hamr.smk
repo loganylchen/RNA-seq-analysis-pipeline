@@ -2,7 +2,8 @@ rule hamr:
     input:
         bam='results/star/{sample}/split.bam',
     output:
-        outdir=directory('results/hamr/{sample}/')
+        outdir=directory('results/hamr/{sample}/'),
+        output="results/hamr/{sample}/hamr.mod.txt"
     log:
         log='logs/hamr/{sample}.log',
         error='logs/hamr/{sample}.err',
