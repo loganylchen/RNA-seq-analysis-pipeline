@@ -10,7 +10,6 @@ rule hamr:
         log='logs/hamr/{sample}.log',
         error='logs/hamr/{sample}.err',
     params:
-
         extra=config['params']['hamr']
     threads: config["threads"]["star"]
     container:
