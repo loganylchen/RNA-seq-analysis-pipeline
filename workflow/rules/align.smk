@@ -23,7 +23,7 @@ rule split_bam:
     output:
         split_bam = "results/star/{sample}/split.bam",
     params:
-        extra=config['params']['gatk']
+        extra=config['params']['gatk4']
     log:
         "logs/split_bam/{sample}.log",
     conda:
