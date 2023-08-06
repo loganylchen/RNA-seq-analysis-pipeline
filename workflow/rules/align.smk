@@ -22,7 +22,7 @@ rule split_bam:
     output:
         split_bam = "results/star/{sample}/split.bam",
     params:
-        genome='resources/genome.fa'
+        genome='resources/genome.fasta'
     log:
         "logs/split_bam/{sample}.log",
     conda:
