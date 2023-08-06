@@ -1,7 +1,7 @@
 rule modtect:
     input:
         bam='results/star/{sample}/split.bam',
-        genome="resources/genome.fa",
+        genome="resources/genome.fasta",
         bed="resources/genome.sorted.bed",
     output:
         output='results/modtect/{sample}/modtect.combined.txt'
