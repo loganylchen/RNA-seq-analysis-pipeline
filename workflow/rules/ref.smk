@@ -93,7 +93,7 @@ rule create_dict:
     # and which can be used to request RAM during cluster job submission as `{resources.mem_mb}`:
     # https://snakemake.readthedocs.io/en/latest/executing/cluster.html#job-properties
     resources:
-        mem_mb=1024,
+        mem_mb=10240,
     wrapper:
         "v2.3.1/bio/picard/createsequencedictionary"
 
@@ -112,7 +112,7 @@ rule gtf_to_bed:
 
 rule bedtools_merge:
     input:
-        "resources/genome.bed"
+        "resources/genome.sorted.bed"
     output:
         "resources/genome.merged.bed"
     params:
@@ -125,7 +125,7 @@ rule bedtools_merge:
 
 rule bedtools_sort_bed:
     input:
-        in_file="resources/genome.merged.bed",
+        in_file="resources/genome.bed",
         # an optional sort file can be set as genomefile by the variable genome or
         # as fasta index file by the variable faidx
         genome="resources/genome.fasta"
