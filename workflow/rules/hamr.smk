@@ -8,9 +8,8 @@ rule hamr:
         error='logs/hamr/{sample}.err',
     params:
         genome="resources/genome.fa",
-        is_pe=' --pe ' if lambda w: samples.loc[w.sample].loc['seq_type']  == 'pe' else ' ',
+        extra=config['params']['hamr']
     threads: config["threads"]["star"]
     shell:
-        "hamr.py {input.bam} {params.genome} {output.outdir} {params.is_pe} 1>{log.log} 2>{log.error}"
+        "hamr.py {input.bam} {params.genome} {output.outdir} {params.extra} 1>{log.log} 2>{log.error}"
 
-clusters =
