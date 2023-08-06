@@ -128,7 +128,7 @@ rule bedtools_sort_bed:
         in_file="resources/genome.bed",
         # an optional sort file can be set as genomefile by the variable genome or
         # as fasta index file by the variable faidx
-        genome="resources/genome.fasta"
+        genome="resources/genome.fasta.fai"
     output:
         "resources/genome.sorted.bed"
     params:
