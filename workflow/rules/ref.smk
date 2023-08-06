@@ -139,14 +139,3 @@ rule bedtools_sort_bed:
     wrapper:
         "v2.3.1/bio/bedtools/sort"
 
-rule samtools_index:
-    input:
-        "resources/genome.fasta",
-    output:
-        "resources/genome.fasta.fai",
-    log:
-        "logs/samtools/faidx.log",
-    params:
-        extra="",  # optional params string
-    wrapper:
-        "v2.3.1/bio/samtools/faidx"
