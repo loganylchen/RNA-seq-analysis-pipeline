@@ -19,6 +19,7 @@ rule split_bam:
     input:
         aln = "results/star/{sample}/Aligned.sortedByCoord.out.bam",
         genome_dict="resources/genome.dict",
+        genome_idx="resources/genome.fasta.fai",
         genome='resources/genome.fasta'
     output:
         split_bam = "results/star/{sample}/split.bam",
@@ -30,5 +31,5 @@ rule split_bam:
         "../envs/gatk4.yaml"
     threads: config["threads"]["gatk4"]
     shell:
-        "gatk SplitNCigarReads --create-output-bam-index -R {input.genome} -I {input.aln} -O {output.split_bam} -U ALLOW_N_CIGAR_READS {params.extra} 2>{log}"
+        "gatk SplitNCigarReads --create-output-bam-index -R {input.genome} -I {input.aln} -O {output.split_bam} {params.extra} 2>{log}"
 
