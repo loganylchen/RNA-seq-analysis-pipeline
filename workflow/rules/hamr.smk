@@ -11,7 +11,6 @@ rule hamr:
         error='logs/hamr/{sample}.err',
     params:
         extra=config['params']['hamr']
-    threads: config["threads"]["star"]
     container:
         "docker://btrspg/hamr:latest"
     shell:
