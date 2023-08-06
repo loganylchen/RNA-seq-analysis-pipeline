@@ -30,5 +30,5 @@ rule split_bam:
         "../envs/gatk4.yaml"
     threads: config["threads"]["gatk4"]
     shell:
-        "gatk SplitNCigarReads --create-output-bam-index -R {input.genome} -I {input.aln} -o {output.split_bam} -U ALLOW_N_CIGAR_READS {params.extra} 2>{log}"
+        "gatk SplitNCigarReads --create-output-bam-index -R {input.genome} -I {input.aln} -O {output.split_bam} -U ALLOW_N_CIGAR_READS {params.extra} 2>{log}"
 
