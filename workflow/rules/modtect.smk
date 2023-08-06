@@ -10,6 +10,8 @@ rule modtect:
         error='logs/modtect/{sample}.err',
     params:
         label='results/modtect/{sample}/modtect',
+    container:
+        "docker://btrspg/modtect:latest"
     threads: config["threads"]["modtect"]
     shell:
         "modtect.py {input.bam} {input.genome} 0 0 0 "

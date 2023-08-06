@@ -12,6 +12,8 @@ rule hamr:
         bed="resources/genome.sorted.bed",
         extra=config['params']['hamr']
     threads: config["threads"]["star"]
+    container:
+        "docker://btrspg/hamr:latest"
     shell:
         "hamr.py {input.bam} {params.genome} {output.outdir} -n {params.bed} {params.extra} 1>{log.log} 2>{log.error}"
 
