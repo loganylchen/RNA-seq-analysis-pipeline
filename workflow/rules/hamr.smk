@@ -9,8 +9,9 @@ rule hamr:
         error='logs/hamr/{sample}.err',
     params:
         genome="resources/genome.fa",
+        bed="resources/genome.sorted.bed",
         extra=config['params']['hamr']
     threads: config["threads"]["star"]
     shell:
-        "hamr.py {input.bam} {params.genome} {output.outdir} {params.extra} 1>{log.log} 2>{log.error}"
+        "hamr.py {input.bam} {params.genome} {output.outdir} -n {params.bed} {params.extra} 1>{log.log} 2>{log.error}"
 

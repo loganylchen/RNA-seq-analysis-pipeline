@@ -96,3 +96,45 @@ rule create_dict:
         mem_mb=1024,
     wrapper:
         "v2.3.1/bio/picard/createsequencedictionary"
+
+rule gtf_to_bed:
+    input:
+        "resources/genome.gtf"
+    output:
+        "resources/genome.bed"
+    log:
+        "logs/gtf2bed/gtf2bed.log"
+    conda:
+        "../envs/pygtftk.yaml"
+    shell:
+        "gtftk select_by_key -e -i {input} | "
+        "gtftk convert --outputfile {output} -f bed6"
+
+rule bedtools_merge:
+    input:
+        "resources/genome.bed"
+    output:
+        "resources/genome.merged.bed"
+    params:
+        ## Add optional parameters
+        extra=" " ## In this example, we want to count how many input lines we merged per output line
+    log:
+        "logs/merge.bedtools.log"
+    wrapper:
+        "v2.3.1/bio/bedtools/merge"
+
+rule bedtools_sort_bed:
+    input:
+        in_file="resources/genome.merged.bed",
+        # an optional sort file can be set as genomefile by the variable genome or
+        # as fasta index file by the variable faidx
+        genome="resources/genome.fasta"
+    output:
+        "resources/genome.sorted.bed"
+    params:
+        ## Add optional parameters
+        extra=""
+    log:
+        "logs/sorted.bed.log"
+    wrapper:
+        "v2.3.1/bio/bedtools/sort"
