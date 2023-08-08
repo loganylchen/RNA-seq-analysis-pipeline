@@ -14,6 +14,8 @@ rule count_matrix:
         "logs/count-matrix.log",
     params:
         samples=samples["sample_name"].tolist(),
+    benchmark:
+        "benchmarks/count_matrix.benchmark.txt"
     conda:
         "../envs/pandas.yaml"
     script:
@@ -36,6 +38,8 @@ rule feature_counts:
         strand=0,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
         r_path="",  # implicitly sets the --Rpath flag
         extra=config['params']['featurecounts']
+    benchmark:
+        "benchmarks/featurecounts.benchmark.txt"
     log:
         "logs/count-matrix_featurecounts.log",
     wrapper:
@@ -48,6 +52,8 @@ rule tidy_featurecounts_table:
         "results/counts/count_matrix.tidy.featureCounts"
     log:
         "logs/count-matrix_featurecounts_tidy.log",
+    benchmark:
+        "benchmarks/tidyfc_table.benchmark.txt"
     conda:
         "../envs/pandas.yaml"
     script:

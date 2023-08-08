@@ -13,6 +13,8 @@ rule deseq2_init:
         "../envs/deseq2.yaml"
     log:
         "logs/deseq2/init.log",
+    benchmark:
+        "benchmarks/countmatrix.benchmark.txt"
     threads: config['threads']['deseq2']
     script:
         "../scripts/deseq2-init.R"
@@ -31,6 +33,8 @@ rule deseq2:
         contrast=get_contrast,
     conda:
         "../envs/deseq2.yaml"
+    benchmark:
+        "benchmarks/{contrast}_{subclass}.deseq2.benchmark.txt"
     log:
         "logs/deseq2/{contrast}_{subclass}.diffexp.log",
     threads: config['threads']['deseq2']

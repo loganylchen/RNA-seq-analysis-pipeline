@@ -15,5 +15,7 @@ rule volcano_vis:
         "../envs/enhancedvolcano.yaml"
     log:
         "logs/visualization/Volcano.{contrast}_{subclass}.diffexp.log",
+    benchmark:
+        "benchmarks/Volcano.{contrast}_{subclass}.benchmark.txt"
     script:
         "../scripts/volcano.R"

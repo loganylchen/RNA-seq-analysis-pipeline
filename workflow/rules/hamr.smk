@@ -9,6 +9,8 @@ rule hamr:
     log:
         log='logs/hamr/{sample}.log',
         error='logs/hamr/{sample}.err',
+    benchmark:
+        "benchmarks/{sample}.hamr.benchmark.txt"
     params:
         extra=config['params']['hamr']
     container:

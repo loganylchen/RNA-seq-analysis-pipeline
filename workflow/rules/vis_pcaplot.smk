@@ -14,6 +14,8 @@ rule pca_vis:
         "../envs/pcatools.yaml"
     log:
         "logs/pcatools/pcatools.log",
+    benchmark:
+        "benchmarks/pca_vis.benchmark.txt"
     threads: config['threads']['deseq2']
     script:
         "../scripts/pcatools.R"

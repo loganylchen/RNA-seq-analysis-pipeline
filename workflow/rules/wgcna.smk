@@ -10,6 +10,8 @@ rule wgcna:
         fig_outdir="results/wgcna/figures/"
     conda:
         "../envs/wgcna.yaml"
+    benchmark:
+        "benchmarks/wgcna.benchmark.txt"
     log:
         "logs/wgcna/init.log",
     threads: config['threads']['wgcna']

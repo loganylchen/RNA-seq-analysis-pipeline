@@ -9,6 +9,8 @@ rule get_genome:
         build=config["ref"]["build"],
         release=config["ref"]["release"],
     cache: True
+    benchmark:
+        "benchmarks/get_genome.benchmark.txt"
     wrapper:
         "v1.21.4/bio/reference/ensembl-sequence"
 
@@ -25,6 +27,8 @@ rule get_annotation:
     cache: True
     log:
         "logs/ref/get_annotation.log",
+    benchmark:
+        "benchmarks/get_annotation.benchmark.txt"
     wrapper:
         "v1.21.4/bio/reference/ensembl-annotation"
 
@@ -54,6 +58,8 @@ rule star_index:
     log:
         "logs/star_index_genome.log",
     cache: True
+    benchmark:
+        "benchmarks/star_index.benchmark.txt"
     wrapper:
         "v1.21.4/bio/star/index"
 

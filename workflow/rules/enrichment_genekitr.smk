@@ -10,6 +10,8 @@ rule genekitr_enrichment:
         kegg_name=config['ref']['kegg_name']
     container:
         "docker://btrspg/genekitr:latest"
+    benchmark:
+        "benchmarks/{contrast}_{subclass}.enrichment.benchmark.txt"
     log:
         "logs/enrichment/{contrast}_{subclass}.log",
     benchmark:

@@ -6,6 +6,8 @@ rule align:
         reads_per_gene="results/star/{sample}/ReadsPerGene.out.tab",
     log:
         "logs/star/{sample}.log",
+    benchmark:
+        "benchmarks/{sample}.staralign.benchmark.txt"
     params:
         idx=lambda wc, input: input.index,
         extra="--outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --sjdbGTFfile {} {}".format(
@@ -25,6 +27,8 @@ rule split_bam:
         split_bam = "results/star/{sample}/split.bam",
     params:
         extra=config['params']['gatk4']
+    benchmark:
+        "benchmarks/{sample}.splitbam.benchmark.txt"
     log:
         "logs/split_bam/{sample}.log",
     conda:
