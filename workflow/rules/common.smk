@@ -7,8 +7,9 @@ validate(config, schema="../schemas/config.schema.yaml")
 samples = (
     pd.read_csv(config["samples"], sep="\t", dtype={"sample_name": str})
     .set_index("sample_name", drop=False)
-    .sort_index()
-)
+    .sort_index())
+
+
 
 validate(samples, schema="../schemas/samples.schema.yaml")
 
@@ -29,25 +30,25 @@ def get_raw_fq(wildcards):
     seq_type = samples.loc[wildcards.sample].loc['seq_type']
     if seq_type == 'se':
         return {
-            'fq1':f"{wildcards.project}/raw_fastq/{wildcards.sample}/{wildcards.sample}.fastq.gz",
+            'fq1':f"{wildcards.project}/data/{wildcards.sample}/{wildcards.sample}.fastq.gz",
         }
     elif seq_type == 'pe':
         return {
-            'fq1':f"{wildcards.project}/raw_fastq/{wildcards.sample}/{wildcards.sample}_1.fastq.gz",
-            'fq2':f"{wildcards.project}/raw_fastq/{wildcards.sample}/{wildcards.sample}_2.fastq.gz"
+            'fq1':f"{wildcards.project}/data/{wildcards.sample}/{wildcards.sample}_1.fastq.gz",
+            'fq2':f"{wildcards.project}/data/{wildcards.sample}/{wildcards.sample}_2.fastq.gz"
         }
 
 
 def get_clean_data_star(wildcards):
     if samples.loc[wildcards.sample].loc['seq_type'] == 'pe':
         return {
-            'fq1': f"{wildcards.project}/clean_data/{wildcards.sample}_1.fastq.gz"
-            'fq2': f"{wildcards.project}/clean_data/{wildcards.sample}_2.fastq.gz"
+            'fq1': f"{wildcards.project}/clean_data/{wildcards.sample}_1.fastq.gz",
+            'fq2': f"{wildcards.project}/clean_data/{wildcards.sample}_2.fastq.gz",
             'index':"resources/star_genome",
         }
     elif samples.loc[wildcards.sample].loc['seq_type'] == 'se':
         return {
-            'fq1': f"{wildcards.project}/clean_data/{wildcards.sample}.fastq.gz"
+            'fq1': f"{wildcards.project}/clean_data/{wildcards.sample}.fastq.gz",
             'index': "resources/star_genome",
         }
     else:
@@ -89,6 +90,13 @@ def get_clean_data_hisat2(wildcards):
         raise ValueError(f'{wildcards.sample} is a wired name!')
 
 def get_final_output():
+    final_output = []
+    
+    for sample in samples.index:
+        project = samples.loc[sample,'project']
+        final_output+=[
+            f"{project}/data/{sample}/{sample}_1.fastq.gz",
+        ]
     return final_output
 
 

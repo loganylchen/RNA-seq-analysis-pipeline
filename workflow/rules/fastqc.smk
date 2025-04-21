@@ -2,7 +2,7 @@ rule fastp_se:
     input:
         sample=["{project}/data/{accession}.fastq.gz"]
     output:
-        trimmed="{project}/clean_data/{accession}.fastq.gz"
+        trimmed="{project}/clean_data/{accession}.fastq.gz",
         html="{project}/report/{accession}.fastp.html",
         json="{project}/report/{accession}.fastp.json",
     log:

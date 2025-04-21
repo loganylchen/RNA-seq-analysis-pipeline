@@ -1,7 +1,2 @@
-sample_name	condition	raw_data	time_label	description	seq_type
-GSM6928932	KFC1	SRR23054392	t0	GSM6928932: kfc1-- t0 rep 1; Saccharomyces cerevisiae; RNA-Seq	pe
-GSM6928933	KFC1	SRR23054391	t0	GSM6928933: kfc1-- t2 rep 1; Saccharomyces cerevisiae; RNA-Seq	pe
-GSM6928938	KFC1	SRR23054386	t0	GSM6928938: kfc1-- t0 rep 2; Saccharomyces cerevisiae; RNA-Seq	pe
-GSM6928972	WT	SRR23054352	t0	GSM6928972: Wild type t0 rep 1_re-used; Saccharomyces cerevisiae; RNA-Seq	pe
-GSM6928973	WT	SRR23054351	t0	GSM6928973: Wild type t2 rep 1_re-used; Saccharomyces cerevisiae; RNA-Seq	pe
-GSM6928978	WT	SRR23054346	t0	GSM6928978: Wild type t0 rep 2_re-used; Saccharomyces cerevisiae; RNA-Seq	pe
+sample_name	condition	raw_data	project	batch	seq_type
+SRR14765641	KFC1	SRR14765641	test	GSM6928932: kfc1-- t0 rep 1; Saccharomyces cerevisiae; RNA-Seq	pe
