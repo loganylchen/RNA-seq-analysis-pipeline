@@ -14,6 +14,9 @@ properties:
   raw_data:
     type: string
     description: raw fastq file path or SRA ID
+  project:
+    type: string
+    description: project name, should be string with [A-Za-z0-9]+
   seq_type:
     type: string
     description: pe or se
