@@ -1,40 +1,24 @@
-rule sratools_fetchfastq_pe:
+rule get_fastq_pe:
     output:
-        fq1="results/raw_fastq/{sample}/{sample}_1.fastq.gz",
-        fq2="results/raw_fastq/{sample}/{sample}_2.fastq.gz",
-        outdir=directory("results/raw_fastq/{sample}")
+        "{project}/data/{accession}_1.fastq.gz",
+        "{project}/data/{accession}_2.fastq.gz",
     log:
-        "logs/raw_fastq/{sample}_fetchfastq.log"
+        "logs/{project}/get_{accession}.fastq.log"
     params:
-        extra=config['params']['sratools_fetchfastq'],
-        sra=get_sra
-    benchmark:
-        "benchmarks/{sample}.sratools_fetchfastq.benchmark.txt"
-    conda:
-        "../envs/sratools.yaml"
-    shell:
-        "fastq-dump "
-        "{params.extra} "
-        "--outdir {output.outdir} {params.sra} 2>{log} && "
-        "mv {output.outdir}/{params.sra}_1.fastq.gz {output.fq1} && "
-        "mv {output.outdir}/{params.sra}_2.fastq.gz {output.fq2} "
+        extra="--skip-technical"
+    threads: config['threads']['sra']
+    wrapper:
+        "v6.0.0/bio/sra-tools/fasterq-dump"
+
+rule get_fastq_se:
+    output:
+        "{project}/data/{accession}.fastq.gz"
+    log:
+        "logs/{project}/get_{accession}.fastq.log"
+    params:
+        extra="--skip-technical"
+    threads: config['threads']['sra']
+    wrapper:
+        "v6.0.0/bio/sra-tools/fasterq-dump"
 
 
-rule sratools_fetchfastq_se:
-    output:
-        fq="results/raw_fastq/{sample}/{sample}.fastq.gz",
-        outdir=directory("results/raw_fastq/{sample}")
-    log:
-        "logs/raw_fastq/{sample}_fetchfastq.log"
-    params:
-        extra=config['params']['sratools_fetchfastq'],
-        sra=get_sra
-    benchmark:
-        "benchmarks/{sample}.sratools_fetchfastq.benchmark.txt"
-    conda:
-        "../envs/sratools.yaml"
-    shell:
-        "fastq-dump "
-        "{params.extra} "
-        "--outdir {output.outdir} {params.sra} 2>{log} && "
-        "mv {output.outdir}/{params.sra}.fastq.gz {output.fq} "

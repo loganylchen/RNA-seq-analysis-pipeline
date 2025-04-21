@@ -8,6 +8,9 @@ properties:
   condition:
     type: string
     description: sample condition that will be compared during differential expression analysis (e.g. a treatment, a tissue time, a disease)
+  batch:
+    type: string
+    description: batch identifier
   raw_data:
     type: string
     description: raw fastq file path or SRA ID
@@ -18,4 +21,5 @@ required:
   - sample_name
   - condition
   - raw_data
+  - batch
   - seq_type

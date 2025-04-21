@@ -19,196 +19,78 @@ def is_pe(wildcards):
         return True
     else:
         return False
-def check_raw_data(raw_data_string:str,seq_type:str):
-    if raw_data_string.endswith('.fq') or raw_data_string.endswith('.fq.gz') or raw_data_string.endswith('.fastq') or raw_data_string.endswith('.fastq.gz'):
-        if seq_type == 'se':
-            fq = raw_data_string
-            return 'fastq',seq_type,fq,None
-        elif seq_type == 'pe':
-            fq1, fq2 = raw_data_string.split(',')
-            return 'fastq',seq_type,fq1,fq2
-        else:
-            raise ValueError(f'{seq_type} is not a valide seq_type')
-    elif raw_data_string.startswith('SRR'):
-        return 'sra',seq_type, raw_data_string, None
-    else:
-        raise ValueError(f'{raw_data_string} is not a valide datatype')
-def get_fq(wildcards):
+
+def get_sra(wildcards):
+    return samples.loc[wildcards.sample].loc['raw_data']
+
+
+def get_raw_fq(wildcards):
     raw_data = samples.loc[wildcards.sample].loc['raw_data']
     seq_type = samples.loc[wildcards.sample].loc['seq_type']
-    data_type , seq_type,  *data = check_raw_data(raw_data,seq_type)
-    if data_type == 'fastq':
-        if seq_type =='se':
-            return {
-                'fq1': data[0]
-            }
-        elif seq_type =='pe':
-            return {
-                'fq1':data[0],
-                'fq2':data[1]
-            }
-    else:
-        if seq_type == 'se':
-            return {
-                'fq1':f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}.fastq.gz",
-            }
-        elif seq_type == 'pe':
-            return {
-                'fq1':f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}_1.fastq.gz",
-                'fq2':f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}_2.fastq.gz"
-            }
+    if seq_type == 'se':
+        return {
+            'fq1':f"{wildcards.project}/raw_fastq/{wildcards.sample}/{wildcards.sample}.fastq.gz",
+        }
+    elif seq_type == 'pe':
+        return {
+            'fq1':f"{wildcards.project}/raw_fastq/{wildcards.sample}/{wildcards.sample}_1.fastq.gz",
+            'fq2':f"{wildcards.project}/raw_fastq/{wildcards.sample}/{wildcards.sample}_2.fastq.gz"
+        }
 
 
-def get_clean_data(wildcards):
+def get_clean_data_star(wildcards):
     if samples.loc[wildcards.sample].loc['seq_type'] == 'pe':
         return {
-            'fq1': f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}_1.fastq.gz",
-            'fq2': f"results/raw_fastq/{wildcards.sample}/{wildcards.sample}_2.fastq.gz",
+            'fq1': f"{wildcards.project}/clean_data/{wildcards.sample}_1.fastq.gz"
+            'fq2': f"{wildcards.project}/clean_data/{wildcards.sample}_2.fastq.gz"
             'index':"resources/star_genome",
         }
     elif samples.loc[wildcards.sample].loc['seq_type'] == 'se':
         return {
-            'fq1': f"results/clean_fastq/{wildcards.sample}/{wildcards.sample}.fastq.gz",
+            'fq1': f"{wildcards.project}/clean_data/{wildcards.sample}.fastq.gz"
             'index': "resources/star_genome",
         }
     else:
         raise ValueError(f'{wildcards.sample} is a wired name!')
-def get_sra(wildcards):
-    return samples.loc[wildcards.sample].loc['raw_data']
+
+def get_clean_data_hisat2(wildcards):
+    if samples.loc[wildcards.sample].loc['seq_type'] == 'pe':
+        return {
+            'reads': [f"{wildcards.project}/clean_data/{wildcards.sample}_1.fastq.gz",
+             f"{wildcards.project}/clean_data/{wildcards.sample}_2.fastq.gz"],
+             'idx':multiext(
+            "resources/hisat2_genome/genome",
+            ".1.ht2",
+            ".2.ht2",
+            ".3.ht2",
+            ".4.ht2",
+            ".5.ht2",
+            ".6.ht2",
+            ".7.ht2",
+            ".8.ht2",
+        ),
+        }
+    elif samples.loc[wildcards.sample].loc['seq_type'] == 'se':
+        return {
+            'reads': [f"{wildcards.project}/clean_data/{wildcards.sample}.fastq.gz"],
+             'idx':multiext(
+            "resources/hisat2_genome/genome",
+            ".1.ht2",
+            ".2.ht2",
+            ".3.ht2",
+            ".4.ht2",
+            ".5.ht2",
+            ".6.ht2",
+            ".7.ht2",
+            ".8.ht2",
+        ),
+        }
+    else:
+        raise ValueError(f'{wildcards.sample} is a wired name!')
 
 def get_final_output():
-    contrasts = config['diffexp']['contrasts']
-    subclasses = samples.loc[:,config['diffexp']['subclass']].unique()
-    final_output = expand("results/star/{sample.sample_name}/ReadsPerGene.out.tab",sample=samples.itertuples())
-    final_output += expand("results/hamr/{sample.sample_name}/hamr.mods.txt",sample=samples.itertuples())
-    final_output += expand('results/modtect/{sample.sample_name}/modtect.combined.txt',sample=samples.itertuples())
-    final_output.append("results/deseq2/count_matrix.rds")
-    final_output.append("results/counts/count_matrix.tidy.featureCounts")
-    final_output.append("results/wgcna/wgcna.rds")
-    for key in contrasts:
-        for subclass in subclasses:
-            final_output.append(f"results/diffexp/{key}/{subclass}.diffexp.tsv")
-            final_output.append(directory(f"results/enrichment/{key}_{subclass}"))
-            final_output.append(f"results/visualization/Volcano.{key}_{subclass}.diffexp.pdf")
-            final_output.append(f"results/visualization/Volcano.{key}_{subclass}.diffexp.png")
-    final_output.append(f"results/visualization/PCA.pdf")
-    final_output.append(f"results/visualization/PCA.png")
-    # final_output.append("results/counts/all.symbol.tsv")
     return final_output
 
 
 
-def get_contrast(wildcards):
-    return config["diffexp"]["contrasts"][wildcards.contrast]
 
-
-# units = (
-#     pd.read_csv(config["units"], sep="\t", dtype={"sample_name": str, "unit_name": str})
-#     .set_index(["sample_name", "unit_name"], drop=False)
-#     .sort_index()
-# )
-# validate(units, schema="../schemas/units.schema.yaml")
-#
-#
-# def get_cutadapt_input(wildcards):
-#     unit = units.loc[wildcards.sample].loc[wildcards.unit]
-#
-#     if pd.isna(unit["fq1"]):
-#         # SRA sample (always paired-end for now)
-#         accession = unit["sra"]
-#         return expand("sra/{accession}_{read}.fastq", accession=accession, read=[1, 2])
-#
-#     if unit["fq1"].endswith("gz"):
-#         ending = ".gz"
-#     else:
-#         ending = ""
-#
-#     if pd.isna(unit["fq2"]):
-#         # single end local sample
-#         return "pipe/cutadapt/{S}/{U}.fq1.fastq{E}".format(
-#             S=unit.sample_name, U=unit.unit_name, E=ending
-#         )
-#     else:
-#         # paired end local sample
-#         return expand(
-#             "pipe/cutadapt/{S}/{U}.{{read}}.fastq{E}".format(
-#                 S=unit.sample_name, U=unit.unit_name, E=ending
-#             ),
-#             read=["fq1", "fq2"],
-#         )
-#
-#
-# def get_cutadapt_pipe_input(wildcards):
-#     files = list(
-#         sorted(glob.glob(units.loc[wildcards.sample].loc[wildcards.unit, wildcards.fq]))
-#     )
-#     assert len(files) > 0
-#     return files
-#
-#
-# def is_paired_end(sample):
-#     sample_units = units.loc[sample]
-#     fq2_null = sample_units["fq2"].isnull()
-#     sra_null = sample_units["sra"].isnull()
-#     paired = ~fq2_null | ~sra_null
-#     all_paired = paired.all()
-#     all_single = (~paired).all()
-#     assert (
-#         all_single or all_paired
-#     ), "invalid units for sample {}, must be all paired end or all single end".format(
-#         sample
-#     )
-#     return all_paired
-#
-#
-
-#
-#
-# def get_strandedness(units):
-#     if "strandedness" in units.columns:
-#         return units["strandedness"].tolist()
-#     else:
-#         strand_list = ["none"]
-#         return strand_list * units.shape[0]
-#
-#
-# def get_deseq2_threads(wildcards=None):
-#     # https://twitter.com/mikelove/status/918770188568363008
-#     few_coeffs = False if wildcards is None else len(get_contrast(wildcards)) < 10
-#     return 1 if len(samples) < 100 or few_coeffs else 6
-#
-#
-# def is_activated(xpath):
-#     c = config
-#     for entry in xpath.split("/"):
-#         c = c.get(entry, {})
-#     return bool(c.get("activate", False))
-#
-#
-# def get_bioc_species_name():
-#     first_letter = config["ref"]["species"][0]
-#     subspecies = config["ref"]["species"].split("_")[1]
-#     return first_letter + subspecies
-#
-#
-# def get_fastqs(wc):
-#     if config["trimming"]["activate"]:
-#         return expand(
-#             "results/trimmed/{sample}/{unit}_{read}.fastq.gz",
-#             unit=units.loc[wc.sample, "unit_name"],
-#             sample=wc.sample,
-#             read=wc.read,
-#         )
-#     unit = units.loc[wc.sample]
-#     if all(pd.isna(unit["fq1"])):
-#         # SRA sample (always paired-end for now)
-#         accession = unit["sra"]
-#         return expand(
-#             "sra/{accession}_{read}.fastq", accession=accession, read=wc.read[-1]
-#         )
-#     fq = "fq{}".format(wc.read[-1])
-#     return units.loc[wc.sample, fq].tolist()
-#
-#
-# def get_contrast(wildcards):
-#     return config["diffexp"]["contrasts"][wildcards.contrast]

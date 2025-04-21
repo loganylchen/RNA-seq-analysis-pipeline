@@ -1,39 +1,30 @@
-rule align:
+rule star_align:
     input:
-        unpack(get_clean_data),
+        get_clean_data_star,
     output:
-        aln="results/star/{sample}/Aligned.sortedByCoord.out.bam",
-        reads_per_gene="results/star/{sample}/ReadsPerGene.out.tab",
+        aln="{project}/alignment/{accession}/{accession}.star.bam",
+        sj="{project}/alignment/{accession}/{accession}.SJ.out.tab",
     log:
-        "logs/star/{sample}.log",
-    benchmark:
-        "benchmarks/{sample}.staralign.benchmark.txt"
+        "logs/{project}_{accession}_star.log",
     params:
-        idx=lambda wc, input: input.index,
-        extra="--outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --sjdbGTFfile {} {}".format(
-            "resources/genome.gtf", config["params"]["star"]
-        ),
-    threads: config["threads"]["star"]
+        extra=config['star']['extra'],
+    threads: config['threads']['star']
     wrapper:
-        "v1.21.4/bio/star/align"
+        "v6.0.0/bio/star/align"
 
-rule split_bam:
+
+
+
+rule hisat2_align:
     input:
-        aln = "results/star/{sample}/Aligned.sortedByCoord.out.bam",
-        genome_dict="resources/genome.dict",
-        genome_idx="resources/genome.fasta.fai",
-        genome='resources/genome.fasta'
+        get_clean_data_hisat2
+        
     output:
-        split_bam = "results/star/{sample}/split.bam",
-    params:
-        extra=config['params']['gatk4']
-    benchmark:
-        "benchmarks/{sample}.splitbam.benchmark.txt"
+        "mapped/{sample}.bam",
     log:
-        "logs/split_bam/{sample}.log",
-    conda:
-        "../envs/gatk4.yaml"
-    threads: config["threads"]["gatk4"]
-    shell:
-        "gatk SplitNCigarReads --create-output-bam-index -R {input.genome} -I {input.aln} -O {output.split_bam} {params.extra} 2>{log}"
-
+        "logs/hisat2_align_{sample}.log",
+    params:
+        extra="",
+    threads: 2
+    wrapper:
+        "v6.0.0/bio/hisat2/align"
