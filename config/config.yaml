@@ -30,4 +30,4 @@ reference:
   # Genome build
   build: GRCh38
   select_contigs:
-    - 22
+    - '22'
