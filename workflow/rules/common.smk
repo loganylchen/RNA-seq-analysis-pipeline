@@ -45,11 +45,13 @@ def get_clean_data(wildcards):
         return {
             'fq1': f"{wildcards.project}/clean_data/{wildcards.sample}_1.fastq.gz",
             'fq2': f"{wildcards.project}/clean_data/{wildcards.sample}_2.fastq.gz",
+            'reads': [f"{wildcards.project}/clean_data/{wildcards.sample}_1.fastq.gz",f"{wildcards.project}/clean_data/{wildcards.sample}_2.fastq.gz",]
             
         }
     elif samples.loc[wildcards.sample].loc['seq_type'] == 'se':
         return {
             'fq1': f"{wildcards.project}/clean_data/{wildcards.sample}.fastq.gz",
+            'reads':[ f"{wildcards.project}/clean_data/{wildcards.sample}.fastq.gz"],
         }
     else:
         raise ValueError(f'{wildcards.sample} is a wired name!')

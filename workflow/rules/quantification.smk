@@ -5,19 +5,18 @@ rule featurecounts_quantification_star:
     output:
         counts = "{project}/quantification/{sample}.star_counts.txt",
     params:
-        extra = config['featurecounts']['extra']
-    threads: config['threads']['featurecounts']
+        extra = config['featurecounts']['extra'],
     conda:
-        '../envs/featurecounts.yaml'
+        "../envs/featurecounts.yaml",
+    threads: config['threads']['featurecounts'],
     log:
-        "logs/{project}_{sample}_featurecounts_star.log"
+        "logs/quantification/{project}_{sample}_star.log"
     shell:
-        "featureCounts -T {threads} "
-        "{params.extra} "
+        "featureCounts -T {threads} {params.extra} "
         "-a {input.gtf} "
         "-o {output.counts} "
         "{input.bam} > {log} 2>&1 "
-        
+
 rule featurecounts_quantification_hisat2:
     input:
         bam = "{project}/alignment/{sample}/{sample}.hisat2.bam",
@@ -25,16 +24,15 @@ rule featurecounts_quantification_hisat2:
     output:
         counts = "{project}/quantification/{sample}.hisat2_counts.txt",
     params:
-        extra = config['featurecounts']['extra']
-    threads: config['threads']['featurecounts']
+        extra = config['featurecounts']['extra'],
     conda:
-        '../envs/featurecounts.yaml'
+        "../envs/featurecounts.yaml",
+    threads: config['threads']['featurecounts'],
     log:
-        "logs/{project}_{sample}_featurecounts_hisat2.log"
+        "logs/quantification/{project}_{sample}_hisat2.log"
     shell:
-        "featureCounts -T {threads} "
-        "{params.extra} "
+        "featureCounts -T {threads} {params.extra} "
         "-a {input.gtf} "
         "-o {output.counts} "
         "{input.bam} > {log} 2>&1 "
-        
+

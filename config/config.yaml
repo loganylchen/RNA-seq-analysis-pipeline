@@ -20,7 +20,7 @@ hisat2:
   index_extra: ''
 
 featurecounts:
-  extra: ' -p --countReadPairs -t exon -g gene_id,gene_name '
+  extra: ' -p --countReadPairs -t exon -g gene_id '
 
 reference:
   # Ensembl species name

@@ -1,7 +1,7 @@
 rule star_align:
     input:
         unpack(get_clean_data),
-        index="resources/star_genome",
+        idx="resources/star_genome",
         gtf="resources/genome.gtf",
     output:
         aln="{project}/alignment/{sample}/{sample}.star.bam",
