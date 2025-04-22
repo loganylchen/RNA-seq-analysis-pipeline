@@ -91,7 +91,6 @@ def get_clean_data_hisat2(wildcards):
 
 def get_final_output():
     final_output = []
-    
     for sample in samples.index:
         project = samples.loc[sample,'project']
         final_output+=[

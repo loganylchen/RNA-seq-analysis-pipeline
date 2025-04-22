@@ -7,8 +7,8 @@ min_version("6.4.1")
 
 
 wildcard_constraints:
-    sample="[a-zA-Z\d]+",
-    sra="SRR[\d]+"
+    sample="[a-zA-Z0-9]+",
+    sra="SRR[0-9]+"
 
 
 
