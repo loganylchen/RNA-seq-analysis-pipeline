@@ -1,49 +1,25 @@
 samples: config/samples.tsv
 
-params:
-  sratools_fetchfastq: "--gzip --split-3 "
-  fastp: "-c "
-  star: ""
-  featurecounts: " -O --fracOverlap 0.2 -J --extraAttributes  gene_name,gene_type "
-  wgcna_phenotype: "condition"
 threads:
-  fastp: 12
-  star: 12
-  deseq2: 12
-  wgcna: 12
-
-thresholds:
-  deseq2:
-    count: 10
-    log2foldchange: 1
-    padj: 0.05
-  volcano:
-    log2foldchange: 1
-    padj: 0.05
+  sra: 6
+  fastp: 6
+  star: 6
+  hisat2: 6
 
 
+fastp:
+  se_extra: ''
+  pe_extra: ''
+
+star:
+  extra: ''
 
 
 ref:
   # Ensembl species name
-  species: saccharomyces_cerevisiae
+  species: homo_sapiens
   # Ensembl release (make sure to take one where snpeff data is available, check 'snpEff databases' output)
-  release: 100
+  release: 104
   # Genome build
-  build: R64-1-1
-  go_name: yeast
-  kegg_name: sce
+  build: GRCh38
 
-diffexp:
-  # contrasts for the deseq2 results method
-  subclass: time_label
-  contrasts:
-    KFC1-vs-WT:
-      - KFC1
-      - WT
-  model: ~condition
-
-vis:
-  pcatools:
-    color_by: condition
-    shape_by: time_label
