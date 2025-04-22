@@ -36,7 +36,7 @@ include: "rules/quantification.smk"
 # include: "rules/enrichment_genekitr.smk"
 # include: "rules/hamr.smk"
 # include: "rules/modtect.smk"
-# include: "rules/ref.smk"
+include: "rules/ref.smk"
 # include: "rules/vis_volcano.smk"
 # include: "rules/vis_pcaplot.smk"
 
