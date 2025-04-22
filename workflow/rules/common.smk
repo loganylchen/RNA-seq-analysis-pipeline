@@ -94,8 +94,8 @@ def get_final_output():
     for sample in samples.index:
         project = samples.loc[sample,'project']
         final_output+=[
-            f"{project}/alignment/{sample}/{sample}.hisat2.bam",
-            f"{project}/alignment/{sample}/{sample}.star.bam",
+            f"{project}/quantification/{sample}.hisat2_counts.txt",,
+            f"{project}/quantification/{sample}.star_counts.txt",,
         ]
     return final_output
 

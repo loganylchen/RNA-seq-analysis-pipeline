@@ -1,20 +1,40 @@
-rule featurecounts_quantification:
+rule featurecounts_quantification_star:
     input:
         bam = "{project}/alignment/{sample}/{sample}.star.bam",
         gtf = "resources/genome.gtf",
     output:
-        counts = "{project}/quantification/{sample}.counts.txt",
-        summary = "{project}/quantification/{sample}.counts.summary.txt"
+        counts = "{project}/quantification/{sample}.star_counts.txt",
     params:
-        # Optional parameters can be added here
-        extra = "-p -B -C"  # Example: count paired-end reads, both ends mapped, exclude chimeric reads
-    threads: 8
+        extra = config['featurecounts']['extra']
+    threads: config['threads']['featurecounts']
+    conda:
+        '../envs/featurecounts.yaml'
     log:
-        "logs/quantification/{sample}.log"
+        "logs/{project}_{sample}_featurecounts_star.log"
     shell:
-        """
-        featureCounts -T {threads} {params.extra} \
-            -a {input.gtf} \
-            -o {output.counts} \
-            {input.bam} > {log} 2>&1
-        """
+        "featureCounts -T {threads} "
+        "{params.extra} "
+        "-a {input.gtf} "
+        "-o {output.counts} "
+        "{input.bam} > {log} 2>&1 "
+        
+rule featurecounts_quantification_hisat2:
+    input:
+        bam = "{project}/alignment/{sample}/{sample}.hisat2.bam",
+        gtf = "resources/genome.gtf",
+    output:
+        counts = "{project}/quantification/{sample}.hisat2_counts.txt",
+    params:
+        extra = config['featurecounts']['extra']
+    threads: config['threads']['featurecounts']
+    conda:
+        '../envs/featurecounts.yaml'
+    log:
+        "logs/{project}_{sample}_featurecounts_hisat2.log"
+    shell:
+        "featureCounts -T {threads} "
+        "{params.extra} "
+        "-a {input.gtf} "
+        "-o {output.counts} "
+        "{input.bam} > {log} 2>&1 "
+        

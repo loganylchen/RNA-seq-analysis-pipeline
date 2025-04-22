@@ -2,10 +2,10 @@ rule star_align:
     input:
         get_clean_data_star,
     output:
-        aln="{project}/alignment/{accession}/{accession}.star.bam",
-        sj="{project}/alignment/{accession}/{accession}.SJ.out.tab",
+        aln="{project}/alignment/{sample}/{sample}.star.bam",
+        sj="{project}/alignment/{sample}/{sample}.SJ.out.tab",
     log:
-        "logs/{project}_{accession}_star.log",
+        "logs/{project}_{sample}_star.log",
     params:
         extra=config['star']['extra'],
     threads: config['threads']['star']
@@ -18,9 +18,9 @@ rule hisat2_align:
     input:
         get_clean_data_hisat2,
     output:
-        "{project}/alignment/{accession}/{accession}.hisat2.bam",
+        "{project}/alignment/{sample}/{sample}.hisat2.bam",
     log:
-        "logs/{project}_{accession}_hisat2.log",
+        "logs/{project}_{sample}_hisat2.log",
     params:
         extra=config['hisat2']['extra'],
     threads: config['threads']['hisat2']
