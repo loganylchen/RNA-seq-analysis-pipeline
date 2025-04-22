@@ -1,2 +1,3 @@
 sample_name	condition	raw_data	project	batch	seq_type
 SRR14765641	KFC1	SRR14765641	test	test	pe
+SRR15225330	control	SRR15225330	test	test	pe
