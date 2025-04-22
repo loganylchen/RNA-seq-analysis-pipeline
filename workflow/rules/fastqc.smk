@@ -1,23 +1,8 @@
-rule fastp_se:
+rule fastp:
     input:
-        unpack(get_raw_fq_4qc)
+        sample=["{project}/data/{sample}_1.fastq.gz", "{project}/data/{sample}_2.fastq.gz"] if is_pe else ["{project}/data/{sample}.fastq.gz"]
     output:
-        unpack(get_trimmed_data),
-        html="{project}/report/{sample}.fastp.html",
-        json="{project}/report/{sample}.fastp.json",
-    log:
-        "logs/{project}/fastp_{sample}.log"
-    params:
-        extra=config['fastp']['se_extra']
-    threads: config['threads']['fastp']
-    wrapper:
-        "v6.0.0/bio/fastp"
-
-rule fastp_pe:
-    input:
-        unpack(get_raw_fq_4qc)
-    output:
-        unpack(get_trimmed_data),
+        trimmed=["{project}/clean_data/{sample}_1.fastq.gz","{project}/clean_data/{sample}_2.fastq.gz"] if is_pe else "{project}/clean_data/{sample}.fastq.gz",
         html="{project}/report/{sample}.fastp.html",
         json="{project}/report/{sample}.fastp.json"
     log:
