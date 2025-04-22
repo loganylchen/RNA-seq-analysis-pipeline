@@ -14,6 +14,8 @@ fastp:
 star:
   extra: ''
 
+hisat2:
+  extra: ''
 
 ref:
   # Ensembl species name
@@ -23,3 +25,6 @@ ref:
   # Genome build
   build: GRCh38
 
+reference:
+  select_contigs:
+    - 22
