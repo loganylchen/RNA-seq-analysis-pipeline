@@ -39,7 +39,7 @@ def get_raw_fq(wildcards):
         }
 
 
-def get_clean_data_star(wildcards):
+def get_clean_data(wildcards):
     if samples.loc[wildcards.sample].loc['seq_type'] == 'pe':
         return {
             'fq1': f"{wildcards.project}/clean_data/{wildcards.sample}_1.fastq.gz",
@@ -53,20 +53,20 @@ def get_clean_data_star(wildcards):
     else:
         raise ValueError(f'{wildcards.sample} is a wired name!')
 
-def get_clean_data_hisat2(wildcards):
+def get_trimmed_data(wildcards):
     if samples.loc[wildcards.sample].loc['seq_type'] == 'pe':
         return {
-            'reads': [f"{wildcards.project}/clean_data/{wildcards.sample}_1.fastq.gz",
-             f"{wildcards.project}/clean_data/{wildcards.sample}_2.fastq.gz"],
-             
+            'trimmed': [f"{wildcards.project}/clean_data/{wildcards.sample}_1.fastq.gz",
+             f"{wildcards.project}/clean_data/{wildcards.sample}_2.fastq.gz"]
+            
         }
     elif samples.loc[wildcards.sample].loc['seq_type'] == 'se':
         return {
-            'reads': [f"{wildcards.project}/clean_data/{wildcards.sample}.fastq.gz"],
-             
+            'trimmed': f"{wildcards.project}/clean_data/{wildcards.sample}.fastq.gz",
         }
     else:
         raise ValueError(f'{wildcards.sample} is a wired name!')
+
 
 def get_final_output():
     final_output = []

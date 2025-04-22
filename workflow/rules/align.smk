@@ -1,6 +1,6 @@
 rule star_align:
     input:
-        unpack(get_clean_data_star),
+        unpack(get_clean_data),
         index="resources/star_genome",
         gtf="resources/genome.gtf",
     output:
@@ -18,7 +18,7 @@ rule star_align:
 
 rule hisat2_align:
     input:
-        unpack(get_clean_data_hisat2),
+        unpack(get_clean_data),
         idx=multiext(
             "resources/hisat2_genome/genome",
             ".1.ht2",
