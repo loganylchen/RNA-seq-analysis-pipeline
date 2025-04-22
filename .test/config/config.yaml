@@ -20,14 +20,12 @@ hisat2:
 featurecounts:
   extra: ' -p --countReadPairs -t exon -g gene_id,gene_name '
 
-ref:
+reference:
   # Ensembl species name
   species: homo_sapiens
   # Ensembl release (make sure to take one where snpeff data is available, check 'snpEff databases' output)
   release: 104
   # Genome build
   build: GRCh38
-
-reference:
   select_contigs:
     - 22
