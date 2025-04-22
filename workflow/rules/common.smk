@@ -44,12 +44,11 @@ def get_clean_data_star(wildcards):
         return {
             'fq1': f"{wildcards.project}/clean_data/{wildcards.sample}_1.fastq.gz",
             'fq2': f"{wildcards.project}/clean_data/{wildcards.sample}_2.fastq.gz",
-            'index':"resources/star_genome",
+            
         }
     elif samples.loc[wildcards.sample].loc['seq_type'] == 'se':
         return {
             'fq1': f"{wildcards.project}/clean_data/{wildcards.sample}.fastq.gz",
-            'index': "resources/star_genome",
         }
     else:
         raise ValueError(f'{wildcards.sample} is a wired name!')
@@ -59,32 +58,12 @@ def get_clean_data_hisat2(wildcards):
         return {
             'reads': [f"{wildcards.project}/clean_data/{wildcards.sample}_1.fastq.gz",
              f"{wildcards.project}/clean_data/{wildcards.sample}_2.fastq.gz"],
-             'idx':multiext(
-            "resources/hisat2_genome/genome",
-            ".1.ht2",
-            ".2.ht2",
-            ".3.ht2",
-            ".4.ht2",
-            ".5.ht2",
-            ".6.ht2",
-            ".7.ht2",
-            ".8.ht2",
-        ),
+             
         }
     elif samples.loc[wildcards.sample].loc['seq_type'] == 'se':
         return {
             'reads': [f"{wildcards.project}/clean_data/{wildcards.sample}.fastq.gz"],
-             'idx':multiext(
-            "resources/hisat2_genome/genome",
-            ".1.ht2",
-            ".2.ht2",
-            ".3.ht2",
-            ".4.ht2",
-            ".5.ht2",
-            ".6.ht2",
-            ".7.ht2",
-            ".8.ht2",
-        ),
+             
         }
     else:
         raise ValueError(f'{wildcards.sample} is a wired name!')

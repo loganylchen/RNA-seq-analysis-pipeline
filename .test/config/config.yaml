@@ -9,10 +9,10 @@ threads:
 
 fastp:
   se_extra: ''
-  pe_extra: ''
+  pe_extra: ' -c '
 
 star:
-  extra: ''
+  extra: ""
 
 hisat2:
   extra: ''

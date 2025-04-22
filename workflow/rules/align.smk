@@ -1,13 +1,15 @@
 rule star_align:
     input:
-        get_clean_data_star,
+        unpack(get_clean_data_star),
+        index="resources/star_genome",
+        gtf="resources/genome.gtf",
     output:
         aln="{project}/alignment/{sample}/{sample}.star.bam",
-        sj="{project}/alignment/{sample}/{sample}.SJ.out.tab",
+        reads_per_gene="{project}/alignment/{sample}/ReadsPerGene.out.tab",
     log:
         "logs/{project}_{sample}_star.log",
     params:
-        extra=config['star']['extra'],
+        extra=lambda wc, input: f'--outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --sjdbGTFfile {input.gtf} {config["star"]["extra"]}', 
     threads: config['threads']['star']
     wrapper:
         "v6.0.0/bio/star/align"
@@ -16,7 +18,18 @@ rule star_align:
 
 rule hisat2_align:
     input:
-        get_clean_data_hisat2,
+        unpack(get_clean_data_hisat2),
+        idx=multiext(
+            "resources/hisat2_genome/genome",
+            ".1.ht2",
+            ".2.ht2",
+            ".3.ht2",
+            ".4.ht2",
+            ".5.ht2",
+            ".6.ht2",
+            ".7.ht2",
+            ".8.ht2",
+        ),
     output:
         "{project}/alignment/{sample}/{sample}.hisat2.bam",
     log:

@@ -5,7 +5,7 @@ threads:
   fastp: 6
   star: 6
   hisat2: 6
-
+  featurecounts: 6
 
 fastp:
   se_extra: ''
@@ -16,6 +16,9 @@ star:
 
 hisat2:
   extra: ''
+
+featurecounts:
+  extra: ' -p --countReadPairs -t exon -g gene_id,gene_name '
 
 ref:
   # Ensembl species name
