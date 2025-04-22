@@ -1,6 +1,6 @@
 rule fastp_se:
     input:
-        sample=["{project}/data/{sample}.fastq.gz"]
+        unpack(get_raw_fq_4qc)
     output:
         unpack(get_trimmed_data),
         html="{project}/report/{sample}.fastp.html",
@@ -15,7 +15,7 @@ rule fastp_se:
 
 rule fastp_pe:
     input:
-        sample=["{project}/data/{sample}_1.fastq.gz", "{project}/data/{sample}_2.fastq.gz"]
+        unpack(get_raw_fq_4qc)
     output:
         unpack(get_trimmed_data),
         html="{project}/report/{sample}.fastp.html",

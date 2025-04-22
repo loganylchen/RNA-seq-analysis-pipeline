@@ -39,6 +39,20 @@ def get_raw_fq(wildcards):
         }
 
 
+def get_raw_fq_4qc(wildcards):
+    raw_data = samples.loc[wildcards.sample].loc['raw_data']
+    seq_type = samples.loc[wildcards.sample].loc['seq_type']
+    if seq_type == 'se':
+        return {
+            'sample':[f"{wildcards.project}/data/{wildcards.sample}/{wildcards.sample}.fastq.gz"],
+        }
+    elif seq_type == 'pe':
+        return {
+            'sample':[f"{wildcards.project}/data/{wildcards.sample}/{wildcards.sample}_1.fastq.gz",
+            f"{wildcards.project}/data/{wildcards.sample}/{wildcards.sample}_2.fastq.gz"]
+        }
+
+
 def get_clean_data(wildcards):
     if samples.loc[wildcards.sample].loc['seq_type'] == 'pe':
         return {
