@@ -18,7 +18,7 @@ input_fasta = snakemake.input.fasta
 input_gtf = snakemake.input.gtf
 output_fasta = snakemake.output.fasta
 output_gtf = snakemake.output.gtf
-contigs = snakemake.params.contigs
+contigs = snakemake.params.select_contigs
 
 filter_fasta(input_fasta, output_fasta, contigs)
 filter_gtf(input_gtf, output_gtf, contigs)

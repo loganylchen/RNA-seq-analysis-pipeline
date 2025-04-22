@@ -65,12 +65,9 @@ ax.set_xticklabels(ax.get_xticklabels(),rotation=75)
 fig.savefig(snakemake.output[4],dpi=300)
 
 
-u_s = unstrandedness_sum - strandedness_sum
-s_u = -u_s
-u_r = unstrandedness_sum - reverse_sum
-r_u = -u_r
-r_s = strandedness_sum - reverse_sum
-s_r = -r_s
+per_s =  strandedness_sum/unstrandedness_sum
+per_r =  reverse_sum/unstrandedness_sum
+per_s_r = strandedness_sum/reverse_sum
 
 
 
