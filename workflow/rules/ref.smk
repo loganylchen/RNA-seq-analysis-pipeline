@@ -56,7 +56,6 @@ rule genome_faidx:
         "resources/genome.fasta.fai",
     log:
         "logs/ref/genome-faidx.log",
-    cache: True
     wrapper:
         "v1.21.4/bio/samtools/faidx"
 
