@@ -14,7 +14,7 @@ outdir=$(dirname "${read_1}")
 mkdir -p "${outdir}"
 
 # Create temporary directory
-tmpdir=$(mktemp -d -p ${outdir}/tmp)
+tmpdir=$(mktemp -d -p ${outdir})
 trap 'rm -rf "$tmpdir"' EXIT
 echo ${tmpdir}
 # Ensure output directory exists
