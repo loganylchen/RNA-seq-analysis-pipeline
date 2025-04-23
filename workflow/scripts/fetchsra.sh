@@ -3,9 +3,13 @@
 # Get command line arguments from Snakemake
 log=${snakemake_log[0]}
 threads=${snakemake[threads]:6}
-mem_mb=${snakemake_resources[mem_mb]:-2048}
-accession=${snakemake_wildcards[accession]}
-outdir=$(dirname "${snakemake_output[fq1]}")
+mem_mb="-m${snakemake_resources[mem_mb]:-2048}M"
+accession=${snakemake_wildcards[sample]}
+
+reads=(${snakemake_output[reads]})
+read_1=${reads[0]}
+
+outdir=$(dirname "${read_1}")
 
 # Create temporary directory
 tmpdir=$(mktemp -d)
@@ -18,7 +22,7 @@ mkdir -p "$outdir"
 (fasterq-dump --skip-technical \
     --temp $tmpdir \
     --threads $threads \
-    --mem ${mem_mb}M \
+    --mem "${mem_mb}" \
     --outdir $outdir \
     $accession
 

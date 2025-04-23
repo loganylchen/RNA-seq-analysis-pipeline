@@ -8,8 +8,7 @@ threads:
   featurecounts: 6
 
 fastp:
-  se_extra: ''
-  pe_extra: ' -c '
+  extra: ' -c '
 
 star:
   extra: ""
@@ -30,4 +29,26 @@ reference:
   # Genome build
   build: GRCh38
   select_contigs:
+    - '1'
+    - '2'
+    - '3'
+    - '4'
+    - '5'
+    - '6'
+    - '7'
+    - '8'
+    - '9'
+    - '10'
+    - '11'
+    - '12'
+    - '13'
+    - '14'
+    - '15'
+    - '16'
+    - '17'
+    - '18'
+    - '19'
+    - '20'
+    - '21'
     - '22'
+    - 'X'

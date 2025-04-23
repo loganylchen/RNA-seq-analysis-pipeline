@@ -64,9 +64,10 @@ def get_clean_data(wildcards):
 
 
 def get_final_output():
-    final_output = [f"{project}/quantification/STAR_count_matrix.txt",
-        f"{project}/quantification/STAR_fc_count_matrix.txt",
-        f"{project}/quantification/HISAT2_fc_count_matrix.txt",
+    final_output = [
+        # f"{project}/quantification/STAR_count_matrix.txt",
+        # f"{project}/quantification/STAR_fc_count_matrix.txt",
+        # f"{project}/quantification/HISAT2_fc_count_matrix.txt",
     ]
     for sample in samples.index:
         sample_project = samples.loc[sample,'project']

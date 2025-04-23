@@ -8,8 +8,7 @@ threads:
   featurecounts: 6
 
 fastp:
-  se_extra: ''
-  pe_extra: ' -c '
+  extra: ' -c '
 
 star:
   extra: ""

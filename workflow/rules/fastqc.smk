@@ -8,9 +8,7 @@ rule fastp:
     log:
         "logs/{project}/fastp_{sample}.log"
     params:
-        extra=config['fastp']['pe_extra']
+        extra=config['fastp']['extra']
     threads: config['threads']['fastp']
-    wrapper:
-        "v6.0.0/bio/fastp"
-
-
+    script:
+        "../scripts/fastp.sh"
