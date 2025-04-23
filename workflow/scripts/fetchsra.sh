@@ -10,13 +10,14 @@ reads=(${snakemake_output[reads]})
 read_1=${reads[0]}
 
 outdir=$(dirname "${read_1}")
+mkdir -p "$outdir"
 
 # Create temporary directory
-tmpdir=$(mktemp -d)
+tmpdir=$(mktemp -d -p $outdir/tmp)
 trap 'rm -rf "$tmpdir"' EXIT
 
 # Ensure output directory exists
-mkdir -p "$outdir"
+
 
 # Run fasterq-dump with error handling
 (fasterq-dump --skip-technical \
