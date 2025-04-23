@@ -28,6 +28,7 @@ def get_sra(wildcards):
     return samples.loc[wildcards.sample].loc['raw_data']
 
 
+
 def get_raw_fq(wildcards):
     raw_data = samples.loc[wildcards.sample].loc['raw_data']
     seq_type = samples.loc[wildcards.sample].loc['seq_type']

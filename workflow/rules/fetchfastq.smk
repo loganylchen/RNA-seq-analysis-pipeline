@@ -1,24 +1,17 @@
-rule get_fastq_pe:
+rule get_fastq:
     output:
-        "{project}/data/{accession}/{accession}_1.fastq.gz",
-        "{project}/data/{accession}/{accession}_2.fastq.gz",
+        unpack(get_raw_fq)
     log:
         "logs/{project}/get_{accession}.fastq.log"
+    contaniner:
+        'docker://btrspg/sratools:3.2.1'
     params:
         extra="--skip-technical"
+    resources:
+        mem_mb=10* 1024,
     threads: config['threads']['sra']
-    wrapper:
-        "v6.0.0/bio/sra-tools/fasterq-dump"
+    script:
+        "../scripts/fetchsra.bash"
 
-rule get_fastq_se:
-    output:
-        "{project}/data/{accession}/{accession}.fastq.gz"
-    log:
-        "logs/{project}/get_{accession}.fastq.log"
-    params:
-        extra="--skip-technical"
-    threads: config['threads']['sra']
-    wrapper:
-        "v6.0.0/bio/sra-tools/fasterq-dump"
 
 
