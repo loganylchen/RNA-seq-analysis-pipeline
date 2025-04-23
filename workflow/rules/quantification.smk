@@ -35,4 +35,3 @@ rule featurecounts_quantification_hisat2:
         "-a {input.gtf} "
         "-o {output.counts} "
         "{input.bam} > {log} 2>&1 "
-

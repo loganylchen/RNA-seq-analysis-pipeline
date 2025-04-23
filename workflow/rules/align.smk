@@ -5,7 +5,7 @@ rule star_align:
         gtf="resources/genome.gtf",
     output:
         aln="{project}/alignment/{sample}/{sample}.star.bam",
-        reads_per_gene="{project}/alignment/{sample}/ReadsPerGene.out.tab",
+        reads_per_gene="{project}/quantification/{sample}/{sample}.ReadsPerGene.out.tab",
     log:
         "logs/{project}_{sample}_star.log",
     params:
