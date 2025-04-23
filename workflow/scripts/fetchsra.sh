@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-
+set -x
+set -e
 # Get command line arguments from Snakemake
 log=${snakemake_log[0]}
 threads=${snakemake[threads]:6}
@@ -15,17 +16,17 @@ mkdir -p "${outdir}"
 # Create temporary directory
 tmpdir=$(mktemp -d -p ${outdir}/tmp)
 trap 'rm -rf "$tmpdir"' EXIT
-
+echo ${tmpdir}
 # Ensure output directory exists
 
 
 # Run fasterq-dump with error handling
 (fasterq-dump --skip-technical \
-    --temp $tmpdir \
-    --threads $threads \
+    --temp ${tmpdir} \
+    --threads ${threads} \
     --mem "${mem_mb}" \
-    --outdir $outdir \
-    $accession
+    --outdir ${outdir} \
+    ${accession}
 
 # Compress output files if they exist
 for file in "$outdir"/*.fastq; do
