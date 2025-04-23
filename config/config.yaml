@@ -6,6 +6,7 @@ threads:
   star: 6
   hisat2: 6
   featurecounts: 6
+  lftp: 6
 
 fastp:
   extra: ' -c '
