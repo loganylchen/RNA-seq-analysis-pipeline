@@ -71,11 +71,11 @@ per_s_r = strandedness_sum/reverse_sum
 
 
 
-if ((u_s>0).sum() > (s_u > 0).sum()) and ((u_r>0).sum() > (r_u > 0).sum()):
+if (per_s_r.mean() < 1.5) and (per_s_r.mean() > 0.5):
     unstrandedness_matrix.to_csv(snakemake.output[0], sep="\t")
-elif ((s_u>0).sum() > (u_s > 0).sum()) and ((s_r>0).sum() > (r_s < 0).sum()):
+elif (per_s.mean() > 0.9)):
     strandedness_matrix.to_csv(snakemake.output[0], sep="\t")
-elif ((r_u>0).sum() > (u_r > 0).sum()) and ((r_s>0).sum() > (s_r < 0).sum()):
+elif (per_r.mean() > 0.9):
     reverse_matrix.to_csv(snakemake.output[0], sep="\t")
 else:
     print("Treated as unstrandedness")

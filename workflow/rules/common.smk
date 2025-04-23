@@ -9,6 +9,9 @@ samples = (
     .set_index("sample_name", drop=False)
     .sort_index())
 
+project = samples['project'].unique().tolist()
+assert len(project) == 1, "Only one project is allowed!"
+project = project[0]
 
 
 validate(samples, schema="../schemas/samples.schema.yaml")
@@ -60,7 +63,10 @@ def get_clean_data(wildcards):
 
 
 def get_final_output():
-    final_output = []
+    final_output = [f"{project}/quantification/STAR_count_matrix.txt",
+        f"{project}/quantification/STAR_fc_count_matrix.txt",
+        f"{project}/quantification/HISAT2_fc_count_matrix.txt",
+    ]
     for sample in samples.index:
         project = samples.loc[sample,'project']
         final_output+=[
