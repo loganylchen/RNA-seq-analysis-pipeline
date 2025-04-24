@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 log=${snakemake_log[0]}
 # 获取Snakemake传递的参数
-extra=${snakemake_params[extra]}
-threads=${snakemake[threads]}
+extra=${snakemake_params[extra]:-""}
+threads=${snakemake[threads]:-6}
 
 # 获取输入文件数量
 input_files=("${snakemake_input[sample]}")
