@@ -3,7 +3,7 @@ set -x
 set -e
 # Get command line arguments from Snakemake
 log=${snakemake_log[0]}
-threads=${snakemake[threads]:6}
+threads=${snakemake[threads]:-6}
 mem_mb="-m${snakemake_resources[mem_mb]:-2048}M"
 accession=${snakemake_wildcards[sample]}
 
