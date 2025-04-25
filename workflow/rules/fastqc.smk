@@ -7,6 +7,8 @@ rule fastp:
         json="{project}/report/{sample}.fastp.json"
     log:
         "logs/{project}/fastp_{sample}.log"
+    container:
+        "docker://btrspg/fastp:0.24.0"
     params:
         extra=config['fastp']['extra']
     threads: config['threads']['fastp']
