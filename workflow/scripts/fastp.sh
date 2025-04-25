@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 log=${snakemake_log[0]}
+
+exec > "${log}" 2>&1
 # 获取Snakemake传递的参数
 extra=${snakemake_params[extra]:-""}
 threads=${snakemake[threads]:-6}
@@ -10,7 +12,7 @@ n=${#input_files[@]}
 
 # 检查输入文件数量是否正确
 if [ $n -ne 1 ] && [ $n -ne 2 ]; then
-    echo "错误: input->sample必须有1个(单端)或2个(双端)元素。" >&2
+    echo "错误: input->sample必须有1个(单端)或2个(双端)元素。" 
     exit 1
 fi
 
@@ -44,4 +46,4 @@ json="--json ${snakemake_output[json]}"
     $reads \
     $trimmed \
     $json \
-    $html) 2>&1 > "$log"
+    $html) 
