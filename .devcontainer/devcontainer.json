@@ -1,0 +1,28 @@
+{
+  "name": "MPAGE R Development Environment",
+  "image": "btrspg/env-snakemake:20251015",
+  "features": {},
+  "workspaceMount": "source=/home/logan/Projects/RNA-seq-analysis-pipeline,target=/home/vscode/workspace/,type=bind,consistency=cached",
+  "workspaceFolder": "/home/vscode/workspace/",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot-chat",
+        "GitHub.copilot",
+        "Anthropic.claude-code",
+        "ivanhofer.git-assistant",
+        "mhutchie.git-graph",
+        "github.vscode-github-actions",
+        "ms-toolsai.jupyter",
+        "mathematic.vscode-latex",
+        "REditorSupport.r",
+        "redhat.vscode-yaml",
+        "ms-python.python",
+        "ms-toolsai.vscode-jupyter-powertoys",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  "remoteUser": "loganvscode",
+  "updateRemoteUserUID": false
+}
