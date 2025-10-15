@@ -1,5 +1,5 @@
 {
-  "name": "MPAGE R Development Environment",
+  "name": "Snakemake",
   "image": "btrspg/env-snakemake:20251015",
   "features": {},
   "workspaceMount": "source=/home/logan/Projects/RNA-seq-analysis-pipeline,target=/home/vscode/workspace/,type=bind,consistency=cached",
