@@ -1,0 +1,97 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: snakemake configuration file
+
+type: object
+
+properties:
+  samples:
+    type: string
+
+  ref:
+    type: object
+    properties:
+      species:
+        type: string
+      release:
+        type: integer
+      build:
+        type: string
+      go_name:
+        type: string
+      kegg_name:
+        type: string
+    required:
+      - species
+      - release
+      - build
+
+
+
+  threads:
+    type: object
+    properties:
+      fastp:
+        type: integer
+      star:
+        type: integer
+      hisat2:
+        type: integer
+
+
+
+  # params:
+  #   type: object
+  #   properties:
+  #     sratools_fetchfastq:
+  #       type: string
+  #     fastp:
+  #       type: string
+  #     star:
+  #       type: string
+
+  # thresholds:
+  #   type: object
+  #   properties:
+  #     deseq2:
+  #       type: object
+  #       properties:
+  #         count:
+  #           type: integer
+  #         log2foldchange:
+  #           type: number
+  #         padj:
+  #           type: number
+
+  # diffexp:
+  #   type: object
+  #   properties:
+  #     contrasts:
+  #       type: object
+
+  #     model:
+  #       type: string
+  #     subclass:
+  #       type: string
+  #   required:
+  #     - subclass
+  #     - contrasts
+  #     - model
+  # vis:
+  #   type: object
+  #   properties:
+  #     pcatools:
+  #       type: object
+  #       properties:
+  #         color_by:
+  #           type: string
+  #         shape_by:
+  #           type: string
+# required:
+#   - samples
+#   - ref
+#   - params
+#   - threads
+#   - diffexp
+#   - vis
+

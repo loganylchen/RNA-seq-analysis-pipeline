@@ -1,4 +1,49 @@
-# Main entrypoint of the workflow. 
-# Please follow the best practices: 
-# https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
-# in particular regarding the standardized folder structure mentioned there. 
+# libraries
+
+import os
+from snakemake.utils import min_version
+
+min_version("6.4.1")
+
+
+wildcard_constraints:
+    sample="[a-zA-Z0-9]+",
+    accession="SRR[0-9]+",
+
+
+
+##### setup report #####
+configfile: "config/config.yaml"
+
+##### setup singularity #####
+
+
+# this container defines the underlying OS for each job when using the workflow
+# with --use-conda --use-singularity
+container: "docker://condaforge/mambaforge:22.11.1-4"
+
+report: "report/workflow.rst"
+
+include: "rules/common.smk"
+include: "rules/fetchfastq.smk"
+include: "rules/fastqc.smk"
+include: "rules/align.smk"
+include: "rules/quantification.smk"
+include: "rules/expression.smk"
+# include: "rules/annotate.smk"
+# include: "rules/generatematrix.smk"
+# include: "rules/diffexp_deseq2.smk"
+# include: "rules/wgcna.smk"
+# include: "rules/enrichment_genekitr.smk"
+# include: "rules/hamr.smk"
+# include: "rules/modtect.smk"
+include: "rules/ref.smk"
+# include: "rules/vis_volcano.smk"
+# include: "rules/vis_pcaplot.smk"
+
+##### target rules #####
+
+
+rule all:
+    input:
+        get_final_output()

@@ -3,3 +3,7 @@ resources/**
 logs/**
 .snakemake
 .snakemake/**
+.idea
+
+.test/*
+!.test/config

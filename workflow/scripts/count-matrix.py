@@ -1,0 +1,85 @@
+import sys
+
+# logging
+sys.stderr = open(snakemake.log[0], "w")
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+counts_unstrandedness = [
+    pd.read_table(
+        f, index_col=0, usecols=[0, 1], header=None, skiprows=4
+    )
+    for f in snakemake.input
+]
+
+counts_strandedness = [
+    pd.read_table(
+        f, index_col=0, usecols=[0, 2], header=None, skiprows=4
+    )
+    for f in snakemake.input
+]
+
+counts_reverse = [
+    pd.read_table(
+        f, index_col=0, usecols=[0, 3], header=None, skiprows=4
+    )
+    for f in snakemake.input
+]
+
+for t, sample in zip(counts_unstrandedness, snakemake.params.samples):
+    t.columns = [sample]
+
+for t, sample in zip(counts_strandedness, snakemake.params.samples):
+    t.columns = [sample]
+
+for t, sample in zip(counts_reverse, snakemake.params.samples):
+    t.columns = [sample]
+
+
+unstrandedness_matrix = pd.concat(counts_unstrandedness, axis=1)
+unstrandedness_matrix.index.name = "gene"
+
+strandedness_matrix = pd.concat(counts_strandedness, axis=1)
+strandedness_matrix.index.name = "gene"
+
+reverse_matrix = pd.concat(counts_reverse, axis=1)
+reverse_matrix.index.name = "gene"
+
+unstrandedness_matrix.to_csv(snakemake.output[1], sep="\t")
+strandedness_matrix.to_csv(snakemake.output[2], sep="\t")
+reverse_matrix.to_csv(snakemake.output[3], sep="\t")
+
+unstrandedness_sum = unstrandedness_matrix.sum(axis=0)
+strandedness_sum = strandedness_matrix.sum(axis=0)
+reverse_sum = reverse_matrix.sum(axis=0)
+
+
+fig,ax = plt.subplots(1,1,figsize=(15,7))
+ax.plot(unstrandedness_sum,label='unstrandedness')
+ax.plot(strandedness_sum,label='strandedness')
+ax.plot(reverse_sum,label='reverse')
+ax.set_title('RNA-seq strandedness check')
+ax.legend()
+ax.set_xticklabels(ax.get_xticklabels(),rotation=75)
+fig.savefig(snakemake.output[4],dpi=300)
+
+
+per_s =  strandedness_sum/unstrandedness_sum
+per_r =  reverse_sum/unstrandedness_sum
+per_s_r = strandedness_sum/reverse_sum
+
+
+
+if (per_s_r.mean() < 1.5) and (per_s_r.mean() > 0.5):
+    unstrandedness_matrix.to_csv(snakemake.output[0], sep="\t")
+elif (per_s.mean() > 0.9)):
+    strandedness_matrix.to_csv(snakemake.output[0], sep="\t")
+elif (per_r.mean() > 0.9):
+    reverse_matrix.to_csv(snakemake.output[0], sep="\t")
+else:
+    print("Treated as unstrandedness")
+    unstrandedness_matrix.to_csv(snakemake.output[0], sep="\t")
+    print(f"Can't decide the strandedness of the RNA-seq, please check by yourself. refer to {snakemake.output[4]}")
+
+

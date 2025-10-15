@@ -1,0 +1,10 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-wgcna =1.71
+  - r-dplyr =1.1.2
+  - bioconductor-limma =3.56.2
+  - r-ggplot2 =3.4.2
+  - r-tibble =3.2.1
+  - bioconductor-complexheatmap =2.16.0

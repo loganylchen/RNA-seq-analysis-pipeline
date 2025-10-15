@@ -1,0 +1,28 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: an entry in the sample sheet
+properties:
+  sample_name:
+    type: string
+    description: sample name/identifier
+  condition:
+    type: string
+    description: sample condition that will be compared during differential expression analysis (e.g. a treatment, a tissue time, a disease)
+  batch:
+    type: string
+    description: batch identifier
+  raw_data:
+    type: string
+    description: raw fastq file path or SRA ID
+  project:
+    type: string
+    description: project name, should be string with [A-Za-z0-9]+
+  seq_type:
+    type: string
+    description: pe or se
+required:
+  - sample_name
+  - condition
+  - raw_data
+  - batch
+  - seq_type
