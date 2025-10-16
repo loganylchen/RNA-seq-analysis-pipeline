@@ -7,8 +7,8 @@ set -x
 set -e
 threads=${snakemake[threads]:-6}
 sra_or_fastq=${snakemake_params[sra]}
-fq1==${snakemake_params[fq1]}
-fq2==${snakemake_params[fq2]}
+fq1=${snakemake_params[fq1]}
+fq2=${snakemake_params[fq2]}
 mem_mb="-m${snakemake_resources[mem_mb]:-2048}M"
 
 
