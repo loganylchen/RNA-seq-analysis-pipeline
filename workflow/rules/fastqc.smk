@@ -5,7 +5,7 @@ rule fastp:
             if is_pe
             else "{project}/data/{sample}/{sample}.fastq.gz"
         ),
-        fq2="{project}/data/{sample}_2.fastq.gz",
+        fq2="{project}/data/{sample}/{sample}_2.fastq.gz",
     output:
         fq1=(
             "{project}/clean_data/{sample}_1.fastq.gz"
