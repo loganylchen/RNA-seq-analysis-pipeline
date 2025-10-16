@@ -18,9 +18,10 @@ echo $pe
 
 if [ "$pe" == "True" ]; then
     reads="--in1 ${input_files[0]} --in2 ${input_files[1]}"
-    
+    echo 'PE reads'
 else
     reads="--in1 ${input_files[0]}"
+    echo 'SE reads'
 fi
 
 
@@ -29,9 +30,10 @@ if [ -n "${snakemake_output[trimmed]}" ]; then
     if [ "$pe" == "True" ]; then
         trimmed_files=("${snakemake_output[trimmed]}")
         trimmed="--out1 ${trimmed_files[0]} --out2 ${trimmed_files[1]}"
-        
+        echo 'PE reads'
     else
         trimmed="--out1 ${snakemake_output[trimmed]}"
+        echo 'SE reads'
     fi
 fi
 
