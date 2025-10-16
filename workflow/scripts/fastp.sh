@@ -14,26 +14,24 @@ echo ${input_files}
 echo $n
 echo $pe
 
-if [ $n -ne 1 ] && [ $n -ne 2 ]; then
-    echo "ERROR: input->sample has 1 or 2"
-    exit 1
-fi
 
 
-if [ $n -eq 1 ]; then
-    reads="--in1 ${input_files[0]}"
-else
+if [ "$pe" == "True" ]; then
     reads="--in1 ${input_files[0]} --in2 ${input_files[1]}"
+    
+else
+    reads="--in1 ${input_files[0]}"
 fi
 
 
 trimmed=""
 if [ -n "${snakemake_output[trimmed]}" ]; then
-    if [ $n -eq 1 ]; then
-        trimmed="--out1 ${snakemake_output[trimmed]}"
-    else
+    if [ "$pe" == "True" ]; then
         trimmed_files=("${snakemake_output[trimmed]}")
         trimmed="--out1 ${trimmed_files[0]} --out2 ${trimmed_files[1]}"
+        
+    else
+        trimmed="--out1 ${snakemake_output[trimmed]}"
     fi
 fi
 
