@@ -4,7 +4,7 @@ rule get_genome:
     log:
         "logs/ref/get-genome.log",
     container:
-        "docker://minidocks/lftp:4.8"
+        "docker://btrspg/lftp:latest"
     params:
         species=config["reference"]["species"],
         datatype="dna",
@@ -29,7 +29,7 @@ rule get_annotation:
         release=config["reference"]["release"],
         flavor="",
     container:
-        "docker://curlimages/curl:8.13.0"
+        "docker://btrspg/lftp:latest"
     threads: 1
     resources:
         mem_mb=1024 * 2,

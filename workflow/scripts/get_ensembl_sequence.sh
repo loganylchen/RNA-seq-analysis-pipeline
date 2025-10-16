@@ -41,21 +41,9 @@ trap 'rm -rf "$tmpdir"' EXIT
 
 
 
-declare -a suffixes
-if [ "$datatype" = "dna" ]; then
-    suffixes=("dna.primary_assembly.fa.gz" "dna.toplevel.fa.gz")
-    elif [ "$datatype" = "cdna" ]; then
-    suffixes=("cdna.all.fa.gz")
-    elif [ "$datatype" = "cds" ]; then
-    suffixes=("cds.all.fa.gz")
-    elif [ "$datatype" = "ncrna" ]; then
-    suffixes=("ncrna.fa.gz")
-    elif [ "$datatype" = "pep" ]; then
-    suffixes=("pep.all.fa.gz")
-else
-    echo "ERROR: dna、cdna、cds、ncrna pep " >&2
-    exit 1
-fi
+
+suffixes=("dna.primary_assembly.fa.gz" "dna.toplevel.fa.gz")
+
 
 success=false
 for suffix in "${suffixes[@]}"; do
