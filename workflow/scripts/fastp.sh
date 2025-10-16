@@ -11,6 +11,7 @@ input_files=("${snakemake_input[sample]}")
 n=${#input_files[@]}
 
 echo ${input_files}
+echo $n
 
 if [ $n -ne 1 ] && [ $n -ne 2 ]; then
     echo "ERROR: input->sample has 1 or 2"
