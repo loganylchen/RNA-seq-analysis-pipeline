@@ -2,7 +2,12 @@ rule fastp:
     input:
         unpack(get_raw_fq),
     output:
-        unpack(get_clean_data),
+        fq1=(
+            "{project}/clean_data/{sample}_1.fastq.gz"
+            if is_pe
+            else "{project}/clean_data/{sample}.fastq.gz"
+        ),
+        fq2="{project}/clean_data/{sample}_2.fastq.gz",
         html="{project}/report/{sample}.fastp.html",
         json="{project}/qc/{sample}/{sample}.fastp.json",
     log:
