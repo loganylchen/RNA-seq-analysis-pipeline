@@ -3,8 +3,13 @@
 # Get command line arguments from Snakemake
 log=${snakemake_log[0]}
 threads=${snakemake[threads]:-6}
+sra_or_fastq=${snakemake_params[sra]}
+fq1==${snakemake_params[fq1]}
+fq2==${snakemake_params[fq2]}
 mem_mb="-m${snakemake_resources[mem_mb]:-2048}M"
-accession=${snakemake_wildcards[sample]}
+
+
+
 
 reads=(${snakemake_output[reads]})
 read_1=${reads[0]}
@@ -20,16 +25,31 @@ echo ${tmpdir}
 
 
 # Run fasterq-dump with error handling
-(fasterq-dump --skip-technical \
-    --temp ${tmpdir} \
-    --threads ${threads} \
-    --mem "${mem_mb}" \
-    --outdir ${outdir} \
-    ${accession}
+if [[ $sra_or_fastq == SRA* ]] ;
+then
+    (fasterq-dump --skip-technical \
+        --temp ${tmpdir} \
+        --threads ${threads} \
+        --mem "${mem_mb}" \
+        --outdir ${outdir} \
+        ${sra_or_fastq}
+        
+        # Compress output files if they exist
+        for file in "$outdir"/*.fastq; do
+            if [ -f "$file" ]; then
+                pigz -p "$threads" "$file"
+            fi
+    done) 2>&1 | tee "$log"
+fi
 
-# Compress output files if they exist
-for file in "$outdir"/*.fastq; do
-    if [ -f "$file" ]; then
-        pigz -p "$threads" "$file"
+if [[ $sra_or_fastq == '' ]] ;
+then
+    if [[ -f $fq1 ]];
+    then
+        ln -s $fq1 ${reads[0]}
     fi
-done) 2>&1 | tee "$log"
+    if [[ -f $fq2 ]];
+    then
+        ln -s $fq2 ${reads[1]}
+    fi
+fi
