@@ -28,7 +28,7 @@ fi
 if [[ "$output_file" == *.gz ]]; then
     decompress=""
 else
-    decompress="| gzip -d"
+    decompress="gzip -dc"
 fi
 
 
@@ -51,11 +51,13 @@ for suffix in "${suffixes[@]}"; do
     url_ftp="${url_https/https:\/\//ftp:\/\/}"
     
     if curl --location --head "$url_https" 2>/dev/null | grep -q 'Content-Length'; then
-        (lftp -c "pget -n ${threads} ${url_https} -" $decompress >> "$output_file") 2>&1 | tee -a "$log"
+        (lftp -c "pget -n ${threads} ${url_https}" ) 2>&1 | tee -a "$log"
+        ($decompress ${species^}.${spec}.${suffix} > "$output_file") 2>&1 | tee -a "$log"
         success=true
         
         elif curl --location --head "$url_ftp" 2>/dev/null | grep -q 'Content-Length'; then
-        (lftp -c "pget -n ${threads} ${url_ftp} -" $decompress >> "$output_file") 2>&1 | tee -a "$log"
+        (lftp -c "pget -n ${threads} ${url_ftp} "  2>&1 | tee -a "$log"
+        ($decompress ${species^}.${spec}.${suffix} > "$output_file") 2>&1 | tee -a "$log"
         success=true
     fi
 done
