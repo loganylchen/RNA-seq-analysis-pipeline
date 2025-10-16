@@ -12,7 +12,7 @@ fastp:
   extra: " -c "
 
 star:
-  extra: "--quantMode GeneCounts "
+  extra: ""
   index_extra: ""
 
 hisat2:

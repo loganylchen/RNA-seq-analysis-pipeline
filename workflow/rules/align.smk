@@ -12,7 +12,7 @@ rule star_align:
     log:
         "logs/{project}_{sample}_star.log",
     params:
-        extra=lambda wc, input: f'--outSAMtype BAM SortedByCoordinate --sjdbGTFfile {input.gtf} {config["star"]["extra"]}',
+        extra=lambda wc, input: f'--quantMode GeneCounts  --outSAMtype BAM SortedByCoordinate --sjdbGTFfile {input.gtf} {config["star"]["extra"]}',
     threads: config["threads"]["star"]
     shell:
         "STAR --genomeDir {input.index} "

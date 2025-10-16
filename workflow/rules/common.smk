@@ -69,10 +69,11 @@ def get_final_output():
         # f"{project}/quantification/STAR_fc_count_matrix.txt",
         # f"{project}/quantification/HISAT2_fc_count_matrix.txt",
     ]
-    # for sample in samples.index:
-    #     sample_project = samples.loc[sample, "project"]
-    #     final_output += [
-    #         f"{sample_project}/quantification/{sample}.hisat2_counts.txt",
-    #         f"{sample_project}/quantification/{sample}.star_counts.txt",
-    #     ]
+    for sample in samples.index:
+        sample_project = samples.loc[sample, "project"]
+        final_output += [
+            # f"{sample_project}/quantification/{sample}.hisat2_counts.txt",
+            # f"{sample_project}/quantification/{sample}.star_counts.txt",
+            f"{sample_project}/alignment/{sample}/{sample}.star.bam"
+        ]
     return final_output
