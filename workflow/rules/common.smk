@@ -85,4 +85,5 @@ def get_final_output():
             # f"{sample_project}/quantification/{sample}.star_counts.txt",
             f"{sample_project}/alignment/{sample}/{sample}.star.bam"
         ]
+    print(final_output)
     return final_output

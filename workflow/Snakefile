@@ -11,9 +11,9 @@ wildcard_constraints:
     accession="SRR[0-9]+",
 
 
-
 ##### setup report #####
 configfile: "config/config.yaml"
+
 
 ##### setup singularity #####
 
@@ -22,7 +22,9 @@ configfile: "config/config.yaml"
 # with --use-conda --use-singularity
 container: "docker://condaforge/mambaforge:22.11.1-4"
 
+
 report: "report/workflow.rst"
+
 
 include: "rules/common.smk"
 include: "rules/fetchfastq.smk"
@@ -38,6 +40,8 @@ include: "rules/expression.smk"
 # include: "rules/hamr.smk"
 # include: "rules/modtect.smk"
 include: "rules/ref.smk"
+
+
 # include: "rules/vis_volcano.smk"
 # include: "rules/vis_pcaplot.smk"
 
@@ -46,4 +50,4 @@ include: "rules/ref.smk"
 
 rule all:
     input:
-        get_final_output()
+        get_final_output(),
