@@ -5,13 +5,14 @@ exec > "${log}" 2>&1
 
 extra=${snakemake_params[extra]:-""}
 threads=${snakemake[threads]:-6}
-
+pe=${snakemake_params['pe']}
 
 input_files="${snakemake_input[sample]}"
 n=${#input_files[@]}
 
 echo ${input_files}
 echo $n
+echo $pe
 
 if [ $n -ne 1 ] && [ $n -ne 2 ]; then
     echo "ERROR: input->sample has 1 or 2"

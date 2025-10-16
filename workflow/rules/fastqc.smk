@@ -28,6 +28,7 @@ rule fastp:
             else config["container"].get("fastp", None)
         )
     params:
+        pe=is_pe,
         extra=config["fastp"]["extra"],
     threads: config["threads"]["fastp"]
     script:
