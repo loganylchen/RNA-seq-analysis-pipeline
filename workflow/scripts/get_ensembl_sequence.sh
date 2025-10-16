@@ -45,7 +45,7 @@ trap 'rm -rf "$tmpdir"' EXIT
 suffixes=("dna.primary_assembly.fa.gz" "dna.toplevel.fa.gz")
 
 
-success=false
+fail=true
 for suffix in "${suffixes[@]}"; do
     url_https="${url_prefix}.${suffix}"
     url_ftp="${url_https/https:\/\//ftp:\/\/}"
@@ -53,18 +53,20 @@ for suffix in "${suffixes[@]}"; do
     if curl --location --head "$url_https" 2>/dev/null | grep -q 'Content-Length'; then
         (lftp -c "pget -n ${threads} ${url_https}" ) 2>&1 | tee -a "$log"
         ($decompress ${species^}.${spec}.${suffix} > "$output_file") 2>&1 | tee -a "$log"
-        success=true
+        fail=false
         
         elif curl --location --head "$url_ftp" 2>/dev/null | grep -q 'Content-Length'; then
         (lftp -c "pget -n ${threads} ${url_ftp} ")  2>&1 | tee -a "$log"
         ($decompress ${species^}.${spec}.${suffix} > "$output_file") 2>&1 | tee -a "$log"
-        success=true
+        fail=false
     fi
 done
 
-if ! $success; then
-    
-    echo "Checking URL" >&2
-    echo "Species" >&2
+
+
+echo "Checking URL" >&2
+echo "Species" >&2
+
+if $fail; then
     exit 1
 fi
