@@ -10,9 +10,11 @@ rule get_genome:
         datatype="dna",
         build=config["reference"]["build"],
         release=config["reference"]["release"],
+    resources:
+        mem_mb=1024 * 10,
     benchmark:
         "benchmarks/get_genome.benchmark.txt"
-    threads: config['threads']['lftp']
+    threads: config["threads"]["lftp"]
     script:
         "../scripts/get_ensembl_sequence.sh"
 
@@ -29,6 +31,8 @@ rule get_annotation:
     container:
         "docker://curlimages/curl:8.13.0"
     threads: 1
+    resources:
+        mem_mb=1024 * 2,
     log:
         "logs/ref/get_annotation.log",
     benchmark:
@@ -46,15 +50,17 @@ rule filtering_genome_and_annotation:
         gtf="resources/genome.gtf",
     log:
         "logs/ref/filtering_references.log",
+    resources:
+        mem_mb=1024 * 10,
     params:
         select_contigs=config["reference"]["select_contigs"],
     container:
         "docker://btrspg/biopython:1.85"
-
     benchmark:
         "benchmarks/filtering_references.benchmark.txt"
     script:
         "../scripts/reference_filtering.py"
+
 
 rule genome_faidx:
     input:
@@ -63,49 +69,46 @@ rule genome_faidx:
         "resources/genome.fasta.fai",
     log:
         "logs/ref/genome-faidx.log",
+    resources:
+        mem_mb=1024 * 10,
     wrapper:
         "v1.21.4/bio/samtools/faidx"
-
-# rule create_dict:
-#     input:
-#         "resources/genome.fasta",
-#     output:
-#         "resources/genome.dict",
-#     log:
-#         "logs/picard/create_dict.log",
-#     params:
-#         extra="",  # optional: extra arguments for picard.
-#     # optional specification of memory usage of the JVM that snakemake will respect with global
-#     # resource restrictions (https://snakemake.readthedocs.io/en/latest/snakefiles/rules.html#resources)
-#     # and which can be used to request RAM during cluster job submission as `{resources.mem_mb}`:
-#     # https://snakemake.readthedocs.io/en/latest/executing/cluster.html#job-properties
-#     resources:
-#         mem_mb=10240,
-#     wrapper:
-#         "v2.3.1/bio/picard/createsequencedictionary"
-
 
 
 rule star_index:
     input:
-        fasta='resources/genome.fasta',
-        gtf='resources/genome.gtf'
+        fasta="resources/genome.fasta",
+        gtf="resources/genome.gtf",
     output:
-        directory("resources/star_genome")
-    threads: config['threads']['star']
+        directory("resources/star_genome"),
+    threads: config["threads"]["star"]
+    resources:
+        mem_mb=1024 * 100,
     params:
-        sjdb_overhang=100,
-        extra=config['star']['index_extra'],
+        extra=config["star"]["index_extra"],
     log:
         "logs/star_index_genome.log",
     benchmark:
         "benchmarks/star_index.benchmark.txt"
-    wrapper:
-        "v1.21.4/bio/star/index"
+    container:
+        (
+            "docker://btrspg/star:2.7.11b"
+            if config["container"].get("star", None) is None
+            else config["container"].get("star", None)
+        )
+    shell:
+        "STAR --runMode genomeGenerate "
+        "--genomeDir {output} "
+        "--genomeFastaFiles {input.fasta} "
+        "--sjdbGTFfile {input.gtf} "
+        "{params.extra} "
+        "--runThreadN {threads} 1>&2 2>{log} "
+
 
 rule hisat2_index:
     input:
-        fasta='resources/genome.fasta'
+        fasta="resources/genome.fasta",
+        gtf="resources/genome.gtf",
     output:
         multiext(
             "resources/hisat2_genome/genome",
@@ -119,11 +122,24 @@ rule hisat2_index:
             ".8.ht2",
         ),
     params:
-        extra=config['hisat2']['index_extra'],
+        prefix="resources/hisat2_genome/genome",
+        extra=config["hisat2"]["index_extra"],
+    resources:
+        mem_mb=1024 * 40,
     log:
         "logs/hisat2_index_genome.log",
-    threads: config['threads']['hisat2'],
-    wrapper:
-        "v6.0.0/bio/hisat2/index"
-
-
+    container:
+        (
+            "docker://btrspg/hisat2:2.2.1"
+            if config["container"].get("hisat2", None) is None
+            else config["container"].get("hisat2", None)
+        )
+    threads: config["threads"]["hisat2"]
+    benchmark:
+        "benchmarks/hisat2_index.benchmark.txt"
+    shell:
+        "hisat2_extract_splice_sites.py {input.gtf} > {params.prefix}.ss 2>{log};"
+        "hisat2_extract_exons.py {input.gtf} > {params.prefix}.exon 2>>{log}; "
+        "hisat2-build --threads {threads} "
+        "--exon {params.prefix}.exon "
+        "--ss {params.prefix}.ss {input.fasta} {params.prefix} 2>>{log} "
