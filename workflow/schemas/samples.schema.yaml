@@ -13,7 +13,13 @@ properties:
     description: batch identifier
   raw_data:
     type: string
-    description: raw fastq file path or SRA ID
+    description: SRA ID
+  fq1:
+    type: string
+    description: read1 fastq file
+  fq2:
+    type: string
+    description: read2 fastq file
   project:
     type: string
     description: project name, should be string with [A-Za-z0-9]+
@@ -23,6 +29,8 @@ properties:
 required:
   - sample_name
   - condition
+  - fq1
+  - fq2
   - raw_data
   - batch
   - seq_type
