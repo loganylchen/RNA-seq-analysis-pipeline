@@ -5,7 +5,7 @@ rule star_align:
         gtf="resources/genome.gtf",
     output:
         aln="{project}/alignment/{sample}/{sample}.star.bam",
-        temp_dir=temp(directoty("{project}/alignment/{sample}/STAR_TMP")),
+        temp_dir=temp(directory("{project}/alignment/{sample}/STAR_TMP")),
         reads_per_gene="{project}/quantification/{sample}/{sample}.ReadsPerGene.out.tab",
         chim_junc="{project}/chimeric_junction/{sample}/{sample}.star.chim_junc.txt",
         qc_log="{project}/qc/{sample}.Log.final.out",
