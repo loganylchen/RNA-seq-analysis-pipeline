@@ -74,7 +74,7 @@ def get_clean_data(wildcards):
 def get_final_output():
     final_output = [
         "resources/star_genome",
-        "resources/hisat2_genome/genome.1.ht2",
+        # "resources/hisat2_genome/genome.1.ht2",
         # f"{project}/quantification/STAR_fc_count_matrix.txt",
         # f"{project}/quantification/HISAT2_fc_count_matrix.txt",
     ]
@@ -82,6 +82,7 @@ def get_final_output():
         sample_project = samples.loc[sample, "project"]
         final_output += [
             # f"{sample_project}/quantification/{sample}.hisat2_counts.txt",
+            f"{sample_project}/{sample}/qc/qualimap",
             f"{sample_project}/quantification/{sample}.star_counts.txt",
             f"{sample_project}/alignment/{sample}/{sample}.star.bam",
         ]

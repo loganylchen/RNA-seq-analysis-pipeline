@@ -59,3 +59,4 @@ containers:
   hisat2: "docker://btrspg/hisat2:2.2.1"
   fastp: "docker://btrspg/fastp:0.24.0"
   subread: "docker://btrspg/subread:2.1.1"
+  qualimap: "docker://btrspg/qualimap:2.3"
