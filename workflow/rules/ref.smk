@@ -102,7 +102,7 @@ rule star_index:
         "--genomeFastaFiles {input.fasta} "
         "--sjdbGTFfile {input.gtf} "
         "{params.extra} "
-        "--runThreadN {threads} 1>&2 2>{log} "
+        "--runThreadN {threads} &>{log} "
 
 
 rule hisat2_index:
@@ -142,4 +142,4 @@ rule hisat2_index:
         "hisat2_extract_exons.py {input.gtf} > {params.prefix}.exon 2>>{log}; "
         "hisat2-build --threads {threads} "
         "--exon {params.prefix}.exon "
-        "--ss {params.prefix}.ss {input.fasta} {params.prefix} 2>>{log} "
+        "--ss {params.prefix}.ss {input.fasta} {params.prefix} &>>{log} "
