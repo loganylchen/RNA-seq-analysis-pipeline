@@ -18,7 +18,7 @@ rule fastp:
             else "{project}/clean_data/{sample}.fastq.gz"
         ),
         html="{project}/report/{sample}.fastp.html",
-        json="{project}/report/{sample}.fastp.json",
+        json="{project}/qc/{sample}.fastp.json",
     log:
         "logs/{project}/fastp_{sample}.log",
     container:
