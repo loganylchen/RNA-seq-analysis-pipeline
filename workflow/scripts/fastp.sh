@@ -43,7 +43,8 @@ fi
 html="--html ${snakemake_output[html]}"
 json="--json ${snakemake_output[json]}"
 
-
+set -x
+set -e
 (fastp --thread "$threads" \
     $extra \
     $reads \
