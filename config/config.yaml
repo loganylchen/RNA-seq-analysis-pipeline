@@ -12,7 +12,7 @@ fastp:
   extra: " -c "
 
 star:
-  extra: ""
+  extra: "--outSAMtype BAM SortedByCoordinate --quantMode GeneCounts "
   index_extra: ""
 
 hisat2:

@@ -16,7 +16,7 @@ rule get_genome:
         "benchmarks/get_genome.benchmark.txt"
     threads: config["threads"]["lftp"]
     script:
-        "../scripts/get_ensembl_sequence.sh"
+        "../scripts/get_ensembl_sequence.bash"
 
 
 rule get_annotation:
@@ -38,7 +38,7 @@ rule get_annotation:
     benchmark:
         "benchmarks/get_annotation.benchmark.txt"
     script:
-        "../scripts/get_ensembl_annotation.sh"
+        "../scripts/get_ensembl_annotation.bash"
 
 
 rule filtering_genome_and_annotation:

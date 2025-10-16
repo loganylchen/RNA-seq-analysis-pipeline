@@ -9,10 +9,16 @@ rule star_align:
     log:
         "logs/{project}_{sample}_star.log",
     params:
-        extra=lambda wc, input: f'--outSAMtype BAM SortedByCoordinate --quantMode GeneCounts --sjdbGTFfile {input.gtf} {config["star"]["extra"]}', 
+        extra=lambda wc, input: f'--sjdbGTFfile {input.gtf} {config["star"]["extra"]}', 
     threads: config['threads']['star']
-    wrapper:
-        "v6.0.0/bio/star/align"
+    container:
+        (
+            "docker://btrspg/star:2.7.11b"
+            if config["container"].get("star", None) is None
+            else config["container"].get("star", None)
+        )
+    shell:
+        
 
 
 
