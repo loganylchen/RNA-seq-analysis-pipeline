@@ -1,6 +1,6 @@
 rule fastp:
     input:
-        get_raw_fq,
+        unpack(get_raw_fq),
     output:
         unpack(get_clean_data),
         html="{project}/report/{sample}.fastp.html",
