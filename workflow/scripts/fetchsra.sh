@@ -24,9 +24,15 @@ echo ${tmpdir}
 # Ensure output directory exists
 
 
-# Run fasterq-dump with error handling
-if [[ $sra_or_fastq == SRA* ]] ;
+
+if [[ -f $fq1 ]];
 then
+    ln -s $fq1 ${reads[0]}
+    if [[ -f $fq2 ]];
+    then
+        ln -s $fq2 ${reads[1]}
+    fi
+else
     echo "Downloading data from SRA"
     echo `date`
     (fasterq-dump --skip-technical \
@@ -42,13 +48,3 @@ then
                 pigz -p "$threads" "$file"
             fi
     done) 2>&1 | tee "$log"
-else 
-    if [[ -f $fq1 ]];
-    then
-        ln -s $fq1 ${reads[0]}
-    fi
-    if [[ -f $fq2 ]];
-    then
-        ln -s $fq2 ${reads[1]}
-    fi
-fi
