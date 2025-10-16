@@ -1,22 +1,8 @@
 rule fastp:
     input:
-        sample=(
-            [
-                "{project}/data/{sample}/{sample}_1.fastq.gz",
-                "{project}/data/{sample}/{sample}_2.fastq.gz",
-            ]
-            if is_pe
-            else ["{project}/data/{sample}/{sample}.fastq.gz"]
-        ),
+        get_raw_fq,
     output:
-        trimmed=(
-            [
-                "{project}/clean_data/{sample}_1.fastq.gz",
-                "{project}/clean_data/{sample}_2.fastq.gz",
-            ]
-            if is_pe
-            else ["{project}/clean_data/{sample}.fastq.gz"]
-        ),
+        unpack(get_clean_data),
         html="{project}/report/{sample}.fastp.html",
         json="{project}/qc/{sample}/{sample}.fastp.json",
     log:

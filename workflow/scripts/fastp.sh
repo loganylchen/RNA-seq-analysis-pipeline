@@ -7,20 +7,22 @@ extra=${snakemake_params[extra]:-""}
 threads=${snakemake[threads]:-6}
 pe=${snakemake_params['pe']}
 
-input_files=("${snakemake_input[sample]}")
-n=${#input_files[@]}
+fq1="${snakemake_input[fq1]}"
+fq2="${snakemake_input[fq2]}"
 
-echo ${input_files}
-echo $n
-echo $pe
+clean_fq1="${snakemake_output[fq1]}"
+clean_fq2="${snakemake_output[fq2]}"
+
+
+
 
 
 
 if [ "$pe" == "True" ]; then
-    reads="--in1 ${input_files[0]} --in2 ${input_files[1]}"
+    reads="--in1 ${fq1} --in2 ${fq2}"
     echo 'PE reads'
 else
-    reads="--in1 ${input_files[0]}"
+    reads="--in1 ${fq1}"
     echo 'SE reads'
 fi
 
@@ -29,11 +31,11 @@ set -e
 trimmed=""
 if [ -n "${snakemake_output[trimmed]}" ]; then
     if [ "$pe" == "True" ]; then
-        trimmed_files=("${snakemake_output[trimmed]}")
-        trimmed="--out1 ${trimmed_files[0]} --out2 ${trimmed_files[1]}"
+
+        trimmed="--out1 ${clean_fq1} --out2 ${clean_fq2}"
         echo 'PE reads'
     else
-        trimmed="--out1 ${snakemake_output[trimmed]}"
+        trimmed="--out1 ${clean_fq1}"
         echo 'SE reads'
     fi
 fi

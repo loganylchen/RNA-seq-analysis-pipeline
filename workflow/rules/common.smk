@@ -44,6 +44,7 @@ def get_raw_fq(wildcards):
     if seq_type == "se":
         return {
             "fq1": f"{wildcards.project}/data/{wildcards.sample}/{wildcards.sample}.fastq.gz",
+            "fq2": "",
         }
     elif seq_type == "pe":
         return {
@@ -65,6 +66,7 @@ def get_clean_data(wildcards):
     elif samples.loc[wildcards.sample].loc["seq_type"] == "se":
         return {
             "fq1": f"{wildcards.project}/clean_data/{wildcards.sample}.fastq.gz",
+            "fq2": "",
             "reads": [f"{wildcards.project}/clean_data/{wildcards.sample}.fastq.gz"],
         }
     else:
