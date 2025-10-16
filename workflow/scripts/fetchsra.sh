@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-set -x
-set -e
+
 # Get command line arguments from Snakemake
 log=${snakemake_log[0]}
 exec > "$log" 2>&1
-
+set -x
+set -e
 threads=${snakemake[threads]:-6}
 sra_or_fastq=${snakemake_params[sra]}
 fq1==${snakemake_params[fq1]}
