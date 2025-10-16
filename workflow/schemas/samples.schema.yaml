@@ -31,3 +31,4 @@ required:
   - condition
   # - batch
   - seq_type
+  - project
