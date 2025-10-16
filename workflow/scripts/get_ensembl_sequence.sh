@@ -56,7 +56,7 @@ for suffix in "${suffixes[@]}"; do
         success=true
         
         elif curl --location --head "$url_ftp" 2>/dev/null | grep -q 'Content-Length'; then
-        (lftp -c "pget -n ${threads} ${url_ftp} "  2>&1 | tee -a "$log"
+        (lftp -c "pget -n ${threads} ${url_ftp} ")  2>&1 | tee -a "$log"
         ($decompress ${species^}.${spec}.${suffix} > "$output_file") 2>&1 | tee -a "$log"
         success=true
     fi
