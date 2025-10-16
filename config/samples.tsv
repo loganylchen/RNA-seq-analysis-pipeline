@@ -1,2 +1,30 @@
-sample_name	condition	raw_data	project	batch	seq_type
-SRR14765641	KFC1	SRR14765641	test	GSM6928932: kfc1-- t0 rep 1; Saccharomyces cerevisiae; RNA-Seq	pe
+sample_name	condition	patient	raw_data	fq1	fq2	project	batch	seq_type
+CGLAB2020287	Normal	PWH11		/SSD/logan/rna-seq/raw_data/CGLAB2020287_4_1_S1_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020287_4_1_S1_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB2020295	Normal	PWH6		/SSD/logan/rna-seq/raw_data/CGLAB2020295-2_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020295-2_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB2020299	Normal	PWH7		/SSD/logan/rna-seq/raw_data/CGLAB2020299-2_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020299-2_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB2020303	Normal	PWH8		/SSD/logan/rna-seq/raw_data/CGLAB2020303-2_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020303-2_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB2020307	Normal	PWH9		/SSD/logan/rna-seq/raw_data/CGLAB2020307-2_1.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020307-2_2.fastq.gz	CRC_Tissue		pe
+CGLAB20211147	Normal	PWH63		/SSD/logan/rna-seq/raw_data/CGLAB20211147_2_1_S14_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB20211147_2_1_S14_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB20211151	Normal	PWH64		/SSD/logan/rna-seq/raw_data/CGLAB20211151_4_1_S13_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB20211151_4_1_S13_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB20224498	Normal	PWH80		/SSD/logan/rna-seq/raw_data/CGLAB20224498-1-1_S40_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB20224498-1-1_S40_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB2020288	PostS	PWH11		/SSD/logan/rna-seq/raw_data/CGLAB2020288_1_1_1_S8_L001_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020288_1_1_1_S8_L001_R2_001.fastq.gz	CRC_Blood		pe
+CGLAB2020304	PostS	PWH8		/SSD/logan/rna-seq/raw_data/CGLAB2020304_1_1_1_S12_L001_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020304_1_1_1_S12_L001_R2_001.fastq.gz	CRC_Blood		pe
+CGLAB2020308	PostS	PWH9		/SSD/logan/rna-seq/raw_data/CGLAB2020308_1_1_1_R1.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020308_1_1_1_R2.fastq.gz	CRC_Blood		pe
+CGLAB2020312	PostS	PWH10		/SSD/logan/rna-seq/raw_data/CGLAB2020312_1_1_1_R1.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020312_1_1_1_R2.fastq.gz	CRC_Blood		pe
+CGLAB20224496	PostS	PWH80		/SSD/logan/rna-seq/raw_data/CGLAB20224496-1-1-1_S1_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB20224496-1-1-1_S1_R2_001.fastq.gz	CRC_Blood		pe
+CGLAB2020285	PreS	PWH11		/SSD/logan/rna-seq/raw_data/CGLAB2020285_1_1_1_S2_L001_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020285_1_1_1_S2_L001_R2_001.fastq.gz	CRC_Blood		pe
+CGLAB2020301	PreS	PWH8		/SSD/logan/rna-seq/raw_data/CGLAB2020301_1_1_1_S1_L001_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020301_1_1_1_S1_L001_R2_001.fastq.gz	CRC_Blood		pe
+CGLAB2020305	PreS	PWH9		/SSD/logan/rna-seq/raw_data/CGLAB2020305_1_1_1_R1.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020305_1_1_1_R2.fastq.gz	CRC_Blood		pe
+CGLAB2020309	PreS	PWH10		/SSD/logan/rna-seq/raw_data/CGLAB2020309_1_1_1_R1.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020309_1_1_1_R2.fastq.gz	CRC_Blood		pe
+CGLAB20224495	PreS	PWH80		/SSD/logan/rna-seq/raw_data/CGLAB20224495-1-1-1_S2_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB20224495-1-1-1_S2_R2_001.fastq.gz	CRC_Blood		pe
+CGLAB2020282	Tumor	PWH3		/SSD/logan/rna-seq/raw_data/CGLAB2020282_4_1_S9_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020282_4_1_S9_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB2020286	Tumor	PWH11		/SSD/logan/rna-seq/raw_data/CGLAB2020286_4_1_S6_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020286_4_1_S6_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB2020290	Tumor	PWH5		/SSD/logan/rna-seq/raw_data/CGLAB2020290_4_1_S8_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020290_4_1_S8_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB2020294	Tumor	PWH6		/SSD/logan/rna-seq/raw_data/CGLAB2020294-2_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020294-2_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB2020298	Tumor	PWH7		/SSD/logan/rna-seq/raw_data/CGLAB2020298-2_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020298-2_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB2020302	Tumor	PWH8		/SSD/logan/rna-seq/raw_data/CGLAB2020302_4_1_S10_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020302_4_1_S10_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB2020306	Tumor	PWH9		/SSD/logan/rna-seq/raw_data/CGLAB2020306_4_1_S9_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020306_4_1_S9_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB2020310	Tumor	PWH10		/SSD/logan/rna-seq/raw_data/CGLAB2020310_4_1_S6_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB2020310_4_1_S6_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB20211146	Tumor	PWH63		/SSD/logan/rna-seq/raw_data/CGLAB20211146_2_1_S5_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB20211146_2_1_S5_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB20211150	Tumor	PWH64		/SSD/logan/rna-seq/raw_data/CGLAB20211150_2_1_S4_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB20211150_2_1_S4_R2_001.fastq.gz	CRC_Tissue		pe
+CGLAB20224497	Tumor	PWH80		/SSD/logan/rna-seq/raw_data/CGLAB20224497-1-1_S39_R1_001.fastq.gz	/SSD/logan/rna-seq/raw_data/CGLAB20224497-1-1_S39_R2_001.fastq.gz	CRC_Tissue		pe

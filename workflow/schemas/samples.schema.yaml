@@ -29,8 +29,5 @@ properties:
 required:
   - sample_name
   - condition
-  - fq1
-  - fq2
-  - raw_data
   - batch
   - seq_type
