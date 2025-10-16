@@ -21,9 +21,6 @@ outdir=$(dirname "${read_1}")
 mkdir -p "${outdir}"
 
 
-
-
-
 if [[ -f $fq1 ]];
 then
     ln -s $fq1 ${read_1}
