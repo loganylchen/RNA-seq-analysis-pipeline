@@ -57,3 +57,4 @@ reference:
 containers:
   star: "docker://btrspg/star:2.7.11b"
   hisat2: "docker://btrspg/hisat2:2.2.1"
+  fastp: "docker://btrspg/fastp:0.24.0"
