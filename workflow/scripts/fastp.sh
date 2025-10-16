@@ -10,6 +10,7 @@ threads=${snakemake[threads]:-6}
 input_files=("${snakemake_input[sample]}")
 n=${#input_files[@]}
 
+echo ${input_files}
 
 if [ $n -ne 1 ] && [ $n -ne 2 ]; then
     echo "ERROR: input->sample has 1 or 2"
