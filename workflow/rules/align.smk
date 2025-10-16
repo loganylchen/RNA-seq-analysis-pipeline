@@ -8,9 +8,9 @@ rule star_align:
         temp_dir=temp(directory("{project}/alignment/{sample}/STAR_TMP")),
         reads_per_gene="{project}/quantification/{sample}/{sample}.ReadsPerGene.out.tab",
         chim_junc="{project}/chimeric_junction/{sample}/{sample}.star.chim_junc.txt",
-        qc_log="{project}/qc/{sample}.Log.final.out",
+        qc_log="{project}/qc/{sample}/{sample}.Log.final.out",
     log:
-        "logs/{project}_{sample}_star.log",
+        "logs/{project}/{sample}_star.log",
     params:
         extra=lambda wc, input: f'--quantMode GeneCounts  --outSAMtype BAM SortedByCoordinate --sjdbGTFfile {input.gtf} {config["star"]["extra"]}',
     threads: config["threads"]["star"]
@@ -44,7 +44,7 @@ rule hisat2_align:
     output:
         "{project}/alignment/{sample}/{sample}.hisat2.bam",
     log:
-        "logs/{project}_{sample}_hisat2.log",
+        "logs/{project}/{sample}_hisat2.log",
     params:
         extra=config["hisat2"]["extra"],
     threads: config["threads"]["hisat2"]
