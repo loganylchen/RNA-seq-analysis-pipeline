@@ -29,16 +29,16 @@ fi
 set -x
 set -e
 trimmed=""
-if [ -n "${snakemake_output[trimmed]}" ]; then
-    if [ "$pe" == "True" ]; then
 
-        trimmed="--out1 ${clean_fq1} --out2 ${clean_fq2}"
-        echo 'PE reads'
-    else
-        trimmed="--out1 ${clean_fq1}"
-        echo 'SE reads'
-    fi
+if [ "$pe" == "True" ]; then
+
+    trimmed="--out1 ${clean_fq1} --out2 ${clean_fq2}"
+    echo 'PE reads'
+else
+    trimmed="--out1 ${clean_fq1}"
+    echo 'SE reads'
 fi
+
 
 
 
