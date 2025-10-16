@@ -42,7 +42,7 @@ trap 'rm -rf "$tmpdir"' EXIT
 
 
 
-suffixes=("dna.primary_assembly.fa.gz" "dna.toplevel.fa.gz")
+suffixes=("dna.primary_assembly.fa.gz")
 
 
 fail=true
@@ -51,13 +51,15 @@ for suffix in "${suffixes[@]}"; do
     url_ftp="${url_https/https:\/\//ftp:\/\/}"
     
     if curl --location --head "$url_https" 2>/dev/null | grep -q 'Content-Length'; then
-        (lftp -c "pget -n ${threads} ${url_https}" ) 2>&1 | tee -a "$log"
-        ($decompress ${species^}.${spec}.${suffix} > "$output_file") 2>&1 | tee -a "$log"
+        (lftp -c "pget -n ${threads} ${url_https} -o $output_file.tmp" ) 2>&1 | tee -a "$log"
+        ($decompress  $output_file.tmp > "$output_file") 2>&1 | tee -a "$log"
+        rm $output_file.tmp
         fail=false
         
         elif curl --location --head "$url_ftp" 2>/dev/null | grep -q 'Content-Length'; then
-        (lftp -c "pget -n ${threads} ${url_ftp} ")  2>&1 | tee -a "$log"
-        ($decompress ${species^}.${spec}.${suffix} > "$output_file") 2>&1 | tee -a "$log"
+        (lftp -c "pget -n ${threads} ${url_ftp} -o $output_file.tmp")  2>&1 | tee -a "$log"
+        ($decompress  $output_file.tmp > "$output_file") 2>&1 | tee -a "$log"
+        rm $output_file.tmp
         fail=false
     fi
 done
