@@ -3,9 +3,10 @@ rule qualimap_rnaseq_qc:
         bam="{project}/alignment/{sample}/{sample}.star.bam",
         gtf="resources/genome.gtf",
     output:
-        outdir="{project}/{sample}/qc/qualimap",
+        rnaseq_qc="{project}/{sample}/qc/qualimap/rnaseq_qc_results.txt",
     params:
         pe="-pe" if is_pe else "",
+        outdir=lambda wc, output: os.path.dirname(output.rnaseq_qc),
     container:
         (
             "docker://btrspg/qualimap:2.3"
