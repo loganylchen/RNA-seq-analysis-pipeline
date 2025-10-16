@@ -3,16 +3,17 @@ import glob
 from snakemake.utils import validate
 
 validate(config, schema="../schemas/config.schema.yaml")
-
+project = config["project"]
 samples = (
     pd.read_csv(config["samples"], sep="\t", dtype={"sample_name": str})
     .set_index("sample_name", drop=False)
     .sort_index()
 )
 
-project = samples["project"].unique().tolist()
-assert len(project) == 1, "Only one project is allowed!"
-project = project[0]
+samples = samples.loc[samples["project"] == project]
+# project = samples["project"].unique().tolist()
+# assert len(project) == 1, "Only one project is allowed!"
+# project = project[0]
 
 
 validate(samples, schema="../schemas/samples.schema.yaml")
