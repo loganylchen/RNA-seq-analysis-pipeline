@@ -7,7 +7,7 @@ extra=${snakemake_params[extra]:-""}
 threads=${snakemake[threads]:-6}
 pe=${snakemake_params['pe']}
 
-input_files="${snakemake_input[sample]}"
+input_files=("${snakemake_input[sample]}")
 n=${#input_files[@]}
 
 echo ${input_files}
