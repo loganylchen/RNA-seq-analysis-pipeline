@@ -4,6 +4,7 @@ rule qualimap_rnaseq_qc:
         gtf="resources/genome.gtf",
     output:
         rnaseq_qc="{project}/qc/{sample}/rnaseq_qc_results.txt",
+        temp_dir=temp(directory("{project}/qc/{sample}/temp")),
     params:
         pe="-pe" if is_pe else "",
         outdir=lambda wc, output: os.path.dirname(output.rnaseq_qc),
