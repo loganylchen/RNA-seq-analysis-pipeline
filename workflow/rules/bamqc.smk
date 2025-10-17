@@ -22,6 +22,6 @@ rule qualimap_rnaseq_qc:
         "qualimap rnaseq "
         "-bam {input.bam} "
         "-gtf {input.gtf} "
-        "-outdir {output.outdir} "
+        "-outdir {params.outdir} "
         "{params.pe} "
         "--java-mem-size=20G &>{log}"
