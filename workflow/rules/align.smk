@@ -27,6 +27,7 @@ rule star_align:
         "--outFileNamePrefix {output.temp_dir}/ "
         "--outTmpDir {output.temp_dir}/STARtmp "
         "--outStd BAM_SortedByCoordinate "
+        "--runThreadN {threads} "
         "> {output.aln} 2>{log};"
         "mv {output.temp_dir}/ReadsPerGene.out.tab {output.reads_per_gene}; "
         "mv {output.temp_dir}/Chimeric.out.junction  {output.chim_junc}; "
