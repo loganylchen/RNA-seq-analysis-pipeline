@@ -11,6 +11,12 @@ rule star_align:
         qc_log="{project}/qc/{sample}/{sample}.Log.final.out",
     log:
         "logs/{project}/{sample}_star.log",
+    container:
+        (
+            "docker://btrspg/star:2.7.11b"
+            if config["container"].get("star", None) is None
+            else config["container"].get("star", None)
+        )
     params:
         extra=lambda wc, input: f'--quantMode GeneCounts  --outSAMtype BAM SortedByCoordinate --sjdbGTFfile {input.gtf} {config["star"]["extra"]}',
     threads: config["threads"]["star"]
