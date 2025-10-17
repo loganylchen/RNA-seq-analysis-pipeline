@@ -8,6 +8,7 @@ rule qualimap_rnaseq_qc:
     params:
         pe="-pe" if is_pe else "",
         outdir=lambda wc, output: os.path.dirname(output.rnaseq_qc),
+        tmpdir="{project}/qc/{sample}/temp",
     container:
         (
             "docker://btrspg/qualimap:2.3"
@@ -17,11 +18,11 @@ rule qualimap_rnaseq_qc:
     threads: 1
     resources:
         mem_mb=1024 * 20,
-        tmpdir="{project}/qc/{sample}/temp",
+        tmpdir="./temp",
     log:
         "logs/{project}/{sample}_star.log",
     shell:
-        "JAVA_OPTS='-Djava.io.tmpdir={resources.tmpdir}' qualimap rnaseq "
+        "JAVA_OPTS='-Djava.io.tmpdir={params.tmpdir}' qualimap rnaseq "
         "-bam {input.bam} "
         "-gtf {input.gtf} "
         "-outdir {params.outdir} "
