@@ -7,7 +7,6 @@ rule star_align:
         aln="{project}/alignment/{sample}/{sample}.star.bam",
         temp_dir=temp(directory("{project}/alignment/{sample}/STAR_TMP")),
         reads_per_gene="{project}/quantification/{sample}/{sample}.ReadsPerGene.out.tab",
-        chim_junc="{project}/chimeric_junction/{sample}/{sample}.star.chim_junc.txt",
         qc_log="{project}/qc/{sample}/{sample}.Log.final.out",
     log:
         "logs/{project}/{sample}_star.log",
@@ -31,7 +30,6 @@ rule star_align:
         "--runThreadN {threads} "
         "> {output.aln} 2>{log};"
         "mv {output.temp_dir}/ReadsPerGene.out.tab {output.reads_per_gene}; "
-        "mv {output.temp_dir}/Chimeric.out.junction  {output.chim_junc}; "
         "mv {output.temp_dir}/Log.final.out {output.qc_log}; "
 
 
