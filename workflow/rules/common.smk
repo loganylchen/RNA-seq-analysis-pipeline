@@ -84,7 +84,7 @@ def get_final_output():
         sample_project = samples.loc[sample, "project"]
         final_output += [
             # f"{sample_project}/quantification/{sample}.hisat2_counts.txt",
-            f"{sample_project}/qc/{sample}/qualimap",
+            f"{sample_project}/qc/{sample}/qualimap/rnaseq_qc_results.txt",
             f"{sample_project}/quantification/{sample}.star_counts.txt",
             f"{sample_project}/alignment/{sample}/{sample}.star.bam",
         ]
