@@ -18,7 +18,7 @@ rule star_align:
             else config["container"].get("star", None)
         )
     params:
-        extra=lambda wc, input: f'--quantMode GeneCounts  --outSAMtype BAM SortedByCoordinate --sjdbGTFfile {input.gtf} {config["star"]["extra"]}',
+        extra=lambda wc, input: f'--quantMode GeneCounts --chimOutJunctionFormat 1 --outSAMtype BAM SortedByCoordinate --sjdbGTFfile {input.gtf} {config["star"]["extra"]}',
     threads: config["threads"]["star"]
     shell:
         "STAR --genomeDir {input.idx} "
