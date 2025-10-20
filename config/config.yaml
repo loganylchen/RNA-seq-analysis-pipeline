@@ -12,12 +12,16 @@ fastp:
   extra: " -c "
 
 star:
-  extra: ""
+  extra: " --twopassMode Basic "
   index_extra: ""
 
 hisat2:
   extra: ""
   index_extra: ""
+
+stringtie:
+  extra: ""
+  merge_extra: " -c 0 -F 0 -T 0 -i "
 
 featurecounts:
   extra: " -p --countReadPairs -t exon -g gene_id "

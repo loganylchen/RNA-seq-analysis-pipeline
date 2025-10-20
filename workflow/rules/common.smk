@@ -1,6 +1,11 @@
 import pandas as pd
 import glob
+import re
 from snakemake.utils import validate
+
+
+READ_STRAND_INFER = re.compile(r"SSP estimation \(fwd/rev\) = (\d+\.\d+) / (\d+\.\d+)")
+
 
 validate(config, schema="../schemas/config.schema.yaml")
 project = config["project"]
@@ -24,6 +29,45 @@ def is_pe(wildcards):
         return True
     else:
         return False
+
+
+def get_sequence_type(wildcards):
+    qc_file = f"{wildcards.project}/qc/{wildcards.sample}/rnaseq_qc_results.txt"
+    # SSP estimation (fwd/rev) = 0.44 / 0.56
+    with open(qc_file) as fin:
+        for line in fin:
+            match = READ_STRAND_INFER.search(line)
+            if match:
+                fwd = float(match.group(1))
+                rev = float(match.group(2))
+                if fwd >= 0.8:
+                    return "FWD"
+                elif rev >= 0.8:
+                    return "REV"
+                else:
+                    return "UNSTRAND"
+
+    return "UNSTRAND"
+
+
+def stringtie_strand_infer(wildcards):
+    strand = get_sequence_type(wildcards)
+    if strand == "FWD":
+        return " --rf "
+    elif strand == "REV":
+        return " --fr "
+    else:
+        return ""
+
+
+def featurecounts_strand_infer(wildcards):
+    strand = get_sequence_type(wildcards)
+    if strand == "FWD":
+        return " -s 2 "
+    elif strand == "REV":
+        return " -s 1 "
+    else:
+        return " -s 0 "
 
 
 def get_sra(wildcards):
@@ -87,6 +131,7 @@ def get_final_output():
             f"{sample_project}/qc/{sample}/rnaseq_qc_results.txt",
             f"{sample_project}/quantification/{sample}.star_counts.txt",
             f"{sample_project}/alignment/{sample}/{sample}.star.bam",
+            f"{sample_project}/assembly/{sample}/{sample}.stringtie.gtf",
         ]
-
+    final_output += [f"{sample_project}/assembly/merged.gtf"]
     return final_output
