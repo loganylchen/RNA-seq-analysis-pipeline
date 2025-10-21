@@ -11,6 +11,7 @@ threads:
   lftp: 6
   stringtie: 6
   rmats: 6
+  salmon: 6
 
 rmats:
   extra: " --variable-read-length --readLength 100 --novelSS --individual-counts "

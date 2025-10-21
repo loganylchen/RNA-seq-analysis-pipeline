@@ -31,7 +31,7 @@ rule salmon_quantification:
     params:
         extra=config.get("salmon", {}).get("extra", ""),
         strand_param=salmon_strand_infer,
-    threads: threads["salmon"]
+    threads: config["threads"]["salmon"]
     resources:
         mem_mb=1024 * 10,
     container:
@@ -49,5 +49,6 @@ rule salmon_quantification:
         "{params.extra} "
         "-1 {input.fq1} "
         "-2 {input.fq2} "
+        "-p {threads} "
         "-o {output.outdir} "
         "&> {log} "
