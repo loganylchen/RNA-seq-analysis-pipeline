@@ -141,7 +141,7 @@ def get_final_output():
             f"{sample_project}/assembly/{sample}/{sample}.stringtie.gtf",
         ]
     final_output += [
-        f"{sample_project}/assembly/merged.gtf",
+        f"{sample_project}/assembly/gffcompare.annotated.gtf",
         f"{sample_project}/transcript_splicing/rmats",
     ]
     return final_output

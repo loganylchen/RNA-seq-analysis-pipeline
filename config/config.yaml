@@ -33,6 +33,9 @@ stringtie:
 featurecounts:
   extra: " -p --countReadPairs -t exon -g gene_id "
 
+gffcompare:
+  extra: " -R "
+
 reference:
   # Ensembl species name
   species: homo_sapiens

@@ -143,3 +143,43 @@ rule hisat2_index:
         "hisat2-build --threads {threads} "
         "--exon {params.prefix}.exon "
         "--ss {params.prefix}.ss {input.fasta} {params.prefix} &>>{log} "
+
+
+rule get_transcript_sequence:
+    input:
+        fasta="resources/genome.fasta",
+        gtf="resources/genome.gtf",
+    output:
+        multiext(
+            "resources/hisat2_genome/genome",
+            ".1.ht2",
+            ".2.ht2",
+            ".3.ht2",
+            ".4.ht2",
+            ".5.ht2",
+            ".6.ht2",
+            ".7.ht2",
+            ".8.ht2",
+        ),
+    params:
+        prefix="resources/hisat2_genome/genome",
+        extra=config["hisat2"]["index_extra"],
+    resources:
+        mem_mb=1024 * 40,
+    log:
+        "logs/hisat2_index_genome.log",
+    container:
+        (
+            "docker://btrspg/hisat2:2.2.1"
+            if config["container"].get("hisat2", None) is None
+            else config["container"].get("hisat2", None)
+        )
+    threads: config["threads"]["hisat2"]
+    benchmark:
+        "benchmarks/hisat2_index.benchmark.txt"
+    shell:
+        "hisat2_extract_splice_sites.py {input.gtf} > {params.prefix}.ss 2>{log};"
+        "hisat2_extract_exons.py {input.gtf} > {params.prefix}.exon 2>>{log}; "
+        "hisat2-build --threads {threads} "
+        "--exon {params.prefix}.exon "
+        "--ss {params.prefix}.ss {input.fasta} {params.prefix} &>>{log} "
