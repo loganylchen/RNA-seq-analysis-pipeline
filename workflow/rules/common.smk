@@ -77,6 +77,16 @@ def featurecounts_strand_infer(wildcards):
         return " -s 0 "
 
 
+def salmon_strand_infer(wildcards):
+    strand = get_sequence_type(wildcards)
+    if strand == "FWD":
+        return " -l ISR "
+    elif strand == "REV":
+        return " -l ISF "
+    else:
+        return " -l IU "
+
+
 def get_sra(wildcards):
     return samples.loc[wildcards.sample].loc["raw_data"]
 
@@ -139,6 +149,7 @@ def get_final_output():
             f"{sample_project}/quantification/{sample}.star_counts.txt",
             f"{sample_project}/alignment/{sample}/{sample}.star.bam",
             f"{sample_project}/assembly/{sample}/{sample}.stringtie.gtf",
+            f"{sample_project}/quantification/{sample}.salmon",
         ]
     final_output += [
         f"{sample_project}/assembly/gffcompare.annotated.gtf",

@@ -20,3 +20,34 @@ rule featurecounts_quantification_star:
         "-a {input.gtf} "
         "-o {output.counts} "
         "{input.bam} &>{log}  "
+
+
+rule salmon_quantification:
+    input:
+        unpack(get_clean_data),
+        idx="{project}/assembly/transcriptome_salmon_index",
+    output:
+        outdir=directory("{project}/quantification/{sample}.salmon"),
+    params:
+        extra=config.get("salmon", {}).get("extra", ""),
+        strand_param=salmon_strand_infer,
+    threads: threads["salmon"]
+    resources:
+        mem_mb=1024 * 10,
+    container:
+        (
+            "docker://btrspg/salmon:1.10.3"
+            if config["container"].get("salmon", None) is None
+            else config["container"].get("salmon", None)
+        )
+    log:
+        "logs/{project}/{sample}_salmon_quantify.log",
+    shell:
+        "salmon quant "
+        "-i {input.idx} "
+        "{params.strand_param} "
+        "{params.extra} "
+        "-1 {input.fq1} "
+        "-2 {input.fq2} "
+        "-o {output.outdir} "
+        "&> {log} "
