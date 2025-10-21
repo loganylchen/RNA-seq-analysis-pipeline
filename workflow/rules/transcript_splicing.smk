@@ -1,10 +1,18 @@
-rule preparing_rmats_input:
+rule preparing_rmats:
     input:
-        case_bams=expand("{project}/alignment/{sample}/{sample}.star.bam",,project=project,sample=case_samples.index.tolist()),
-        control_bams=expand("{project}/alignment/{sample}/{sample}.star.bam",,project=project,sample=control_samples.index.tolist()),
+        case_bams=expand(
+            "{project}/alignment/{sample}/{sample}.star.bam",
+            project=project,
+            sample=case_samples.index.tolist(),
+        ),
+        control_bams=expand(
+            "{project}/alignment/{sample}/{sample}.star.bam",
+            project=project,
+            sample=control_samples.index.tolist(),
+        ),
     output:
-        case_bam_list_f='{project}/transcript_splicing/case.list',
-        control_bam_list_f='{project}/transcript_splicing/control.list',
+        case_bam_list_f="{project}/transcript_splicing/case.list",
+        control_bam_list_f="{project}/transcript_splicing/control.list",
     log:
         "logs/{project}/rmats_sample_list.log",
     threads: 1
@@ -13,14 +21,15 @@ rule preparing_rmats_input:
         "echo {input.control_bams} | sed 's/ /,/g' > {output.control_bam_list_f}; "
         "echo `date` > {log}"
 
+
 rule splicing_rmats:
     input:
-        case_bam_list_f='{project}/transcript_splicing/case.list',
-        control_bam_list_f='{project}/transcript_splicing/control.list',
+        case_bam_list_f="{project}/transcript_splicing/case.list",
+        control_bam_list_f="{project}/transcript_splicing/control.list",
         gtf="{project}/assembly/merged.gtf",
     output:
-        outdir=directory('{project}/transcript_splicing/rmats'),
-        temp_dir=temp(directory('{project}/transcript_splicing/rmats_temp'))
+        outdir=directory("{project}/transcript_splicing/rmats"),
+        temp_dir=temp(directory("{project}/transcript_splicing/rmats_temp")),
     log:
         "logs/{project}/splicing_rmats.log",
     container:
@@ -30,7 +39,7 @@ rule splicing_rmats:
             else config["container"].get("rmatsturbo", None)
         )
     params:
-        extra=config['rmats']['extra'],
+        extra=config["rmats"]["extra"],
     threads: config["threads"]["rmats"]
     shell:
         "rmats.py "
