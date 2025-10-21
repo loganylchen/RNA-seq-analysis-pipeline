@@ -7,6 +7,12 @@ rule transcript_compare_gffcompare:
     params:
         out_prefix="{project}/assembly/gffcompare",
         extra=config["gffcompare"]["extra"],
+    container:
+        (
+            "docker://btrspg/gffcompare:0.12.10"
+            if config["container"].get("gffcompare", None) is None
+            else config["container"].get("gffcompare", None)
+        )
     threads: 1
     log:
         "logs/{project}/gffcompare.log",

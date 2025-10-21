@@ -75,3 +75,4 @@ container:
   subread: "docker://btrspg/subread:2.1.1"
   qualimap: "docker://btrspg/qualimap:2.3"
   rmats: "docker://btrspg/rmatsturbo:4.3.0"
+  gffcompare: "docker://btrspg/gffcompare:0.12.10"
