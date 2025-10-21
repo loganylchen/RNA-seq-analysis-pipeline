@@ -26,7 +26,7 @@ rule splicing_rmats:
     input:
         case_bam_list_f="{project}/transcript_splicing/case.list",
         control_bam_list_f="{project}/transcript_splicing/control.list",
-        gtf="{project}/assembly/merged.gtf",
+        gtf="{project}/assembly/gffcompare.annotated.gtf",
     output:
         outdir=directory("{project}/transcript_splicing/rmats"),
         temp_dir=temp(directory("{project}/transcript_splicing/rmats_temp")),
