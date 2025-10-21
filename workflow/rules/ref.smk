@@ -175,7 +175,7 @@ rule salmon_index:
         index=directory("{project}/assembly/transcriptome_salmon_index"),
     params:
         extra=config.get("salmon", {}).get("extra_index", ""),
-    threads: threads["salmon"]
+    threads: config["threads"]["salmon"]
     resources:
         mem_mb=1024 * 10,
     container:
