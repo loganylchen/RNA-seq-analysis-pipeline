@@ -9,6 +9,10 @@ READ_STRAND_INFER = re.compile(r"SSP estimation \(fwd/rev\) = (\d+\.\d+) / (\d+\
 
 validate(config, schema="../schemas/config.schema.yaml")
 project = config["project"]
+case_condition = config["case_condition"]
+control_condition = config["control_condition"]
+
+
 samples = (
     pd.read_csv(config["samples"], sep="\t", dtype={"sample_name": str})
     .set_index("sample_name", drop=False)
@@ -16,6 +20,9 @@ samples = (
 )
 
 samples = samples.loc[samples["project"] == project]
+case_samples = samples.loc[samples["condition"] == case_condition]
+control_samples = samples.loc[samples["condition"] == control_condition]
+
 # project = samples["project"].unique().tolist()
 # assert len(project) == 1, "Only one project is allowed!"
 # project = project[0]
@@ -133,5 +140,8 @@ def get_final_output():
             f"{sample_project}/alignment/{sample}/{sample}.star.bam",
             f"{sample_project}/assembly/{sample}/{sample}.stringtie.gtf",
         ]
-    final_output += [f"{sample_project}/assembly/merged.gtf"]
+    final_output += [
+        f"{sample_project}/assembly/merged.gtf",
+        f"{sample_project}/transcript_splicing/rmats",
+    ]
     return final_output

@@ -1,5 +1,7 @@
 samples: config/samples.tsv
-
+project: CRC_Tissue
+case_condition: Tumor
+control_condition: Normal
 threads:
   sra: 6
   fastp: 6
@@ -8,6 +10,10 @@ threads:
   featurecounts: 6
   lftp: 6
   stringtie: 6
+  rmats: 6
+
+rmats:
+  extra: " --variable-read-length --readLength 100 --novelSS --individual-counts "
 
 fastp:
   extra: " -c "
@@ -65,3 +71,4 @@ containers:
   fastp: "docker://btrspg/fastp:0.24.0"
   subread: "docker://btrspg/subread:2.1.1"
   qualimap: "docker://btrspg/qualimap:2.3"
+  rmats: "docker://btrspg/rmatsturbo:4.3.0"
