@@ -23,7 +23,7 @@ rule assembly_stringtie2:
     shell:
         "stringtie "
         "-G {input.gtf} "
-        "-p {thresds} "
+        "-p {threads} "
         "{params.strand_param} {params.extra} "
         "-o {output.gtf} "
         "{input.bam} "
