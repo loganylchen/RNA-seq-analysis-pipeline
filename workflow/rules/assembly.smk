@@ -57,7 +57,7 @@ rule assembly_merge:
     shell:
         "stringtie "
         "--merge "
-        "-G {input.gtf} "
+        "-G {input.ref_gtf} "
         "{params.extra} "
         "-o {output.gtf} "
         "{input.gtfs} "
