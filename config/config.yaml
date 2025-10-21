@@ -36,6 +36,9 @@ featurecounts:
 gffcompare:
   extra: " -R "
 
+gffread:
+  extra: ""
+
 reference:
   # Ensembl species name
   species: homo_sapiens
@@ -76,3 +79,4 @@ container:
   qualimap: "docker://btrspg/qualimap:2.3"
   rmats: "docker://btrspg/rmatsturbo:4.3.0"
   gffcompare: "docker://btrspg/gffcompare:0.12.10"
+  gffread: "docker://btrspg/gffread:0.12.7"
