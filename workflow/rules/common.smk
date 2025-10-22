@@ -38,8 +38,8 @@ def is_pe(wildcards):
         return False
 
 
-def get_sequence_type(wildcards):
-    qc_file = f"{wildcards.project}/qc/{wildcards.sample}/rnaseq_qc_results.txt"
+def get_sequence_type(qc_file):
+
     # SSP estimation (fwd/rev) = 0.44 / 0.56
     with open(qc_file) as fin:
         for line in fin:
@@ -57,8 +57,8 @@ def get_sequence_type(wildcards):
     return "UNSTRAND"
 
 
-def stringtie_strand_infer(wildcards):
-    strand = get_sequence_type(wildcards)
+def stringtie_strand_infer(qc_file):
+    strand = get_sequence_type(qc_file)
     if strand == "FWD":
         return " --fr "
     elif strand == "REV":
@@ -67,8 +67,8 @@ def stringtie_strand_infer(wildcards):
         return ""
 
 
-def featurecounts_strand_infer(wildcards):
-    strand = get_sequence_type(wildcards)
+def featurecounts_strand_infer(qc_file):
+    strand = get_sequence_type(qc_file)
     if strand == "FWD":
         return " -s 1 "
     elif strand == "REV":
@@ -77,8 +77,8 @@ def featurecounts_strand_infer(wildcards):
         return " -s 0 "
 
 
-def salmon_strand_infer(wildcards):
-    strand = get_sequence_type(wildcards)
+def salmon_strand_infer(qc_file):
+    strand = get_sequence_type(qc_file)
     if strand == "FWD":
         return " -l ISF "
     elif strand == "REV":

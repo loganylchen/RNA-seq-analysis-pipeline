@@ -7,7 +7,7 @@ rule assembly_stringtie2:
         gtf="{project}/assembly/{sample}/{sample}.stringtie.gtf",
     params:
         extra=config["stringtie"]["extra"],
-        strand_param=stringtie_strand_infer,
+        strand_param=lambda wildcards, input: stringtie_strand_infer(input.rnaseq_qc),
     container:
         (
             "docker://btrspg/stringtie:2.2.3"

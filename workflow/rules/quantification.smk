@@ -1,12 +1,15 @@
 rule featurecounts_quantification_star:
     input:
         bam="{project}/alignment/{sample}/{sample}.star.bam",
+        rnaseq_qc="{project}/qc/{sample}/rnaseq_qc_results.txt",
         gtf="resources/genome.gtf",
     output:
         counts="{project}/quantification/{sample}.star_counts.txt",
     params:
         extra=config["featurecounts"]["extra"],
-        strand_info=featurecounts_strand_infer,
+        strand_param=lambda wildcards, input: featurecounts_strand_infer(
+            input.rnaseq_qc
+        ),
     container:
         (
             "docker://btrspg/subread:2.1.1"
@@ -29,11 +32,12 @@ rule salmon_quantification:
     input:
         unpack(get_clean_data),
         idx="{project}/assembly/transcriptome_salmon_index",
+        rnaseq_qc="{project}/qc/{sample}/rnaseq_qc_results.txt",
     output:
         outdir=directory("{project}/quantification/{sample}.salmon"),
     params:
         extra=config.get("salmon", {}).get("extra", ""),
-        strand_param=salmon_strand_infer,
+        strand_param=lambda wildcards, input: salmon_strand_infer(input.rnaseq_qc),
     threads: config["threads"]["salmon"]
     resources:
         mem_mb=1024 * 10,
