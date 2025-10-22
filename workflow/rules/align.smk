@@ -24,7 +24,7 @@ rule star_align:
         "--readFilesIn {input.reads} "
         "--readFilesCommand zcat "
         "--outFileNamePrefix {output.temp_dir}/ "
-        "--outTmpDir {output.temp_dir} "
+        "--outTmpDir {output.temp_dir}/_STARTMP "
         "--outStd BAM_SortedByCoordinate "
         "{params.extra} "
         "--runThreadN {threads} "
