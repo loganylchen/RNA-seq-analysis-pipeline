@@ -6,6 +6,7 @@ rule featurecounts_quantification_star:
         counts="{project}/quantification/{sample}.star_counts.txt",
     params:
         extra=config["featurecounts"]["extra"],
+        strand_info=featurecounts_strand_infer,
     container:
         (
             "docker://btrspg/subread:2.1.1"
@@ -16,7 +17,9 @@ rule featurecounts_quantification_star:
     log:
         "logs/quantification/{project}_{sample}_star.log",
     shell:
-        "featureCounts -T {threads} {params.extra} "
+        "featureCounts -T {threads} "
+        "{params.extra} "
+        "{params.strand_info} "
         "-a {input.gtf} "
         "-o {output.counts} "
         "{input.bam} &>{log}  "
