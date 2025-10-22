@@ -15,8 +15,12 @@ rule count_matrix:
         "logs/{project}/count-matrix.log",
     params:
         samples=samples.index.tolist(),
-    conda:
-        "../envs/pandas.yaml"
+    container:
+        (
+            "docker://btrspg/python3:latest"
+            if config["container"].get("python3", None) is None
+            else config["container"].get("python3", None)
+        )
     script:
         "../scripts/count-matrix.py"
 
@@ -29,12 +33,17 @@ rule count_matrix_star_FC:
             sample=samples.index.tolist(),
         ),
     output:
-        "{project}/quantification/STAR_fc_count_matrix.txt",
+        count_matrix="{project}/quantification/STAR_fc_count_matrix.txt",
+        puree_count_matrix="{project}/quantification/STAR_fc_count_matrix_PUREE.txt",
     log:
         "logs/{project}/count-matrix_star2fc.log",
     params:
         samples=samples.index.tolist(),
-    conda:
-        "../envs/pandas.yaml"
+    container:
+        (
+            "docker://btrspg/python3:latest"
+            if config["container"].get("python3", None) is None
+            else config["container"].get("python3", None)
+        )
     script:
         "../scripts/count-matrix_fc.py"
