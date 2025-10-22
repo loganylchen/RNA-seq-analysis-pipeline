@@ -1,7 +1,7 @@
 rule count_matrix:
     input:
         expand(
-            "{project}/quantification/{sample}/{sample}.ReadsPerGene.out.tab",
+            "{project}/quantification/{sample}/{sample}.ReadsPerGene.out.tab",,
             project=project, sample=samples.index.tolist(),
         ),
     output:
@@ -20,22 +20,7 @@ rule count_matrix:
         "../scripts/count-matrix.py"
 
 
-rule count_matrix_hisat2_FC:
-    input:
-        expand(
-            "{project}/quantification/{sample}.hisat2_counts.txt",
-            project=project, sample=samples.index.tolist(),
-        ),
-    output:
-        "{project}/quantification/HISAT2_fc_count_matrix.txt",
-    log:
-        "logs/{project}/count-matrix_hisat2fc.log",
-    params:
-        samples=samples.index.tolist()
-    conda:
-        "../envs/pandas.yaml"
-    script:
-        "../scripts/count-matrix_fc.py"
+
 
 
 rule count_matrix_star_FC:
