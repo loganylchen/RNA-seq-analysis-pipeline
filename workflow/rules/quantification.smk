@@ -22,7 +22,7 @@ rule featurecounts_quantification_star:
     shell:
         "featureCounts -T {threads} "
         "{params.extra} "
-        "{params.strand_info} "
+        "{params.strand_param} "
         "-a {input.gtf} "
         "-o {output.counts} "
         "{input.bam} &>{log}  "
