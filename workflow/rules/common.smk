@@ -60,9 +60,9 @@ def get_sequence_type(wildcards):
 def stringtie_strand_infer(wildcards):
     strand = get_sequence_type(wildcards)
     if strand == "FWD":
-        return " --rf "
-    elif strand == "REV":
         return " --fr "
+    elif strand == "REV":
+        return " --rf "
     else:
         return ""
 
@@ -70,9 +70,9 @@ def stringtie_strand_infer(wildcards):
 def featurecounts_strand_infer(wildcards):
     strand = get_sequence_type(wildcards)
     if strand == "FWD":
-        return " -s 2 "
-    elif strand == "REV":
         return " -s 1 "
+    elif strand == "REV":
+        return " -s 2 "
     else:
         return " -s 0 "
 
@@ -80,9 +80,9 @@ def featurecounts_strand_infer(wildcards):
 def salmon_strand_infer(wildcards):
     strand = get_sequence_type(wildcards)
     if strand == "FWD":
-        return " -l ISR "
-    elif strand == "REV":
         return " -l ISF "
+    elif strand == "REV":
+        return " -l ISR "
     else:
         return " -l IU "
 
