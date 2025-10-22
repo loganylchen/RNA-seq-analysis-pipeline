@@ -155,5 +155,6 @@ def get_final_output():
         f"{sample_project}/assembly/gffcompare.annotated.gtf",
         f"{sample_project}/transcript_splicing/rmats",
         f"{sample_project}/assembly/transcriptome.fasta",
+        f"{sample_project}/quantification/STAR_fc_count_matrix_PUREE.txt",
     ]
     return final_output
