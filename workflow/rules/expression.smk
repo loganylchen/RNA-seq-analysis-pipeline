@@ -1,8 +1,9 @@
 rule count_matrix:
     input:
         expand(
-            "{project}/quantification/{sample}/{sample}.ReadsPerGene.out.tab",,
-            project=project, sample=samples.index.tolist(),
+            "{project}/quantification/{sample}/{sample}.ReadsPerGene.out.tab",
+            project=project,
+            sample=samples.index.tolist(),
         ),
     output:
         "{project}/quantification/STAR_count_matrix.txt",
@@ -13,28 +14,26 @@ rule count_matrix:
     log:
         "logs/{project}/count-matrix.log",
     params:
-        samples=samples.index.tolist()
+        samples=samples.index.tolist(),
     conda:
         "../envs/pandas.yaml"
     script:
         "../scripts/count-matrix.py"
 
 
-
-
-
 rule count_matrix_star_FC:
     input:
         expand(
             "{project}/quantification/{sample}.star_counts.txt",
-            project=project, sample=samples.index.tolist(),
+            project=project,
+            sample=samples.index.tolist(),
         ),
     output:
         "{project}/quantification/STAR_fc_count_matrix.txt",
     log:
         "logs/{project}/count-matrix_star2fc.log",
     params:
-        samples=samples.index.tolist()
+        samples=samples.index.tolist(),
     conda:
         "../envs/pandas.yaml"
     script:
