@@ -2,6 +2,8 @@ samples: config/samples.tsv
 project: CRC_Tissue
 case_condition: Tumor
 control_condition: Normal
+discovery_sample_type: tissue
+
 threads:
   sra: 6
   fastp: 6

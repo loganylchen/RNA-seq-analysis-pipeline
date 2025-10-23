@@ -11,6 +11,7 @@ validate(config, schema="../schemas/config.schema.yaml")
 project = config["project"]
 case_condition = config["case_condition"]
 control_condition = config["control_condition"]
+discovery_sample_type = config["discovery_sample_type"]
 
 
 samples = (
@@ -22,6 +23,7 @@ samples = (
 samples = samples.loc[samples["project"] == project]
 case_samples = samples.loc[samples["condition"] == case_condition]
 control_samples = samples.loc[samples["condition"] == control_condition]
+discovery_samples = samples.loc[samples["sample_type"] == discovery_sample_type]
 
 # project = samples["project"].unique().tolist()
 # assert len(project) == 1, "Only one project is allowed!"
