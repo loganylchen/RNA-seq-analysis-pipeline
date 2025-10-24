@@ -17,7 +17,7 @@ rule count_matrix:
         samples=samples.index.tolist(),
     container:
         (
-            "docker://btrspg/python3:20251022"
+            "docker://btrspg/python3:20251024"
             if config["container"].get("python3", None) is None
             else config["container"].get("python3", None)
         )
@@ -41,7 +41,7 @@ rule count_matrix_star_FC:
         samples=samples.index.tolist(),
     container:
         (
-            "docker://btrspg/python3:20251022"
+            "docker://btrspg/python3:20251024"
             if config["container"].get("python3", None) is None
             else config["container"].get("python3", None)
         )

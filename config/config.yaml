@@ -84,3 +84,4 @@ container:
   rmats: "docker://btrspg/rmatsturbo:4.3.0"
   gffcompare: "docker://btrspg/gffcompare:0.12.10"
   gffread: "docker://btrspg/gffread:0.12.7"
+  python3: "docker://btrspg/python3:20251024"
