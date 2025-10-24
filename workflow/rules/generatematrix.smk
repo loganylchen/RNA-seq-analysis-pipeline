@@ -9,7 +9,7 @@ rule count_matrix:
         "results/counts/count_matrix_unstrandedness.tsv",
         "results/counts/count_matrix_strandedness.tsv",
         "results/counts/count_matrix_reverse.tsv",
-        "results/counts/strandedness_check.pdf"
+        "results/counts/strandedness_check.pdf",
     log:
         "logs/count-matrix.log",
     params:
@@ -24,7 +24,10 @@ rule count_matrix:
 
 rule feature_counts:
     input:
-        samples=expand("results/star/{sample.sample_name}/Aligned.sortedByCoord.out.bam",sample=samples.itertuples()),
+        samples=expand(
+            "results/star/{sample.sample_name}/Aligned.sortedByCoord.out.bam",
+            sample=samples.itertuples(),
+        ),
         annotation="resources/genome.gtf",
     output:
         multiext(
@@ -37,7 +40,7 @@ rule feature_counts:
     params:
         strand=0,  # optional; strandness of the library (0: unstranded [default], 1: stranded, and 2: reversely stranded)
         r_path="",  # implicitly sets the --Rpath flag
-        extra=config['params']['featurecounts']
+        extra=config["params"]["featurecounts"],
     benchmark:
         "benchmarks/featurecounts.benchmark.txt"
     log:
@@ -45,11 +48,12 @@ rule feature_counts:
     wrapper:
         "v2.2.1/bio/subread/featurecounts"
 
+
 rule tidy_featurecounts_table:
     input:
-        "results/counts/count_matrix.featureCounts"
+        "results/counts/count_matrix.featureCounts",
     output:
-        "results/counts/count_matrix.tidy.featureCounts"
+        "results/counts/count_matrix.tidy.featureCounts",
     log:
         "logs/count-matrix_featurecounts_tidy.log",
     benchmark:
