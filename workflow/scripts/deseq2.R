@@ -12,37 +12,34 @@ if (snakemake@threads > 1) {
     parallel <- TRUE
 }
 
-dds <- readRDS(snakemake@input[[1]])
 
 
 
-coldata <- colData(dds)
-keep_samples <- coldata[,snakemake@params[["subclass_column"]]] == snakemake@params[["subclass"]]
-dds_sub <- dds[keep_samples,]
-dds
-dds_sub
-# subset(dds, select= snakemake@params[["subclass_column"]] == snakemake@params[["subclass"]])
-dds_sub <- DESeqDataSet(dds_sub, design = as.formula(snakemake@params[["model"]]))
-dds_sub <- DESeq(dds_sub)
-contrast <- c("condition", snakemake@params[["contrast"]])
-res <- results(dds_sub, contrast=contrast, parallel=parallel)
-# shrink fold changes for lowly expressed genes
-# use ashr so we can use `contrast` as conversion to coef is not trivial
-# see https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#extended-section-on-shrinkage-estimators
-res <- lfcShrink(dds_sub, contrast=contrast, res=res, type="ashr")
 
-# sort by p-value
-res <- res[order(res$padj),]
-# TODO explore IHW usage
+discovery_dds<- readRDS(snakemake@input[['discovery_count_rds']])
+validation_dds<- readRDS(snakemake@input[['validation_count_rds']])
+
+case_condition<-snakemake@params[["case_condition"]]
+control_condition<-snakemake@params[["control_condition"]]
 
 
-# store results
-# svg(snakemake@output[["ma_plot"]])
-# plotMA(res, ylim=c(-2,2))
-# dev.off()
 
-outdir <- dirname(snakemake@output[["table"]])
 
-if (!dir.exists(outdir)) {dir.create(outdir)}
 
-write.table(data.frame("gene"=rownames(res),res), file=snakemake@output[["table"]], row.names=FALSE, sep='\t',quote=FALSE)
+# output
+discovery_deg_rds<-snakemake@output[["discovery_deg_rds"]]
+validation_deg_rds<-snakemake@output[["validation_deg_rds"]]
+
+
+
+dds_discovery <- DESeq(dds_discovery)
+dds_validation <- DESeq(dds_validation)
+
+
+
+res_dds_discovery <- results(dds_discovery, contrast=c("condition",case_condition,control_condition),parallel=parallel)
+res_dds_validation <- results(dds_validation, contrast=c("condition",case_condition,control_condition),parallel=parallel)
+
+
+saveRDS(res_dds_discovery,file=discovery_deg_rds)
+saveRDS(res_dds_validation,file=validation_deg_rds)

@@ -33,11 +33,8 @@ rule deseq2:
         discovery_deg_rds="{project}/deseq2/discovery_deg.rds",
         validation_deg_rds="{project}/deseq2/validation_deg.rds",
     params:
-        samples=config["samples"],
-        project=project,
         case_condition=case_condition,
         control_condition=control_condition,
-        discovery_sample_type=discovery_sample_type,
     container:
         (
             "docker://btrspg/deseq2:1.46.0"
@@ -45,9 +42,9 @@ rule deseq2:
             else config["container"].get("deseq2", None)
         )
     benchmark:
-        "benchmarks/{contrast}_{subclass}.deseq2.benchmark.txt"
+        "benchmarks/{project}/deseq2.benchmark.txt"
     log:
-        "logs/deseq2/{contrast}_{subclass}.diffexp.log",
+        "logs/{project}}/DESeq2_diffexp.log",
     threads: config["threads"]["deseq2"]
     script:
         "../scripts/deseq2.R"
