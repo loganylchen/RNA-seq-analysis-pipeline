@@ -33,8 +33,8 @@ discovery_deg_tsv<-snakemake@output[["discovery_deg_tsv"]]
 validation_deg_tsv<-snakemake@output[["validation_deg_tsv"]]
 
 
-dds_discovery <- DESeq(dds_discovery)
-dds_validation <- DESeq(dds_validation)
+dds_discovery <- DESeq(discovery_dds)
+dds_validation <- DESeq(validation_dds)
 
 
 
