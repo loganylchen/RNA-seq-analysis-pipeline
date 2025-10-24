@@ -193,3 +193,16 @@ rule salmon_index:
         "-t {input.fasta} "
         "-i {output.index} "
         "&> {log} "
+
+
+rule geneid_to_genename:
+    input:
+        gtf="resources/genome.gtf",
+    output:
+        tsv="resources/gene_id_to_gene_name.tsv",
+    log:
+        "logs/geneid2genename.log",
+    benchmark:
+        "benchmarks/geneid_to_genename.benchmark.txt"
+    script:
+        "../scripts/get_genename.py"

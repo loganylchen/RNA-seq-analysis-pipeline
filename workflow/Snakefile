@@ -45,9 +45,9 @@ include: "rules/diffexp_deseq2.smk"
 # include: "rules/hamr.smk"
 # include: "rules/modtect.smk"
 include: "rules/ref.smk"
+include: "rules/vis_volcano.smk"
 
 
-# include: "rules/vis_volcano.smk"
 # include: "rules/vis_pcaplot.smk"
 
 ##### target rules #####

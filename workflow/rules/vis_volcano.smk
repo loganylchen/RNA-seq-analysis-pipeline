@@ -1,21 +1,23 @@
 rule volcano_vis:
     input:
-        deg_exp = "results/diffexp/{contrast}/{subclass}.diffexp.tsv",
-        geneid_to_genename = "resources/gene_id_to_gene_name.tsv"
-
+        discovery_deg_rds="{project}/deseq2/discovery_deg.rds",
+        validation_deg_rds="{project}/deseq2/validation_deg.rds",
+        geneid_to_genename="resources/gene_id_to_gene_name.tsv",
     output:
-        png="results/visualization/Volcano.{contrast}_{subclass}.diffexp.png",
-        pdf="results/visualization/Volcano.{contrast}_{subclass}.diffexp.pdf",
-    params:
-        contrast='{contrast}',
-        fc_threshold=config['thresholds']['volcano']['log2foldchange'],
-        p_threshold=config['thresholds']['volcano']['padj']
-
-    conda:
-        "../envs/enhancedvolcano.yaml"
+        discovery_png="{project}/visualization/Volcano_discovery.png",
+        discovery_pdf="{project}/visualization/Volcano_discovery.pdf",
+        validation_png="{project}/visualization/Volcano_validation.png",
+        validation_pdf="{project}/visualization/Volcano_validation.pdf",
+    container:
+        (
+            "docker://btrspg/rlan:20251024"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
     log:
-        "logs/visualization/Volcano.{contrast}_{subclass}.diffexp.log",
+        "logs/{project}/visualization_Volcano.diffexp.log",
+    threads: 1
     benchmark:
-        "benchmarks/Volcano.{contrast}_{subclass}.benchmark.txt"
+        "benchmarks/{project}/Volcano.benchmark.txt"
     script:
         "../scripts/volcano.R"

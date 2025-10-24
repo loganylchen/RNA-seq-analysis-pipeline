@@ -33,26 +33,4 @@ rule star_align:
         "mv {output.temp_dir}/Log.final.out {output.qc_log}; "
 
 
-rule hisat2_align:
-    input:
-        unpack(get_clean_data),
-        idx=multiext(
-            "resources/hisat2_genome/genome",
-            ".1.ht2",
-            ".2.ht2",
-            ".3.ht2",
-            ".4.ht2",
-            ".5.ht2",
-            ".6.ht2",
-            ".7.ht2",
-            ".8.ht2",
-        ),
-    output:
-        "{project}/alignment/{sample}/{sample}.hisat2.bam",
-    log:
-        "logs/{project}/{sample}_hisat2.log",
-    params:
-        extra=config["hisat2"]["extra"],
-    threads: config["threads"]["hisat2"]
-    wrapper:
-        "v6.0.0/bio/hisat2/align"
+
