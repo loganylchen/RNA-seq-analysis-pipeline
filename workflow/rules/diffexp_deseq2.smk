@@ -32,6 +32,8 @@ rule deseq2:
     output:
         discovery_deg_rds="{project}/deseq2/discovery_deg.rds",
         validation_deg_rds="{project}/deseq2/validation_deg.rds",
+        discovery_deg_tsv="{project}/deseq2/discovery_deg.tsv",
+        validation_deg_tsv="{project}/deseq2/validation_deg.tsv",
     params:
         case_condition=case_condition,
         control_condition=control_condition,

@@ -29,7 +29,8 @@ control_condition<-snakemake@params[["control_condition"]]
 # output
 discovery_deg_rds<-snakemake@output[["discovery_deg_rds"]]
 validation_deg_rds<-snakemake@output[["validation_deg_rds"]]
-
+discovery_deg_tsv<-snakemake@output[["discovery_deg_tsv"]]
+validation_deg_tsv<-snakemake@output[["validation_deg_tsv"]]
 
 
 dds_discovery <- DESeq(dds_discovery)
@@ -43,3 +44,6 @@ res_dds_validation <- results(dds_validation, contrast=c("condition",case_condit
 
 saveRDS(res_dds_discovery,file=discovery_deg_rds)
 saveRDS(res_dds_validation,file=validation_deg_rds)
+
+write.csv(res_dds_discovery,discovery_deg_tsv,sep='\t',quote=FALSE)
+write.csv(res_dds_validation,validation_deg_tsv,sep='\t',quote=FALSE)
