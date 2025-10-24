@@ -158,5 +158,6 @@ def get_final_output():
         f"{sample_project}/transcript_splicing/rmats",
         f"{sample_project}/assembly/transcriptome.fasta",
         f"{sample_project}/quantification/STAR_fc_count_matrix_PUREE.txt",
+        f"{sample_project}/deseq2/discovery_count_matrix.rds",
     ]
     return final_output
