@@ -45,5 +45,5 @@ res_dds_validation <- results(dds_validation, contrast=c("condition",case_condit
 saveRDS(res_dds_discovery,file=discovery_deg_rds)
 saveRDS(res_dds_validation,file=validation_deg_rds)
 
-write.tsv(res_dds_discovery,discovery_deg_tsv,sep='\t',quote=FALSE)
-write.tsv(res_dds_validation,validation_deg_tsv,sep='\t',quote=FALSE)
+write.table(res_dds_discovery,discovery_deg_tsv,sep='\t',quote=FALSE)
+write.table(res_dds_validation,validation_deg_tsv,sep='\t',quote=FALSE)
