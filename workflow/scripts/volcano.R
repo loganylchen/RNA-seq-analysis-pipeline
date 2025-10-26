@@ -11,7 +11,7 @@ library(dplyr)
 discovery_deg <- readRDS(snakemake@input[['discovery_deg_rds']])
 validation_deg <- readRDS(snakemake@input[['validation_deg_rds']])
 
-geneid_to_genename <- read.table(snakemake@input[["geneid_to_genename"]], header = T, row.names = 1,sep='\t', check.names=FALSE)
+geneid_to_genename <- read.table(snakemake@input[["geneid_to_genename"]], header = T, row.names = F,sep='\t', check.names=FALSE)
 
 
 discovery_png <- snakemake@output[['discovery_png']]
