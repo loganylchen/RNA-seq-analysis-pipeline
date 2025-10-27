@@ -140,7 +140,8 @@ ora_enrichment <- function(deg_list){
                  pvalueCutoff = 0.05) 
     message('Readable on KEGG')
     message(kegg_id%>% as.data.frame() %>% head())
-    if(!is.null(kegg_id)){
+    kegg_dim <- kegg_id%>% as.data.frame() %>% dim()
+    if(kegg_dim[1]>0){
         kegg_res <- setReadable(kegg_id,org.eg.db,keyType='ENTREZID')
     }else{
         message('KEGG is NULL')
@@ -151,7 +152,8 @@ ora_enrichment <- function(deg_list){
     wp_res<- enrichWP(gene=  unique(deg_list$ENTREZID), organism = wp_org,
                  pvalueCutoff = 0.05) 
     message(wp_res%>% as.data.frame() %>% head())
-    if(!is.null(wp_res)){
+    wp_dim <- wp_res%>% as.data.frame() %>% dim()
+    if(wp_dim[1]>0){
         wp_res <- setReadable(wp_res,org.eg.db,keyType='ENTREZID')
     }else{
         message('WP is NULL')
@@ -165,7 +167,8 @@ ora_enrichment <- function(deg_list){
               qvalueCutoff  = 0.05,
               readable      = FALSE)
     message(do_res%>% as.data.frame() %>% head())
-    if(!is.null(do_res)){
+    do_dim <- do_res%>% as.data.frame() %>% dim()
+    if(do_dim[1]>0){
         do_res <- setReadable(do_res,org.eg.db,keyType='ENTREZID')
     }else{
         message('DO is NULL')
@@ -174,6 +177,8 @@ ora_enrichment <- function(deg_list){
     ncg_res <- enrichNCG(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
               readable      = FALSE) 
     message(ncg_res %>% as.data.frame() %>% head())
+    ncg_dim <- ncg_res%>% as.data.frame() %>% dim()
+    if(ncg_dim[1]>0){
     if(!is.null(ncg_res)){
         ncg_res <- setReadable(ncg_res,org.eg.db,keyType='ENTREZID')
     }else{
@@ -184,6 +189,8 @@ ora_enrichment <- function(deg_list){
     dgn_res <- enrichDGN(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
               readable      = FALSE) 
     message(dgn_res%>% as.data.frame() %>% head())
+    dgn_dim <- dgn_res%>% as.data.frame() %>% dim()
+    if(dgn_dim[1]>0){
     if(!is.null(dgn_res)){
         dgn_res <- setReadable(dgn_res,org.eg.db,keyType='ENTREZID')
     }else{
