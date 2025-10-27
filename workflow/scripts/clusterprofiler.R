@@ -165,7 +165,7 @@ ora_enrichment <- function(deg_list){
         wp=wp_res,
         do=do_res,
         ncg=ncg_res,
-        dgn=dng_res
+        dgn=dgn_res
     ))
      }else{
         return(list(
