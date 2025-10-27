@@ -179,7 +179,6 @@ ora_enrichment <- function(deg_list){
     message(ncg_res %>% as.data.frame() %>% head())
     ncg_dim <- ncg_res%>% as.data.frame() %>% dim()
     if(ncg_dim[1]>0){
-    if(!is.null(ncg_res)){
         ncg_res <- setReadable(ncg_res,org.eg.db,keyType='ENTREZID')
     }else{
         message('NCG is NULL')
@@ -191,7 +190,6 @@ ora_enrichment <- function(deg_list){
     message(dgn_res%>% as.data.frame() %>% head())
     dgn_dim <- dgn_res%>% as.data.frame() %>% dim()
     if(dgn_dim[1]>0){
-    if(!is.null(dgn_res)){
         dgn_res <- setReadable(dgn_res,org.eg.db,keyType='ENTREZID')
     }else{
         message('DGN is NULL')
