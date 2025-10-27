@@ -13,6 +13,8 @@ suppressPackageStartupMessages({
 })
 
 species <- snakemake@params[['species']]
+
+message(paste0('The species is ',species))
 if(species == 'human'){
     kegg_org <- 'hsa'
     wp_org <- 'Homo sapiens'
@@ -34,6 +36,8 @@ padj_threshold <- 0.05
 
 
 loading_data <- function(deg_tsv){
+
+    message(paste0('Loading:',deg_tsv))
     DEG_list <- read.table(deg_tsv) %>%
             dplyr::filter(!is.na(padj),!is.na(baseMean)) %>% 
             dplyr::mutate(Ensembl_ID=rownames(.))
@@ -65,24 +69,27 @@ gsea_enrichment <- function(full_deg_list){
     distinct(ENTREZID,.keep_all=TRUE)
     gene_list <- sorted_gene_list$log2FoldChange
     names(gene_list) <- sorted_gene_list$ENTREZID
+
+    message("GSEA on KEGG")
     gsea_kegg <- gseKEGG(geneList     =  gene_list,
                     organism     = kegg_org,
                     pvalueCutoff = 0.05,
                     verbose      = FALSE) %>% setReadable(.,org.eg.db)
-
+    message("GSEA on WP")
     gsea_wp <- gseWP(geneList     =  gene_list,
                     organism     = wp_org,
                     pvalueCutoff = 0.05,
                     verbose      = FALSE) %>% setReadable(.,org.eg.db)
-
+    message("GSEA on DO")
     gsea_do <- gseDO(gene_list,
            pAdjustMethod = "BH",
            verbose       = FALSE) %>% setReadable(.,org.eg.db)
 
+    message("GSEA on NCG")
     gsea_ncg <-  gseNCG(gene_list,
               pAdjustMethod = "BH",
               verbose       = FALSE) %>% setReadable(.,org.eg.db)
-
+    message("GSEA on DGN")
     gsea_dgn <- gseDGN(geneList,
               pAdjustMethod = "BH",
               verbose       = FALSE) %>% setReadable(.,org.eg.db)
@@ -96,6 +103,8 @@ gsea_enrichment <- function(full_deg_list){
 }
 
 ora_enrichment <- function(deg_list){
+
+    message("GO MF enrichment")
     go_mf <- enrichGO(gene= unique(deg_list$Ensembl_ID),
                     OrgDb         = org.eg.db,
                     ont='MF',
@@ -103,6 +112,7 @@ ora_enrichment <- function(deg_list){
                     keyType       = 'ENSEMBL',
                     pAdjustMethod = "BH",
                     qvalueCutoff  = 0.05) 
+    message("GO CC enrichment")
     go_cc <- enrichGO(gene=  unique(deg_list$Ensembl_ID),
                     OrgDb         = org.eg.db,
                     ont='CC',
@@ -110,28 +120,36 @@ ora_enrichment <- function(deg_list){
                     keyType       = 'ENSEMBL',
                     pAdjustMethod = "BH",
                     qvalueCutoff  = 0.05) 
-    go_res <- enrichGO(gene=  unique(deg_list$Ensembl_ID),
+
+    message("GO BP enrichment")
+    go_bp <- enrichGO(gene=  unique(deg_list$Ensembl_ID),
                     OrgDb         = org.eg.db,
                     ont='BP',
                     readable=TRUE,
                     keyType       = 'ENSEMBL',
                     pAdjustMethod = "BH",
                     qvalueCutoff  = 0.05) 
+
+    message("KEGG enrichment")
     kegg_res <- enrichKEGG(gene=  unique(deg_list$ENTREZID),
                  organism     = kegg_org,
                  pvalueCutoff = 0.05) %>% setReadable(.,org.eg.db)
 
+    message("WIKIPATHWAY enrichment")
     wp_res<- enrichWP(gene=  unique(deg_list$ENTREZID), organism = wp_org,
                  pvalueCutoff = 0.05) %>% setReadable(.,org.eg.db)
 
+
+    message("DO enrichment")
     do_res <- enrichDO(gene  = unique(deg_list$ENTREZID),
               ont           = "DO",
               pAdjustMethod = "BH",
               qvalueCutoff  = 0.05,
               readable      = TRUE)
-
+    message("NCG enrichment")
     ncg_res <- enrichNCG(gene  = unique(deg_list$ENTREZID),
               readable      = TRUE) 
+    message("DGN enrichment")
     dgn_res <- enrichDGN(gene  = unique(deg_list$ENTREZID),
               readable      = TRUE) 
     return(list(
@@ -171,5 +189,5 @@ final_res <- list(
 
 
 output<-snakemake@output[['enrichment']]
-
+message("Wrting results into file")
 saveRDS(final_res,output)
