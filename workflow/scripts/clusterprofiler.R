@@ -71,6 +71,7 @@ gsea_enrichment <- function(full_deg_list){
     gene_list <- sorted_gene_list$log2FoldChange
     names(gene_list) <- sorted_gene_list$ENTREZID
     message(paste0('gene_list: ', length(gene_list)))
+    message(gene_list)
     message("GSEA on KEGG")
     gsea_kegg <- gseKEGG(geneList     =  gene_list,
                     organism     = kegg_org,
