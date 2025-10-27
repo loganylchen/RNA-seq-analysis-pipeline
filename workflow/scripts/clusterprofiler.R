@@ -209,8 +209,8 @@ up_ora <- ora_enrichment(discovery_data_list$up_deg_list)
 message('Down ORA')
 down_ora<-ora_enrichment(discovery_data_list$down_deg_list)
 discovery=list(
-        up_ora=up_ora
-        down_ora=down_ora
+        up_ora=up_ora,
+        down_ora=down_ora,
         gsea=gsea_enrichment(discovery_data_list$DEG_list))
 message('Validation')
 
