@@ -201,7 +201,7 @@ ora_enrichment <- function(deg_list){
         kegg=kegg_res,
         wp=wp_res,
         do=do_res,
-        ncg=ncg_res,
+        # ncg=ncg_res,
         dgn=dgn_res
     ))
      }else{
