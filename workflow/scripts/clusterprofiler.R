@@ -63,13 +63,14 @@ loading_data <- function(deg_tsv){
 
 
 gsea_enrichment <- function(full_deg_list){
+    
     sorted_gene_list  <- full_deg_list %>% 
     arrange(-log2FoldChange) %>% 
     dplyr::filter(!is.na(ENTREZID)) %>% 
     distinct(ENTREZID,.keep_all=TRUE)
     gene_list <- sorted_gene_list$log2FoldChange
     names(gene_list) <- sorted_gene_list$ENTREZID
-
+    message(paste0('full_deg_list: ', length(gene_list)))
     message("GSEA on KEGG")
     gsea_kegg <- gseKEGG(geneList     =  gene_list,
                     organism     = kegg_org,
@@ -103,7 +104,7 @@ gsea_enrichment <- function(full_deg_list){
 }
 
 ora_enrichment <- function(deg_list){
-
+    message(paste0('The shape of the deg_list:',dim(deg_list)))
     if(dim(deg_list)[1]>=5){
 
    
