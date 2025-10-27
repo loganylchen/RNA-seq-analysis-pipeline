@@ -104,7 +104,7 @@ gsea_enrichment <- function(full_deg_list){
         wp=gsea_wp,
         do=gsea_do,
         ncg=gsea_ncg,
-        dgn=gsea_dgn,
+        dgn=gsea_dgn
     ))
 }
 
