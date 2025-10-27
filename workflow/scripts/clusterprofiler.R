@@ -135,7 +135,7 @@ ora_enrichment <- function(deg_list){
 
     message("KEGG enrichment")
     kegg_id <- enrichKEGG(gene=  unique(deg_list$ENTREZID),
-                 organism     = kegg_org,
+                 organism     = kegg_org,pAdjustMethod = "BH",
                  pvalueCutoff = 0.05) 
     message('Readable on KEGG')
     kegg_res <- setReadable(kegg_id,org.eg.db,keyType='ENTREZID')
@@ -152,10 +152,10 @@ ora_enrichment <- function(deg_list){
               qvalueCutoff  = 0.05,
               readable      = TRUE)
     message("NCG enrichment")
-    ncg_res <- enrichNCG(gene  = unique(deg_list$ENTREZID),
+    ncg_res <- enrichNCG(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
               readable      = TRUE) 
     message("DGN enrichment")
-    dgn_res <- enrichDGN(gene  = unique(deg_list$ENTREZID),
+    dgn_res <- enrichDGN(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
               readable      = TRUE) 
     return(list(
         go_cc=go_cc,
