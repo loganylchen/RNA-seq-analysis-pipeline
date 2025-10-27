@@ -229,7 +229,7 @@ up_ora <- ora_enrichment(discovery_data_list$up_deg_list)
 message('Down ORA')
 down_ora<-ora_enrichment(discovery_data_list$down_deg_list)
 message('Running GSEA')
-gsea_res <- gsea_enrichment(discovery_data_list$DEG_list)
+gsea_res <- gsea_enrichment(discovery_data_list$deg_list)
 discovery=list(
         up_ora=up_ora,
         down_ora=down_ora,
@@ -242,7 +242,7 @@ message('Down ORA')
 down_ora<-ora_enrichment(validation_data_list$down_deg_list)
 
 message('Running GSEA')
-gsea_res <- gsea_enrichment(validation_data_list$DEG_list)
+gsea_res <- gsea_enrichment(validation_data_list$deg_list)
 
 
 validation=list(
