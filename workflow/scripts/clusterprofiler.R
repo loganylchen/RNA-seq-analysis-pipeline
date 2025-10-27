@@ -137,6 +137,7 @@ ora_enrichment <- function(deg_list){
     kegg_id <- enrichKEGG(gene=  unique(deg_list$ENTREZID),
                  organism     = kegg_org,
                  pvalueCutoff = 0.05) 
+    message('Readable on KEGG')
     kegg_res <- setReadable(kegg_id,org.eg.db)
 
     message("WIKIPATHWAY enrichment")
