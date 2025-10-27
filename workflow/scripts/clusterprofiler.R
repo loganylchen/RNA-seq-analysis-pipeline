@@ -147,7 +147,7 @@ ora_enrichment <- function(deg_list){
 
     message("DO enrichment")
     do_res <- enrichDO(gene  = unique(deg_list$ENTREZID),
-              ont           = "DO",
+              ont           = "HDO",
               pAdjustMethod = "BH",
               qvalueCutoff  = 0.05,
               readable      = TRUE)
