@@ -6,12 +6,20 @@ sink(log, type="message")
 library(EnhancedVolcano)
 library(ggplot2)
 library(dplyr)
+library(DESeq2)
 
 
-discovery_deg <- readRDS(snakemake@input[['discovery_deg_rds']])
-validation_deg <- readRDS(snakemake@input[['validation_deg_rds']])
+geneid_to_genename <- read.table(snakemake@input[["geneid_to_genename"]], header = T, row.names = NULL,sep='\t', check.names=FALSE) %>% 
+                        distinct(gene_id,.keep_all=TRUE)
 
-geneid_to_genename <- read.table(snakemake@input[["geneid_to_genename"]], header = T, row.names = NULL,sep='\t', check.names=FALSE)
+discovery_deg <- readRDS(snakemake@input[['discovery_deg_rds']]) %>%
+                    dplyr::mutate(gene_id=rownames(.)) %>%
+                    left_join(geneid_to_genename,by='gene_id')
+validation_deg <- readRDS(snakemake@input[['validation_deg_rds']])%>%
+                    dplyr::mutate(gene_id=rownames(.)) %>%
+                    left_join(geneid_to_genename,by='gene_id')
+
+
 
 
 discovery_png <- snakemake@output[['discovery_png']]
@@ -20,7 +28,7 @@ validation_png <- snakemake@output[['validation_png']]
 validation_pdf <- snakemake@output[['validation_pdf']]
 
 g1 <- EnhancedVolcano(discovery_deg,
-        lab = geneid_to_genename[rownames(discovery_deg),'gene_name'],
+        lab = discovery_deg$gene_name,
         title="Discovery",
         x = "log2FoldChange",
         y = "padj",
@@ -40,7 +48,7 @@ g1 <- EnhancedVolcano(discovery_deg,
     )
 
 g2 <- EnhancedVolcano(validation_deg,
-        lab = geneid_to_genename[rownames(validation_deg),'gene_name'],
+        lab = validation_deg$gene_name,
         title="Discovery",
         x = "log2FoldChange",
         y = "padj",

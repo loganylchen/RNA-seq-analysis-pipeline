@@ -86,3 +86,4 @@ container:
   gffread: "docker://btrspg/gffread:0.12.7"
   python3: "docker://btrspg/python3:20251024"
   r: "docker://btrspg/rlan:20251027"
+  clusterprofiler: "docker://btrspg/clusterprofiler:4.14.0"
