@@ -41,7 +41,7 @@ rule count_matrix_star_FC:
         samples=samples.index.tolist(),
     container:
         (
-            "docker://btrspg/rlan:20251024"
+            "docker://btrspg/rlan:20251027"
             if config["container"].get("r", None) is None
             else config["container"].get("r", None)
         )

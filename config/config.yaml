@@ -85,3 +85,4 @@ container:
   gffcompare: "docker://btrspg/gffcompare:0.12.10"
   gffread: "docker://btrspg/gffread:0.12.7"
   python3: "docker://btrspg/python3:20251024"
+  r: "docker://btrspg/rlan:20251027"

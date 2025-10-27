@@ -10,7 +10,7 @@ rule volcano_vis:
         validation_pdf="{project}/visualization/Volcano_validation.pdf",
     container:
         (
-            "docker://btrspg/rlan:20251024"
+            "docker://btrspg/rlan:20251027"
             if config["container"].get("r", None) is None
             else config["container"].get("r", None)
         )
