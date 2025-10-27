@@ -104,7 +104,7 @@ gsea_enrichment <- function(full_deg_list){
 }
 
 ora_enrichment <- function(deg_list){
-    message(paste0('The shape of the ORA deg_list:',dim(deg_list)))
+    message(paste0('The shape of the ORA deg_list:',dim(deg_list)[1]))
     if(dim(deg_list)[1]>=5){
 
    
@@ -139,11 +139,17 @@ ora_enrichment <- function(deg_list){
                  organism     = kegg_org,pAdjustMethod = "BH",
                  pvalueCutoff = 0.05) 
     message('Readable on KEGG')
-    kegg_res <- setReadable(kegg_id,org.eg.db,keyType='ENTREZID')
+    if(kegg_id !=NULL){
+        kegg_res <- setReadable(kegg_id,org.eg.db,keyType='ENTREZID')
+    }
+    
 
     message("WIKIPATHWAY enrichment")
     wp_res<- enrichWP(gene=  unique(deg_list$ENTREZID), organism = wp_org,
-                 pvalueCutoff = 0.05) %>% setReadable(.,org.eg.db)
+                 pvalueCutoff = 0.05) 
+    if(wp_res !=NULL){
+        wp_res <- setReadable(wp_res,org.eg.db,keyType='ENTREZID')
+    }
 
 
     message("DO enrichment")
@@ -151,13 +157,23 @@ ora_enrichment <- function(deg_list){
               ont           = "HDO",
               pAdjustMethod = "BH",
               qvalueCutoff  = 0.05,
-              readable      = TRUE)
+              readable      = FALSE)
+    if(do_res !=NULL){
+        do_res <- setReadable(do_res,org.eg.db,keyType='ENTREZID')
+    }
     message("NCG enrichment")
     ncg_res <- enrichNCG(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
-              readable      = TRUE) 
+              readable      = FALSE) 
+    if(ncg_res !=NULL){
+        ncg_res <- setReadable(ncg_res,org.eg.db,keyType='ENTREZID')
+    }
+    
     message("DGN enrichment")
     dgn_res <- enrichDGN(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
-              readable      = TRUE) 
+              readable      = FALSE) 
+    if(dgn_res !=NULL){
+        dgn_res <- setReadable(dgn_res,org.eg.db,keyType='ENTREZID')
+    }
     return(list(
         go_cc=go_cc,
         go_bp=go_bp,
