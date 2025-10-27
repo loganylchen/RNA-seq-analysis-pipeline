@@ -72,7 +72,7 @@ gsea_enrichment <- function(full_deg_list){
     names(gene_list) <- sorted_gene_list$ENTREZID
     message(paste0('gene_list: ', length(gene_list)))
     # message(gene_list)
-    message("GSEA on KEGG",is.sorted(gene_list))
+    message("GSEA on KEGG")
     gsea_kegg <- gseKEGG(geneList     =  gene_list,
                     organism     = kegg_org,
                     pvalueCutoff = 0.05,
