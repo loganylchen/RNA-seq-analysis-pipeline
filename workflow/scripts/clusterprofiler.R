@@ -139,7 +139,7 @@ ora_enrichment <- function(deg_list){
                  organism     = kegg_org,pAdjustMethod = "BH",
                  pvalueCutoff = 0.05) 
     message('Readable on KEGG')
-    message(kegg_id%>% as.data.frame())
+    message(kegg_id%>% as.data.frame() %>% head())
     if(!is.null(kegg_id)){
         kegg_res <- setReadable(kegg_id,org.eg.db,keyType='ENTREZID')
     }else{
@@ -150,7 +150,7 @@ ora_enrichment <- function(deg_list){
     message("WIKIPATHWAY enrichment")
     wp_res<- enrichWP(gene=  unique(deg_list$ENTREZID), organism = wp_org,
                  pvalueCutoff = 0.05) 
-    message(wp_res%>% as.data.frame())
+    message(wp_res%>% as.data.frame() %>% head())
     if(!is.null(wp_res)){
         wp_res <- setReadable(wp_res,org.eg.db,keyType='ENTREZID')
     }else{
@@ -164,7 +164,7 @@ ora_enrichment <- function(deg_list){
               pAdjustMethod = "BH",
               qvalueCutoff  = 0.05,
               readable      = FALSE)
-    message(do_res%>% as.data.frame())
+    message(do_res%>% as.data.frame() %>% head())
     if(!is.null(do_res)){
         do_res <- setReadable(do_res,org.eg.db,keyType='ENTREZID')
     }else{
@@ -173,7 +173,7 @@ ora_enrichment <- function(deg_list){
     message("NCG enrichment")
     ncg_res <- enrichNCG(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
               readable      = FALSE) 
-    message(ncg_res %>% as.data.frame())
+    message(ncg_res %>% as.data.frame() %>% head())
     if(!is.null(ncg_res)){
         ncg_res <- setReadable(ncg_res,org.eg.db,keyType='ENTREZID')
     }else{
@@ -183,7 +183,7 @@ ora_enrichment <- function(deg_list){
     message("DGN enrichment")
     dgn_res <- enrichDGN(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
               readable      = FALSE) 
-    message(dgn_res%>% as.data.frame())
+    message(dgn_res%>% as.data.frame() %>% head())
     if(!is.null(dgn_res)){
         dgn_res <- setReadable(dgn_res,org.eg.db,keyType='ENTREZID')
     }else{
