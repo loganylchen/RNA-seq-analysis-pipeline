@@ -25,8 +25,7 @@ rule clusterprofiler_enrichment:
         discovery_deg_tsv="{project}/deseq2/discovery_deg.tsv",
         validation_deg_tsv="{project}/deseq2/validation_deg.tsv",
     output:
-        discovery_enrichment="{project}/enrichment/discovery.rds",
-        validation_enrichment="{project}/enrichment/validation.rds",
+        enrichment="{project}/enrichment/all_enrichment.rds",
     log:
         "logs/{project}/enrichment_clusterprofiler.log",
     container:
