@@ -138,7 +138,7 @@ ora_enrichment <- function(deg_list){
                  organism     = kegg_org,
                  pvalueCutoff = 0.05) 
     message('Readable on KEGG')
-    kegg_res <- setReadable(kegg_id,org.eg.db)
+    kegg_res <- setReadable(kegg_id,org.eg.db,keyType='ENTREZID')
 
     message("WIKIPATHWAY enrichment")
     wp_res<- enrichWP(gene=  unique(deg_list$ENTREZID), organism = wp_org,
