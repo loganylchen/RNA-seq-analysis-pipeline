@@ -104,6 +104,9 @@ gsea_enrichment <- function(full_deg_list){
 
 ora_enrichment <- function(deg_list){
 
+    if(dim(deg_list)[1]>=5){
+
+   
     message("GO MF enrichment")
     go_mf <- enrichGO(gene= unique(deg_list$Ensembl_ID),
                     OrgDb         = org.eg.db,
@@ -162,6 +165,18 @@ ora_enrichment <- function(deg_list){
         ncg=ncg_res,
         dgn=dng_res
     ))
+     }else{
+        return(list(
+        go_cc=NULL,
+        go_bp=NULL,
+        go_mf=NULL,
+        kegg=NULL,
+        wp=NULL,
+        do=NULL,
+        ncg=NULL,
+        dgn=NULL
+    ))
+     }
 }
 
 
