@@ -63,7 +63,7 @@ loading_data <- function(deg_tsv){
 
 
 gsea_enrichment <- function(full_deg_list){
-    message(paste0('full_deg_list: ', length(gene_list)))
+    message(paste0('full_deg_list: ', length(full_deg_list)))
     sorted_gene_list  <- full_deg_list %>% 
     dplyr::filter(!is.na(ENTREZID)) %>% 
     arrange(-log2FoldChange) %>% 
