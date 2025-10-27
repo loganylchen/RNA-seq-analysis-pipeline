@@ -139,7 +139,7 @@ ora_enrichment <- function(deg_list){
                  organism     = kegg_org,pAdjustMethod = "BH",
                  pvalueCutoff = 0.05) 
     message('Readable on KEGG')
-    message(kegg_id%>% as.data.frame() %>% head())
+    # message(kegg_id%>% as.data.frame() %>% head())
     kegg_dim <- kegg_id%>% as.data.frame() %>% dim()
     if(kegg_dim[1]>0){
         kegg_res <- setReadable(kegg_id,org.eg.db,keyType='ENTREZID')
@@ -151,7 +151,7 @@ ora_enrichment <- function(deg_list){
     message("WIKIPATHWAY enrichment")
     wp_res<- enrichWP(gene=  unique(deg_list$ENTREZID), organism = wp_org,
                  pvalueCutoff = 0.05) 
-    message(wp_res%>% as.data.frame() %>% head())
+    # message(wp_res%>% as.data.frame() %>% head())
     wp_dim <- wp_res%>% as.data.frame() %>% dim()
     if(wp_dim[1]>0){
         wp_res <- setReadable(wp_res,org.eg.db,keyType='ENTREZID')
@@ -166,7 +166,7 @@ ora_enrichment <- function(deg_list){
               pAdjustMethod = "BH",
               qvalueCutoff  = 0.05,
               readable      = FALSE)
-    message(do_res%>% as.data.frame() %>% head())
+    # message(do_res%>% as.data.frame() %>% head())
     do_dim <- do_res%>% as.data.frame() %>% dim()
     if(do_dim[1]>0){
         do_res <- setReadable(do_res,org.eg.db,keyType='ENTREZID')
@@ -176,7 +176,7 @@ ora_enrichment <- function(deg_list){
     message("NCG enrichment")
     ncg_res <- enrichNCG(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
               readable      = FALSE) 
-    message(ncg_res %>% as.data.frame() %>% head())
+    # message(ncg_res %>% as.data.frame() %>% head())
     ncg_dim <- ncg_res%>% as.data.frame() %>% dim()
     if(ncg_dim[1]>0){
         ncg_res <- setReadable(ncg_res,org.eg.db,keyType='ENTREZID')
@@ -187,7 +187,7 @@ ora_enrichment <- function(deg_list){
     message("DGN enrichment")
     dgn_res <- enrichDGN(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
               readable      = FALSE) 
-    message(dgn_res%>% as.data.frame() %>% head())
+    # message(dgn_res%>% as.data.frame() %>% head())
     dgn_dim <- dgn_res%>% as.data.frame() %>% dim()
     if(dgn_dim[1]>0){
         dgn_res <- setReadable(dgn_res,org.eg.db,keyType='ENTREZID')
