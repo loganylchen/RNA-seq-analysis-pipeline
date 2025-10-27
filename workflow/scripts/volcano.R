@@ -13,9 +13,11 @@ geneid_to_genename <- read.table(snakemake@input[["geneid_to_genename"]], header
                         distinct(gene_id,.keep_all=TRUE)
 
 discovery_deg <- readRDS(snakemake@input[['discovery_deg_rds']]) %>%
+                    as.data.frame() %>%
                     dplyr::mutate(gene_id=rownames(.)) %>%
                     left_join(geneid_to_genename,by='gene_id')
 validation_deg <- readRDS(snakemake@input[['validation_deg_rds']])%>%
+                    as.data.frame() %>%
                     dplyr::mutate(gene_id=rownames(.)) %>%
                     left_join(geneid_to_genename,by='gene_id')
 
