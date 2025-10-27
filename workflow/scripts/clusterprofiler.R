@@ -141,6 +141,8 @@ ora_enrichment <- function(deg_list){
     message('Readable on KEGG')
     if(!is.null(kegg_id)){
         kegg_res <- setReadable(kegg_id,org.eg.db,keyType='ENTREZID')
+    }else{
+        message('KEGG is NULL')
     }
     
 
@@ -149,6 +151,8 @@ ora_enrichment <- function(deg_list){
                  pvalueCutoff = 0.05) 
     if(!is.null(wp_res)){
         wp_res <- setReadable(wp_res,org.eg.db,keyType='ENTREZID')
+    }else{
+        message('WP is NULL')
     }
 
 
@@ -160,12 +164,16 @@ ora_enrichment <- function(deg_list){
               readable      = FALSE)
     if(!is.null(do_res)){
         do_res <- setReadable(do_res,org.eg.db,keyType='ENTREZID')
+    }else{
+        message('DO is NULL')
     }
     message("NCG enrichment")
     ncg_res <- enrichNCG(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
               readable      = FALSE) 
     if(!is.null(ncg_res)){
         ncg_res <- setReadable(ncg_res,org.eg.db,keyType='ENTREZID')
+    }else{
+        message('NCG is NULL')
     }
     
     message("DGN enrichment")
@@ -173,6 +181,8 @@ ora_enrichment <- function(deg_list){
               readable      = FALSE) 
     if(!is.null(dgn_res)){
         dgn_res <- setReadable(dgn_res,org.eg.db,keyType='ENTREZID')
+    }else{
+        message('DGN is NULL')
     }
     return(list(
         go_cc=go_cc,
