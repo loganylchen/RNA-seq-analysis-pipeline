@@ -190,7 +190,7 @@ ora_enrichment <- function(deg_list){
     message(dgn_res%>% as.data.frame() %>% head())
     dgn_dim <- dgn_res%>% as.data.frame() %>% dim()
     if(dgn_dim[1]>0){
-        dgn_res <- setReadable(dgn_res,org.eg.db,keyType='ENTREZID')
+        # dgn_res <- setReadable(dgn_res,org.eg.db,keyType='ENTREZID')
     }else{
         message('DGN is NULL')
     }
@@ -201,7 +201,7 @@ ora_enrichment <- function(deg_list){
         kegg=kegg_res,
         wp=wp_res,
         do=do_res,
-        # ncg=ncg_res,
+        ncg=ncg_res,
         dgn=dgn_res
     ))
      }else{
