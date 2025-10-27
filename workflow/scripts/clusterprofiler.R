@@ -95,7 +95,7 @@ gsea_enrichment <- function(full_deg_list){
               verbose       = FALSE)
     gsea_ncg <- setReadable(gsea_ncg,org.eg.db,keyType='ENTREZID')
     message("GSEA on DGN")
-    gsea_dgn <- gseDGN(geneList,
+    gsea_dgn <- gseDGN(gene_list,
               pAdjustMethod = "BH",
               verbose       = FALSE) 
     gsea_dgn <- setReadable(gsea_dgn,org.eg.db,keyType='ENTREZID')
