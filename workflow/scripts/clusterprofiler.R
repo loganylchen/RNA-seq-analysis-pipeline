@@ -39,7 +39,7 @@ loading_data <- function(deg_tsv){
 
     message(paste0('Loading:',deg_tsv))
     DEG_list <- read.table(deg_tsv) %>%
-            dplyr::filter(!is.na(padj),!is.na(baseMean)) %>% 
+            dplyr::filter(!is.na(baseMean)) %>% 
             dplyr::mutate(Ensembl_ID=rownames(.))
             
     ID_CONV <- bitr(DEG_list$Ensembl_ID, fromType="ENSEMBL", toType=c("ENTREZID","SYMBOL"),OrgDb=org.eg.db)
@@ -104,7 +104,7 @@ gsea_enrichment <- function(full_deg_list){
 }
 
 ora_enrichment <- function(deg_list){
-    message(paste0('The shape of the deg_list:',dim(deg_list)))
+    message(paste0('The shape of the ORA deg_list:',dim(deg_list)))
     if(dim(deg_list)[1]>=5){
 
    
