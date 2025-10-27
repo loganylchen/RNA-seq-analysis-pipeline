@@ -66,8 +66,8 @@ gsea_enrichment <- function(full_deg_list){
     message(paste0('full_deg_list: ', dim(full_deg_list)[1]))
     sorted_gene_list  <- full_deg_list %>% 
     dplyr::filter(!is.na(ENTREZID)) %>% 
-    arrange(-log2FoldChange) %>% 
-    distinct(ENTREZID,.keep_all=TRUE)
+    distinct(ENTREZID,.keep_all=TRUE) %>%
+    arrange(-log2FoldChange)
     gene_list <- sorted_gene_list$log2FoldChange
     names(gene_list) <- sorted_gene_list$ENTREZID
     message(paste0('gene_list: ', dim(gene_list)[1]))
