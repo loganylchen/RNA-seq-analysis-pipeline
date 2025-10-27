@@ -268,4 +268,4 @@ final_res <- list(
 
 output<-snakemake@output[['enrichment']]
 message("Wrting results into file")
-saveRDS(final_res,output)
+saveRDS(final_res,file=output)
