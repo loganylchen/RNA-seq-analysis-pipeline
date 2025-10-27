@@ -76,25 +76,29 @@ gsea_enrichment <- function(full_deg_list){
     gsea_kegg <- gseKEGG(geneList     =  gene_list,
                     organism     = kegg_org,
                     pvalueCutoff = 0.05,
-                    verbose      = FALSE) %>% setReadable(.,org.eg.db)
+                    verbose      = FALSE) 
+    gsea_kegg <- setReadable(gsea_kegg,org.eg.db,keyType='ENTREZID')
     message("GSEA on WP")
     gsea_wp <- gseWP(geneList     =  gene_list,
                     organism     = wp_org,
                     pvalueCutoff = 0.05,
-                    verbose      = FALSE) %>% setReadable(.,org.eg.db)
+                    verbose      = FALSE) 
+    gsea_wp <- setReadable(gsea_wp,org.eg.db,keyType='ENTREZID')
     message("GSEA on DO")
     gsea_do <- gseDO(gene_list,
            pAdjustMethod = "BH",
-           verbose       = FALSE) %>% setReadable(.,org.eg.db)
-
+           verbose       = FALSE)
+    gsea_do <- setReadable(gsea_do,org.eg.db,keyType='ENTREZID')
     message("GSEA on NCG")
     gsea_ncg <-  gseNCG(gene_list,
               pAdjustMethod = "BH",
-              verbose       = FALSE) %>% setReadable(.,org.eg.db)
+              verbose       = FALSE)
+    gsea_ncg <- setReadable(gsea_ncg,org.eg.db,keyType='ENTREZID')
     message("GSEA on DGN")
     gsea_dgn <- gseDGN(geneList,
               pAdjustMethod = "BH",
-              verbose       = FALSE) %>% setReadable(.,org.eg.db)
+              verbose       = FALSE) 
+    gsea_dgn <- setReadable(gsea_dgn,org.eg.db,keyType='ENTREZID')
     return(list(
         gsea=gsea_kegg,
         wp=gsea_wp,
