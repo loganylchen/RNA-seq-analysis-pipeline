@@ -188,14 +188,23 @@ ora_enrichment <- function(deg_list){
 discovery_data_list <- loading_data(snakemake@input[['discovery_deg_tsv']])
 validation_data_list <- loading_data(snakemake@input[['validation_deg_tsv']])
 message('Discovery')
+message('Up ORA')
+up_ora <- ora_enrichment(discovery_data_list$up_deg_list)
+message('Down ORA')
+down_ora<-ora_enrichment(discovery_data_list$down_deg_list)
 discovery=list(
-        up_ora=ora_enrichment(discovery_data_list$up_deg_list),
-        down_ora=ora_enrichment(discovery_data_list$down_deg_list),
+        up_ora=up_ora
+        down_ora=down_ora
         gsea=gsea_enrichment(discovery_data_list$DEG_list))
 message('Validation')
+
+message('Up ORA')
+up_ora <- ora_enrichment(validation_data_list$up_deg_list)
+message('Down ORA')
+down_ora<-ora_enrichment(validation_data_list$down_deg_list)
 validation=list(
-        up_ora=ora_enrichment(validation_data_list$up_deg_list),
-        down_ora=ora_enrichment(validation_data_list$down_deg_list),
+        up_ora=up_ora,
+        down_ora=down_ora,
         gsea=gsea_enrichment(validation_data_list$DEG_list))
 
 final_res <- list(
