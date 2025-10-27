@@ -63,14 +63,14 @@ loading_data <- function(deg_tsv){
 
 
 gsea_enrichment <- function(full_deg_list){
-    
+    message(paste0('full_deg_list: ', length(gene_list)))
     sorted_gene_list  <- full_deg_list %>% 
-    arrange(-log2FoldChange) %>% 
     dplyr::filter(!is.na(ENTREZID)) %>% 
+    arrange(-log2FoldChange) %>% 
     distinct(ENTREZID,.keep_all=TRUE)
     gene_list <- sorted_gene_list$log2FoldChange
     names(gene_list) <- sorted_gene_list$ENTREZID
-    message(paste0('full_deg_list: ', length(gene_list)))
+    
     message("GSEA on KEGG")
     gsea_kegg <- gseKEGG(geneList     =  gene_list,
                     organism     = kegg_org,
@@ -190,7 +190,7 @@ ora_enrichment <- function(deg_list){
     message(dgn_res%>% as.data.frame() %>% head())
     dgn_dim <- dgn_res%>% as.data.frame() %>% dim()
     if(dgn_dim[1]>0){
-        # dgn_res <- setReadable(dgn_res,org.eg.db,keyType='ENTREZID')
+        dgn_res <- setReadable(dgn_res,org.eg.db,keyType='ENTREZID')
     }else{
         message('DGN is NULL')
     }
