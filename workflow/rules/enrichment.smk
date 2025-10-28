@@ -1,25 +1,3 @@
-# rule genekitr_enrichment:
-#     input:
-#         "results/diffexp/{contrast}/{subclass}.diffexp.tsv",
-#     output:
-#         directory("results/enrichment/{contrast}_{subclass}"),
-#     params:
-#         log2foldchange_threshold=config['thresholds']['deseq2']['log2foldchange'],
-#         padj_threshold=config['thresholds']['deseq2']['padj'],
-#         go_name=config['ref']['go_name'],
-#         kegg_name=config['ref']['kegg_name']
-#     container:
-#         "docker://btrspg/genekitr:latest"
-#     benchmark:
-#         "benchmarks/{contrast}_{subclass}.enrichment.benchmark.txt"
-#     log:
-#         "logs/enrichment/{contrast}_{subclass}.log",
-#     benchmark:
-#         "benchmarks/{contrast}_{subclass}.enrichment.genekitr.benchmark.txt",
-#     script:
-#         "../scripts/genekitr.R"
-
-
 rule clusterprofiler_enrichment:
     input:
         discovery_deg_tsv="{project}/deseq2/discovery_deg.tsv",
@@ -39,3 +17,28 @@ rule clusterprofiler_enrichment:
     threads: 1
     script:
         "../scripts/clusterprofiler.R"
+
+
+rule parse_clusterprofiler_enrichment:
+    input:
+        enrichment="{project}/enrichment/all_enrichment.rds",
+    output:
+        discovery_go="{project}/enrichment/discovery_go_enrichment.tsv",
+        discovery_kegg="{project}/enrichment/discovery_kegg_enrichment.tsv",
+        discovery_others="{project}/enrichment/discovery_others_enrichment.tsv",
+        discovery_gsea="{project}/enrichment/discovery_gsea_enrichment.tsv",
+        validation_go="{project}/enrichment/validation_go_enrichment.tsv",
+        validation_kegg="{project}/enrichment/validation_kegg_enrichment.tsv",
+        validation_others="{project}/enrichment/validation_others_enrichment.tsv",
+        validation_gsea="{project}/enrichment/validation_gsea_enrichment.tsv",
+    log:
+        "logs/{project}/parse_enrichment_clusterprofiler.log",
+    container:
+        (
+            "docker://btrspg/clusterprofiler:4.14.0"
+            if config["container"].get("clusterprofiler", None) is None
+            else config["container"].get("clusterprofiler", None)
+        )
+    threads: 1
+    script:
+        "../scripts/parse_clusterprofiler.R"

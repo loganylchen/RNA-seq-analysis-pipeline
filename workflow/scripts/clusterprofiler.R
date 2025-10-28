@@ -31,7 +31,7 @@ if(species == 'human'){
 
 log2foldchange_threshold <- 1.5
 padj_threshold <- 0.05
-
+pvalueCutoff <- 0.05
 
 
 
@@ -75,32 +75,35 @@ gsea_enrichment <- function(full_deg_list){
     message("GSEA on KEGG")
     gsea_kegg <- gseKEGG(geneList     =  gene_list,
                     organism     = kegg_org,
-                    pvalueCutoff = 0.05,
+                    pvalueCutoff = pvalueCutoff,
                     verbose      = FALSE) 
     gsea_kegg <- setReadable(gsea_kegg,org.eg.db,keyType='ENTREZID')
     message("GSEA on WP")
     gsea_wp <- gseWP(geneList     =  gene_list,
                     organism     = wp_org,
-                    pvalueCutoff = 0.05,
+                    pvalueCutoff = pvalueCutoff,
                     verbose      = FALSE) 
     gsea_wp <- setReadable(gsea_wp,org.eg.db,keyType='ENTREZID')
     message("GSEA on DO")
     gsea_do <- gseDO(gene_list,
            pAdjustMethod = "BH",
+           pvalueCutoff = pvalueCutoff,
            verbose       = FALSE)
     gsea_do <- setReadable(gsea_do,org.eg.db,keyType='ENTREZID')
     message("GSEA on NCG")
     gsea_ncg <-  gseNCG(gene_list,
               pAdjustMethod = "BH",
+              pvalueCutoff = pvalueCutoff,
               verbose       = FALSE)
     gsea_ncg <- setReadable(gsea_ncg,org.eg.db,keyType='ENTREZID')
     message("GSEA on DGN")
     gsea_dgn <- gseDGN(gene_list,
               pAdjustMethod = "BH",
+              pvalueCutoff = pvalueCutoff,
               verbose       = FALSE) 
     gsea_dgn <- setReadable(gsea_dgn,org.eg.db,keyType='ENTREZID')
     return(list(
-        gsea=gsea_kegg,
+        kegg=gsea_kegg,
         wp=gsea_wp,
         do=gsea_do,
         ncg=gsea_ncg,
@@ -120,7 +123,7 @@ ora_enrichment <- function(deg_list){
                     readable=TRUE,
                     keyType       = 'ENSEMBL',
                     pAdjustMethod = "BH",
-                    qvalueCutoff  = 0.05) 
+                    pvalueCutoff = pvalueCutoff) 
     message("GO CC enrichment")
     go_cc <- enrichGO(gene=  unique(deg_list$Ensembl_ID),
                     OrgDb         = org.eg.db,
@@ -128,7 +131,7 @@ ora_enrichment <- function(deg_list){
                     readable=TRUE,
                     keyType       = 'ENSEMBL',
                     pAdjustMethod = "BH",
-                    qvalueCutoff  = 0.05) 
+                    pvalueCutoff = pvalueCutoff) 
 
     message("GO BP enrichment")
     go_bp <- enrichGO(gene=  unique(deg_list$Ensembl_ID),
@@ -137,12 +140,12 @@ ora_enrichment <- function(deg_list){
                     readable=TRUE,
                     keyType       = 'ENSEMBL',
                     pAdjustMethod = "BH",
-                    qvalueCutoff  = 0.05) 
+                    pvalueCutoff = pvalueCutoff) 
 
     message("KEGG enrichment")
     kegg_id <- enrichKEGG(gene=  unique(deg_list$ENTREZID),
                  organism     = kegg_org,pAdjustMethod = "BH",
-                 pvalueCutoff = 0.05) 
+                 pvalueCutoff = pvalueCutoff) 
     message('Readable on KEGG')
     # message(kegg_id%>% as.data.frame() %>% head())
     kegg_dim <- kegg_id%>% as.data.frame() %>% dim()
@@ -155,7 +158,7 @@ ora_enrichment <- function(deg_list){
 
     message("WIKIPATHWAY enrichment")
     wp_res<- enrichWP(gene=  unique(deg_list$ENTREZID), organism = wp_org,
-                 pvalueCutoff = 0.05) 
+                 pvalueCutoff = pvalueCutoff) 
     # message(wp_res%>% as.data.frame() %>% head())
     wp_dim <- wp_res%>% as.data.frame() %>% dim()
     if(wp_dim[1]>0){
@@ -169,7 +172,7 @@ ora_enrichment <- function(deg_list){
     do_res <- enrichDO(gene  = unique(deg_list$ENTREZID),
               ont           = "HDO",
               pAdjustMethod = "BH",
-              qvalueCutoff  = 0.05,
+              pvalueCutoff = pvalueCutoff,
               readable      = FALSE)
     # message(do_res%>% as.data.frame() %>% head())
     do_dim <- do_res%>% as.data.frame() %>% dim()
@@ -180,6 +183,7 @@ ora_enrichment <- function(deg_list){
     }
     message("NCG enrichment")
     ncg_res <- enrichNCG(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
+    pvalueCutoff = pvalueCutoff,
               readable      = FALSE) 
     # message(ncg_res %>% as.data.frame() %>% head())
     ncg_dim <- ncg_res%>% as.data.frame() %>% dim()
@@ -191,6 +195,7 @@ ora_enrichment <- function(deg_list){
     
     message("DGN enrichment")
     dgn_res <- enrichDGN(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
+    pvalueCutoff = pvalueCutoff,
               readable      = FALSE) 
     # message(dgn_res%>% as.data.frame() %>% head())
     dgn_dim <- dgn_res%>% as.data.frame() %>% dim()
