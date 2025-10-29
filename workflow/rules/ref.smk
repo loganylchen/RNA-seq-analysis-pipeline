@@ -223,9 +223,5 @@ rule gtf_to_bed:
             if config["container"].get("bedtools", None) is None
             else config["container"].get("bedtools", None)
         )
-    shell:
-        """awk '$3 == "exon" {print $1 "\t" ($4-1) "\t" $5}' {input.gtf} > {output.bed}.tmp;"""
-        "bedtools sort -i {output.bed}.tmp > {output.bed}.sorted;"
-        "bedtools merge -i {output.bed}.sorted  > {output.bed};"
-        "rm {output.bed}.tmp {output.bed}.sorted;"
-        "echo `date` > {log}"
+    script:
+        "../scripts/gtf2bed.sh"
