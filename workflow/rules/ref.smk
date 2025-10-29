@@ -206,3 +206,26 @@ rule geneid_to_genename:
         "benchmarks/geneid_to_genename.benchmark.txt"
     script:
         "../scripts/get_genename.py"
+
+
+rule gtf_to_bed:
+    input:
+        gtf="resources/genome.gtf",
+    output:
+        bed="resources/transcriptome.bed",
+    log:
+        "logs/gtf2bed.log",
+    benchmark:
+        "benchmarks/gtf2bed.benchmark.txt"
+    container:
+        (
+            "docker://btrspg/bedtools:2.31.1"
+            if config["container"].get("bedtools", None) is None
+            else config["container"].get("bedtools", None)
+        )
+    shell:
+        """awk '$3 == "exon" {print $1 "\t" ($4-1) "\t" $5}' {input.gtf} > {output.bed}.tmp;"""
+        "bedtools sort -i {output.bed}.tmp > {output.bed}.sorted;"
+        "bedtools merge -i {output.bed}.sorted  > {output.bed};"
+        "rm {output.bed}.tmp {output.bed}.sorted;"
+        "echo `date` > {log}"

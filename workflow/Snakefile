@@ -43,7 +43,7 @@ include: "rules/diffexp_deseq2.smk"
 # include: "rules/wgcna.smk"
 include: "rules/enrichment.smk"
 # include: "rules/hamr.smk"
-# include: "rules/modtect.smk"
+include: "rules/modification.smk"
 include: "rules/ref.smk"
 include: "rules/vis_volcano.smk"
 

@@ -152,6 +152,7 @@ def get_final_output():
             f"{sample_project}/alignment/{sample}/{sample}.star.bam",
             f"{sample_project}/assembly/{sample}/{sample}.stringtie.gtf",
             f"{sample_project}/quantification/{sample}.salmon",
+            f"{sample_project}/modification/{sample}/modtect/{sample}.modtect.combined.txt",
         ]
     final_output += [
         f"{sample_project}/assembly/gffcompare.annotated.gtf",
