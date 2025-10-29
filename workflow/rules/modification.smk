@@ -7,6 +7,8 @@ rule modtect_mod:
         output="{project}/modification/{sample}/modtect/{sample}.modtect.combined.txt",
     log:
         log="logs/{project}/modtect_{sample}.log",
+    params:
+        label="{project}/modification/{sample}/modtect/{sample}.modtect",
     benchmark:
         "benchmarks/{project}/{sample}.modtect.benchmark.txt"
     container:
@@ -19,4 +21,5 @@ rule modtect_mod:
     shell:
         "modtect.py {input.bam} {input.genome} 0 0 0 "
         "--threads {threads} --regionFile {input.bed} "
+        "--label {params.label}"
         "&>{log}"
