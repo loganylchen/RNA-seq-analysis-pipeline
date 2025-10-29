@@ -46,7 +46,7 @@ rule deseq2:
     benchmark:
         "benchmarks/{project}/deseq2.benchmark.txt"
     log:
-        "logs/{project}}/DESeq2_diffexp.log",
+        "logs/{project}/DESeq2_diffexp.log",
     threads: config["threads"]["deseq2"]
     script:
         "../scripts/deseq2.R"
