@@ -8,7 +8,7 @@ rule modtect_mod:
     log:
         log="logs/{project}/modtect_{sample}.log",
     params:
-        label="{project}/modification/{sample}/modtect/{sample}.modtect",
+        label=lambda wc, output: output.output.replace(".combined.txt", ""),
     benchmark:
         "benchmarks/{project}/{sample}.modtect.benchmark.txt"
     container:
