@@ -46,4 +46,4 @@ rule rnaseq_bam_split:
         "gatk SplitNCigarReads "
         "-R {input.fasta} "
         "-I {input.aln} "
-        "-o {output.split_bam} &>{log}"
+        "-O {output.split_bam} &>{log}"
