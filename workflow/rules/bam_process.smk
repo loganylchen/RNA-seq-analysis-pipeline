@@ -18,4 +18,4 @@ rule rnaseq_bam_split:
         "-R {input.fasta} "
         "-I {input.aln} "
         "--num_threads {threads} "
-        "-O {output.split_bam} &>{log}"
+        "-o {output.split_bam} &>{log}"
