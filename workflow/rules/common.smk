@@ -164,5 +164,4 @@ def get_final_output():
         f"{sample_project}/visualization/Volcano_validation.pdf",
         f"{sample_project}/enrichment/validation_gsea_enrichment.tsv",
     ]
-    print(final_output)
     return final_output
