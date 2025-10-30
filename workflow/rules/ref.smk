@@ -243,5 +243,5 @@ rule ref_dict:
     threads: 1
     shell:
         "picard CreateSequenceDictionary "
-        "R={input.fasta} "
-        "O={output.ref_dict} &>{log}"
+        "-R {input.fasta} "
+        "-O {output.ref_dict} &>{log}"

@@ -14,11 +14,11 @@ rule add_read_group:
     threads: 1
     shell:
         "picard AddOrReplaceReadGroups "
-        "I={input.aln} "
-        "O={output.withrg_bam} "
+        "-I {input.aln} "
+        "-O {output.withrg_bam} "
         "RGPL=illumina RGLB={wildcards.project} RGPU=NONE RGSM={wildcards.sample} "
         "&>{log};"
-        "picard BuildBamIndex I={output.withrg_bam};"
+        "picard BuildBamIndex -I {output.withrg_bam} &>>{log};"
 
 
 rule rnaseq_bam_split:
