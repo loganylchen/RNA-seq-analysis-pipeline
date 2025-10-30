@@ -3,7 +3,7 @@ rule add_read_group:
         aln="{project}/alignment/{sample}/{sample}.star.bam",
     output:
         withrg_bam=temp("{project}/alignment/{sample}/{sample}.withrg.bam"),
-        withrg_bai=temp("{project}/alignment/{sample}/{sample}.withrg.bai"),
+        withrg_bai=temp("{project}/alignment/{sample}/{sample}.withrg.bam.bai"),
     log:
         "logs/{project}/{sample}_add_readgroup.log",
     container:
@@ -21,8 +21,8 @@ rule add_read_group:
         "--RGLB {wildcards.project} "
         "--RGPU NONE "
         "--RGSM {wildcards.sample} "
+        "--CREATE_INDEX true "
         "&>{log};"
-        "picard BuildBamIndex -I {output.withrg_bam} &>>{log};"
 
 
 rule rnaseq_bam_split:
