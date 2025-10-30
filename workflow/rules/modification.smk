@@ -1,6 +1,6 @@
 rule modtect_mod:
     input:
-        bam="{project}/alignment/{sample}/{sample}.star.bam",
+        bam="{project}/alignment/{sample}/{sample}.split.bam",
         genome="resources/genome.fasta",
         bed="resources/transcriptome.bed",
     output:
