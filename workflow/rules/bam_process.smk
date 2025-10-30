@@ -28,7 +28,7 @@ rule add_read_group:
 rule rnaseq_bam_split:
     input:
         aln="{project}/alignment/{sample}/{sample}.withrg.bam",
-        bai="{project}/alignment/{sample}/{sample}.withrg.bai",
+        bai="{project}/alignment/{sample}/{sample}.withrg.bam.bai",
         fasta="resources/genome.fasta",
         ref_dict="resources/genome.dict",
     output:
