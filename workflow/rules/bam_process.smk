@@ -1,9 +1,9 @@
 rule rnaseq_bam_split:
     input:
         aln="{project}/alignment/{sample}/{sample}.star.bam",
+        fasta="resources/genome.fasta",
     output:
         split_bam="{project}/alignment/{sample}/{sample}.split.bam",
-        fasta="resources/genome.fasta",
     log:
         "logs/{project}/{sample}_bam_split.log",
     container:
