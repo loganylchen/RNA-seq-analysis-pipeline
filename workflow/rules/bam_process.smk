@@ -23,11 +23,11 @@ rule add_read_group:
 
 rule rnaseq_bam_split:
     input:
-        aln="{project}/alignment/{sample}/{sample}.star.bam",
+        aln="{project}/alignment/{sample}/{sample}.withrg.bam",
         fasta="resources/genome.fasta",
         ref_dict="resources/genome.dict",
     output:
-        split_bam="{project}/alignment/{sample}/{sample}.split.bam",
+        split_bam=temp("{project}/alignment/{sample}/{sample}.split.bam"),
     log:
         "logs/{project}/{sample}_bam_split.log",
     container:
