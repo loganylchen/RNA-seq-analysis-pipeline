@@ -2,6 +2,7 @@ rule rnaseq_bam_split:
     input:
         aln="{project}/alignment/{sample}/{sample}.star.bam",
         fasta="resources/genome.fasta",
+        ref_dict="resources/genome.dict",
     output:
         split_bam="{project}/alignment/{sample}/{sample}.split.bam",
     log:

@@ -225,3 +225,23 @@ rule gtf_to_bed:
         )
     script:
         "../scripts/gtf2bed.sh"
+
+
+rule ref_dict:
+    input:
+        fasta="resources/genome.fasta",
+    output:
+        ref_dict="resources/genome.dict",
+    log:
+        "logs/ref_dict.log",
+    container:
+        (
+            "docker://btrspg/picard:3.4.0"
+            if config["container"].get("picard", None) is None
+            else config["container"].get("picard", None)
+        )
+    threads: 1
+    shell:
+        "picard CreateSequenceDictionary "
+        "R={input.fasta} "
+        "O={output.ref_dict} &>{log}"
