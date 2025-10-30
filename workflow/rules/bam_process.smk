@@ -43,7 +43,7 @@ rule rnaseq_bam_split:
         )
     threads: 1
     shell:
-        "gatk3 -T SplitNCigarReads "
+        "gatk -T SplitNCigarReads "
         "-R {input.fasta} "
         "-I {input.aln} "
         "-o {output.split_bam} &>{log}"
