@@ -5,6 +5,9 @@ rule modtect_mod:
         bed="resources/transcriptome.bed",
     output:
         output="{project}/modification/{sample}/modtect/{sample}.modtect.combined.txt",
+        temp=temp(
+            directory("{project}/modification/{sample}/modtect/{sample}.modtect_tmp")
+        ),
     log:
         log="logs/{project}/modtect_{sample}.log",
     params:
