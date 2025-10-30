@@ -37,9 +37,9 @@ rule rnaseq_bam_split:
         "logs/{project}/{sample}_bam_split.log",
     container:
         (
-            "docker://btrspg/gatk:3.8"
-            if config["container"].get("gatk", None) is None
-            else config["container"].get("gatk", None)
+            "docker://broadinstitute/gatk:4.6.2.0"
+            if config["container"].get("gatk4", None) is None
+            else config["container"].get("gatk4", None)
         )
     threads: 1
     shell:
