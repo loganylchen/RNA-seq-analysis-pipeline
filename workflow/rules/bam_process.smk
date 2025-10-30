@@ -3,7 +3,7 @@ rule add_read_group:
         aln="{project}/alignment/{sample}/{sample}.star.bam",
     output:
         withrg_bam=temp("{project}/alignment/{sample}/{sample}.withrg.bam"),
-        withrg_bai=temp("{project}/alignment/{sample}/{sample}.withrg.bam.bai"),
+        withrg_bai=temp("{project}/alignment/{sample}/{sample}.withrg.bai"),
     log:
         "logs/{project}/{sample}_add_readgroup.log",
     container:
@@ -28,7 +28,7 @@ rule add_read_group:
 rule rnaseq_bam_split:
     input:
         aln="{project}/alignment/{sample}/{sample}.withrg.bam",
-        bai="{project}/alignment/{sample}/{sample}.withrg.bam.bai",
+        bai="{project}/alignment/{sample}/{sample}.withrg.bai",
         fasta="resources/genome.fasta",
         ref_dict="resources/genome.dict",
     output:
