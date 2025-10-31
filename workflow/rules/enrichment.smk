@@ -17,6 +17,7 @@ rule clusterprofiler_enrichment:
         padj_threshold=config["deg"].get("padj", 0.05),
         log2fc_threshold=config["deg"].get("log2fc", 2),
     threads: 1
+    priority: 10
     script:
         "../scripts/clusterprofiler.R"
 
@@ -42,5 +43,6 @@ rule parse_clusterprofiler_enrichment:
             else config["container"].get("clusterprofiler", None)
         )
     threads: 1
+    priority: 10
     script:
         "../scripts/parse_clusterprofiler.R"
