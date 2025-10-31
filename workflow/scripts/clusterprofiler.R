@@ -29,10 +29,11 @@ if(species == 'human'){
 }
 
 
-log2foldchange_threshold <- 1.5
-padj_threshold <- 0.05
-pvalueCutoff <- 0.05
 
+
+pvalueCutoff <- 0.05
+padj_threshold <- as.numeric(snakemake@params[["padj_threshold"]])
+log2foldchange_threshold <- as.numeric(snakemake@params[["log2fc_threshold"]])
 
 
 loading_data <- function(deg_tsv){

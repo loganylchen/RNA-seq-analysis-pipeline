@@ -14,6 +14,8 @@ rule clusterprofiler_enrichment:
         )
     params:
         species=config["clusterprofiler"]["species"],
+        padj_threshold=config["deg"].get("padj", 0.05),
+        log2fc_threshold=config["deg"].get("log2fc", 2),
     threads: 1
     script:
         "../scripts/clusterprofiler.R"

@@ -25,7 +25,6 @@ control_condition<-snakemake@params[["control_condition"]]
 
 
 
-
 # output
 discovery_deg_rds<-snakemake@output[["discovery_deg_rds"]]
 validation_deg_rds<-snakemake@output[["validation_deg_rds"]]

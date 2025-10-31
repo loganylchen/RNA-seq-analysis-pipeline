@@ -43,6 +43,10 @@ gffcompare:
 gffread:
   extra: ""
 
+deg:
+  padj: 0.00001
+  log2fc: 2
+
 reference:
   # Ensembl species name
   species: homo_sapiens
