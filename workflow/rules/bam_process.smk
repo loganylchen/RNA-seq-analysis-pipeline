@@ -45,7 +45,8 @@ rule rnaseq_bam_split:
         )
     threads: 1
     shell:
-        "gatk SplitNCigarReads "
+        "gatk --java-options '-Djava.io.tmpdir={resources.tmpdir}' "
+        "SplitNCigarReads "
         "-R {input.fasta} "
         "-I {input.aln} "
         "-O {output.split_bam} &>{log}"
