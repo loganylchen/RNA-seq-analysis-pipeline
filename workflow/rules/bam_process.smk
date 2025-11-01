@@ -34,9 +34,7 @@ rule rnaseq_bam_split:
     output:
         split_bam=temp("{project}/alignment/{sample}/{sample}.split.bam"),
     resources:
-        tmpdir=lambda wc, output: os.path.join(
-            os.path.dirname(output.split_bam), "tmpdir"
-        ),
+        tmpdir="tmp_dir/",
     log:
         "logs/{project}/{sample}_bam_split.log",
     container:
