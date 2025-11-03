@@ -38,7 +38,7 @@ featurecounts:
   extra: " -p --countReadPairs -t exon -g gene_id "
 
 gffcompare:
-  extra: " -R "
+  extra: "  "
 
 gffread:
   extra: ""

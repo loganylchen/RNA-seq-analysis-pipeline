@@ -136,6 +136,19 @@ def get_clean_data(wildcards):
         raise ValueError(f"{wildcards.sample} is a wired name!")
 
 
+def get_qc_files():
+    qc_files = []
+    for sample in samples.index:
+        sample_project = samples.loc[sample, "project"]
+        qc_files += [
+            f"{sample_project}/qc/fastp/{sample}/{sample}.fastp.json",
+            f"{sample_project}/qc/STAR/{sample}/{sample}.Log.final.out",
+            f"{sample_project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
+            f"{sample_project}/quantification/salmon/{sample}/",
+        ]
+    return qc_files
+
+
 def get_final_output():
     final_output = [
         "resources/star_genome",
@@ -145,11 +158,7 @@ def get_final_output():
     ]
     for sample in samples.index:
         sample_project = samples.loc[sample, "project"]
-        qc_files = [
-            f"{sample_project}/qc/fastp/{sample}/{sample}.fastp.json",
-            f"{sample_project}/qc/STAR/{sample}/{sample}.Log.final.out",
-            f"{sample_project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
-        ]
+
         final_output += [
             # f"{sample_project}/quantification/{sample}.hisat2_counts.txt",
             # f"{sample_project}/qc/{sample}/rnaseq_qc_results.txt",
@@ -158,7 +167,7 @@ def get_final_output():
             # f"{sample_project}/assembly/{sample}/{sample}.stringtie.gtf",
             # f"{sample_project}/quantification/{sample}.salmon",
             # f"{sample_project}/modification/{sample}/modtect/{sample}.modtect.combined.txt",
-        ] + qc_files
+        ]
 
     final_output += [
         # f"{sample_project}/assembly/gffcompare.annotated.gtf",
@@ -169,6 +178,7 @@ def get_final_output():
         # f"{sample_project}/deseq2/validation_deg.rds",
         f"{sample_project}/visualization/Volcano_validation.pdf",
         # f"{sample_project}/enrichment/validation_gsea_enrichment.tsv",
+        f"{sample_project}/qc/multiqc/",
     ]
 
     return final_output

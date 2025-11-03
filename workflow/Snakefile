@@ -47,6 +47,7 @@ include: "rules/enrichment.smk"
 include: "rules/modification.smk"
 include: "rules/ref.smk"
 include: "rules/vis_volcano.smk"
+include: "rules/qc.smk"
 
 
 # include: "rules/vis_pcaplot.smk"
