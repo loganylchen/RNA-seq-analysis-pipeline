@@ -147,6 +147,7 @@ def get_final_output():
         sample_project = samples.loc[sample, "project"]
         qc_files = [
             f"{sample_project}/qc/fastp/{sample}/{sample}.fastp.json",
+            f"{sample_project}/qc/STAR/{sample}/{sample}.Log.final.out",
         ]
         final_output += [
             # f"{sample_project}/quantification/{sample}.hisat2_counts.txt",
