@@ -155,6 +155,7 @@ def get_qc_files():
             f"{sample_project}/qc/STAR/{sample}/{sample}.Log.final.out",
             f"{sample_project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
             f"{sample_project}/quantification/salmon/{sample}/",
+            f"{sample_project}/qc/kallisto/{sample}/kallisto.log",
         ]
     return qc_files
 
