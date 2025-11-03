@@ -1,12 +1,12 @@
 rule preparing_rmats:
     input:
         case_bams=expand(
-            "{project}/alignment/{sample}/{sample}.star.bam",
+            "{project}/alignment/STAR/{sample}/{sample}.bam",
             project=project,
             sample=case_samples.index.tolist(),
         ),
         control_bams=expand(
-            "{project}/alignment/{sample}/{sample}.star.bam",
+            "{project}/alignment/STAR/{sample}/{sample}.bam",
             project=project,
             sample=control_samples.index.tolist(),
         ),

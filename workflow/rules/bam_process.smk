@@ -1,9 +1,9 @@
 rule add_read_group:
     input:
-        aln="{project}/alignment/{sample}/{sample}.star.bam",
+        aln="{project}/alignment/STAR/{sample}/{sample}.bam",
     output:
-        withrg_bam=temp("{project}/alignment/{sample}/{sample}.withrg.bam"),
-        withrg_bai=temp("{project}/alignment/{sample}/{sample}.withrg.bai"),
+        withrg_bam=temp("{project}/alignment/STAR/{sample}/{sample}.withrg.bam"),
+        withrg_bai=temp("{project}/alignment/STAR/{sample}/{sample}.withrg.bai"),
     log:
         "logs/{project}/{sample}_add_readgroup.log",
     container:
@@ -27,12 +27,12 @@ rule add_read_group:
 
 rule rnaseq_bam_split:
     input:
-        aln="{project}/alignment/{sample}/{sample}.withrg.bam",
-        bai="{project}/alignment/{sample}/{sample}.withrg.bai",
+        aln="{project}/alignment/STAR/{sample}/{sample}.withrg.bam",
+        bai="{project}/alignment/STAR/{sample}/{sample}.withrg.bai",
         fasta="resources/genome.fasta",
         ref_dict="resources/genome.dict",
     output:
-        split_bam=temp("{project}/alignment/{sample}/{sample}.split.bam"),
+        split_bam=temp("{project}/alignment/STAR/{sample}/{sample}.split.bam"),
     resources:
         tmpdir="tmp_dir/",
     log:

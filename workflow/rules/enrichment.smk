@@ -3,7 +3,7 @@ rule clusterprofiler_enrichment:
         discovery_deg_tsv="{project}/deseq2/discovery_deg.tsv",
         validation_deg_tsv="{project}/deseq2/validation_deg.tsv",
     output:
-        enrichment="{project}/enrichment/all_enrichment.rds",
+        enrichment="{project}/enrichment/clusterprofiler/all_enrichment.rds",
     log:
         "logs/{project}/enrichment_clusterprofiler.log",
     container:
@@ -24,16 +24,16 @@ rule clusterprofiler_enrichment:
 
 rule parse_clusterprofiler_enrichment:
     input:
-        enrichment="{project}/enrichment/all_enrichment.rds",
+        enrichment="{project}/enrichment/clusterprofiler/all_enrichment.rds",
     output:
-        discovery_go="{project}/enrichment/discovery_go_enrichment.tsv",
-        discovery_kegg="{project}/enrichment/discovery_kegg_enrichment.tsv",
-        discovery_others="{project}/enrichment/discovery_others_enrichment.tsv",
-        discovery_gsea="{project}/enrichment/discovery_gsea_enrichment.tsv",
-        validation_go="{project}/enrichment/validation_go_enrichment.tsv",
-        validation_kegg="{project}/enrichment/validation_kegg_enrichment.tsv",
-        validation_others="{project}/enrichment/validation_others_enrichment.tsv",
-        validation_gsea="{project}/enrichment/validation_gsea_enrichment.tsv",
+        discovery_go="{project}/enrichment/clusterprofiler/discovery_go_enrichment.tsv",
+        discovery_kegg="{project}/enrichment/clusterprofiler/discovery_kegg_enrichment.tsv",
+        discovery_others="{project}/enrichment/clusterprofiler/discovery_others_enrichment.tsv",
+        discovery_gsea="{project}/enrichment/clusterprofiler/discovery_gsea_enrichment.tsv",
+        validation_go="{project}/enrichment/clusterprofiler/validation_go_enrichment.tsv",
+        validation_kegg="{project}/enrichment/clusterprofiler/validation_kegg_enrichment.tsv",
+        validation_others="{project}/enrichment/clusterprofiler/validation_others_enrichment.tsv",
+        validation_gsea="{project}/enrichment/clusterprofiler/validation_gsea_enrichment.tsv",
     log:
         "logs/{project}/parse_enrichment_clusterprofiler.log",
     container:

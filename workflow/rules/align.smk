@@ -4,10 +4,10 @@ rule star_align:
         idx="resources/star_genome",
         gtf="resources/genome.gtf",
     output:
-        aln="{project}/alignment/{sample}/{sample}.star.bam",
-        temp_dir=temp(directory("{project}/alignment/{sample}/STAR_TMP")),
-        reads_per_gene="{project}/quantification/{sample}/{sample}.ReadsPerGene.out.tab",
-        qc_log="{project}/qc/{sample}/{sample}.Log.final.out",
+        aln="{project}/alignment/STAR/{sample}/{sample}.bam",
+        temp_dir=temp(directory("{project}/alignment/STAR_TMP/{sample}")),
+        reads_per_gene="{project}/quantification/STAR/{sample}/{sample}.ReadsPerGene.out.tab",
+        qc_log="{project}/qc/STAR/{sample}/{sample}.Log.final.out",
     log:
         "logs/{project}/{sample}_star.log",
     container:
@@ -31,6 +31,3 @@ rule star_align:
         "> {output.aln} 2>{log};"
         "mv {output.temp_dir}/ReadsPerGene.out.tab {output.reads_per_gene}; "
         "mv {output.temp_dir}/Log.final.out {output.qc_log}; "
-
-
-

@@ -1,10 +1,10 @@
 rule assembly_stringtie2:
     input:
-        bam="{project}/alignment/{sample}/{sample}.star.bam",
-        rnaseq_qc="{project}/qc/{sample}/rnaseq_qc_results.txt",
+        bam="{project}/alignment/STAR/{sample}/{sample}.bam",
+        rnaseq_qc="{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
         gtf="resources/genome.gtf",
     output:
-        gtf="{project}/assembly/{sample}/{sample}.stringtie.gtf",
+        gtf="{project}/assembly/stringtie/{sample}/{sample}.stringtie.gtf",
     params:
         extra=config["stringtie"]["extra"],
         strand_param=lambda wildcards, input: stringtie_strand_infer(input.rnaseq_qc),
@@ -33,13 +33,13 @@ rule assembly_stringtie2:
 rule assembly_merge:
     input:
         gtfs=expand(
-            "{project}/assembly/{sample}/{sample}.stringtie.gtf",
+            "{project}/assembly/stringtie/{sample}/{sample}.stringtie.gtf",
             project=project,
             sample=discovery_samples.index.tolist(),
         ),
         ref_gtf="resources/genome.gtf",
     output:
-        gtf="{project}/assembly/merged.gtf",
+        gtf="{project}/assembly/stringtie/merged.gtf",
     params:
         extra=config["stringtie"]["merge_extra"],
     container:

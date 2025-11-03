@@ -1,12 +1,12 @@
 rule modtect_mod:
     input:
-        bam="{project}/alignment/{sample}/{sample}.split.bam",
+        bam="{project}/alignment/STAR/{sample}/{sample}.split.bam",
         genome="resources/genome.fasta",
         bed="resources/transcriptome.bed",
     output:
-        output="{project}/modification/{sample}/modtect/{sample}.modtect.combined.txt",
+        output="{project}/modification/modtect/{sample}/{sample}.modtect.combined.txt",
         temp=temp(
-            directory("{project}/modification/{sample}/modtect/{sample}.modtect_tmp")
+            directory("{project}/modification/modtect/{sample}/{sample}.modtect_tmp")
         ),
     log:
         log="logs/{project}/modtect_{sample}.log",

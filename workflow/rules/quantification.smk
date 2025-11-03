@@ -1,10 +1,10 @@
 rule featurecounts_quantification_star:
     input:
-        bam="{project}/alignment/{sample}/{sample}.star.bam",
-        rnaseq_qc="{project}/qc/{sample}/rnaseq_qc_results.txt",
+        bam="{project}/alignment/STAR/{sample}/{sample}.bam",
+        rnaseq_qc="{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
         gtf="resources/genome.gtf",
     output:
-        counts="{project}/quantification/{sample}.star_counts.txt",
+        counts="{project}/quantification/featurecounts/{sample}.txt",
     params:
         extra=config["featurecounts"]["extra"],
         strand_param=lambda wildcards, input: featurecounts_strand_infer(
@@ -18,7 +18,7 @@ rule featurecounts_quantification_star:
         )
     threads: config["threads"]["featurecounts"]
     log:
-        "logs/quantification/{project}_{sample}_star.log",
+        "logs/{project}/{sample}_featurecounts_star.log",
     shell:
         "featureCounts -T {threads} "
         "{params.extra} "
@@ -32,9 +32,9 @@ rule salmon_quantification:
     input:
         unpack(get_clean_data),
         idx="{project}/assembly/transcriptome_salmon_index",
-        rnaseq_qc="{project}/qc/{sample}/rnaseq_qc_results.txt",
+        rnaseq_qc="{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
     output:
-        outdir=directory("{project}/quantification/{sample}.salmon"),
+        outdir=directory("{project}/quantification/salmon/{sample}/"),
     params:
         extra=config.get("salmon", {}).get("extra", ""),
         strand_param=lambda wildcards, input: salmon_strand_infer(input.rnaseq_qc),

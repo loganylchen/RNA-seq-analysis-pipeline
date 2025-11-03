@@ -145,23 +145,28 @@ def get_final_output():
     ]
     for sample in samples.index:
         sample_project = samples.loc[sample, "project"]
+        qc_files = [
+            f"{sample_project}/qc/fastp/{sample}/{sample}.fastp.json",
+        ]
         final_output += [
             # f"{sample_project}/quantification/{sample}.hisat2_counts.txt",
-            f"{sample_project}/qc/{sample}/rnaseq_qc_results.txt",
-            f"{sample_project}/quantification/{sample}.star_counts.txt",
-            f"{sample_project}/alignment/{sample}/{sample}.star.bam",
-            f"{sample_project}/assembly/{sample}/{sample}.stringtie.gtf",
-            f"{sample_project}/quantification/{sample}.salmon",
-            f"{sample_project}/modification/{sample}/modtect/{sample}.modtect.combined.txt",
-        ]
+            # f"{sample_project}/qc/{sample}/rnaseq_qc_results.txt",
+            # f"{sample_project}/quantification/{sample}.star_counts.txt",
+            # f"{sample_project}/alignment/{sample}/{sample}.star.bam",
+            # f"{sample_project}/assembly/{sample}/{sample}.stringtie.gtf",
+            # f"{sample_project}/quantification/{sample}.salmon",
+            # f"{sample_project}/modification/{sample}/modtect/{sample}.modtect.combined.txt",
+        ] + qc_files
+
     final_output += [
-        f"{sample_project}/assembly/gffcompare.annotated.gtf",
-        f"{sample_project}/transcript_splicing/rmats",
-        f"{sample_project}/assembly/transcriptome.fasta",
-        f"{sample_project}/quantification/STAR_fc_count_matrix_PUREE.txt",
-        f"{sample_project}/deseq2/discovery_count_matrix.rds",
-        f"{sample_project}/deseq2/validation_deg.rds",
-        f"{sample_project}/visualization/Volcano_validation.pdf",
-        f"{sample_project}/enrichment/validation_gsea_enrichment.tsv",
+        # f"{sample_project}/assembly/gffcompare.annotated.gtf",
+        # f"{sample_project}/transcript_splicing/rmats",
+        # f"{sample_project}/assembly/transcriptome.fasta",
+        # f"{sample_project}/quantification/STAR_fc_count_matrix_PUREE.txt",
+        # f"{sample_project}/deseq2/discovery_count_matrix.rds",
+        # f"{sample_project}/deseq2/validation_deg.rds",
+        # f"{sample_project}/visualization/Volcano_validation.pdf",
+        # f"{sample_project}/enrichment/validation_gsea_enrichment.tsv",
     ]
+
     return final_output

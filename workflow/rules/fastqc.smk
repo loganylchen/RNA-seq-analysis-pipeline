@@ -13,8 +13,8 @@ rule fastp:
             else "{project}/clean_data/{sample}.fastq.gz"
         ),
         fq2="{project}/clean_data/{sample}_2.fastq.gz",
-        html="{project}/report/{sample}.fastp.html",
-        json="{project}/qc/{sample}/{sample}.fastp.json",
+        html="{project}/report/fastp/{sample}.fastp.html",
+        json="{project}/qc/fastp/{sample}/{sample}.fastp.json",
     log:
         "logs/{project}/fastp_{sample}.log",
     container:

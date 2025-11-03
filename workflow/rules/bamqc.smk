@@ -1,10 +1,10 @@
 rule qualimap_rnaseq_qc:
     input:
-        bam="{project}/alignment/{sample}/{sample}.star.bam",
+        bam="{project}/alignment/STAR/{sample}.bam",
         gtf="resources/genome.gtf",
     output:
-        rnaseq_qc="{project}/qc/{sample}/rnaseq_qc_results.txt",
-        temp_dir=temp(directory("{project}/qc/{sample}/temp")),
+        rnaseq_qc="{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
+        temp_dir=temp(directory("{project}/qc/temp/{sample}")),
     params:
         pe="-pe" if is_pe else "",
         outdir=lambda wc, output: os.path.dirname(output.rnaseq_qc),
@@ -17,9 +17,8 @@ rule qualimap_rnaseq_qc:
     threads: 1
     resources:
         mem_mb=1024 * 20,
-        tmpdir="./temp",
     log:
-        "logs/{project}/{sample}_star.log",
+        "logs/{project}/{sample}_qualimap-rnaseq-qc.log",
     shell:
         "mkdir -p {output.temp_dir};"
         "JAVA_OPTS='-Djava.io.tmpdir={output.temp_dir}' qualimap rnaseq "

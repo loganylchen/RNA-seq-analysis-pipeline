@@ -1,7 +1,7 @@
 rule count_matrix:
     input:
         expand(
-            "{project}/quantification/{sample}/{sample}.ReadsPerGene.out.tab",
+            "{project}/quantification/STAR/{sample}/{sample}.ReadsPerGene.out.tab",
             project=project,
             sample=samples.index.tolist(),
         ),
