@@ -1,6 +1,6 @@
 rule qualimap_rnaseq_qc:
     input:
-        bam="{project}/alignment/STAR/{sample}.bam",
+        bam="{project}/alignment/STAR/{sample}/{sample}.bam",
         gtf="resources/genome.gtf",
     output:
         rnaseq_qc="{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",

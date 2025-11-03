@@ -148,6 +148,7 @@ def get_final_output():
         qc_files = [
             f"{sample_project}/qc/fastp/{sample}/{sample}.fastp.json",
             f"{sample_project}/qc/STAR/{sample}/{sample}.Log.final.out",
+            f"{sample_project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
         ]
         final_output += [
             # f"{sample_project}/quantification/{sample}.hisat2_counts.txt",
