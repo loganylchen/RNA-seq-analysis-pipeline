@@ -99,6 +99,16 @@ def kallisto_strand_infer(qc_file):
         return "  "
 
 
+def hisat2_strand_infer(qc_file):
+    strand = get_sequence_type(qc_file)
+    if strand == "FWD":
+        return " --rna-strandness FR"
+    elif strand == "REV":
+        return " --rna-strandness RF"
+    else:
+        return "  "
+
+
 def get_sra(wildcards):
     return samples.loc[wildcards.sample].loc["raw_data"]
 
@@ -156,6 +166,7 @@ def get_qc_files():
             f"{sample_project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
             f"{sample_project}/quantification/salmon/{sample}/",
             f"{sample_project}/qc/kallisto/{sample}/kallisto.log",
+            f"{sample_project}/qc/hisat2/{sample}/{sample}.log",
         ]
     return qc_files
 

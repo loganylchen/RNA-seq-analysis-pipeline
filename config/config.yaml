@@ -16,6 +16,8 @@ threads:
   salmon: 6
   deseq2: 10
   kallisto: 10
+  hisat2: 10
+
 
 rmats:
   extra: " --variable-read-length --readLength 100 --novelSS --individual-counts "
@@ -28,7 +30,7 @@ star:
   index_extra: ""
 
 hisat2:
-  extra: ""
+  extra: " --dta "
   index_extra: ""
 
 stringtie:
