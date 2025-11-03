@@ -1,11 +1,11 @@
 rule deseq2_init:
     input:
-        counts="{project}/quantification/STAR_fc_count_matrix.txt",
+        counts="{project}/quantification/STAR_FC/count_matrix.txt",
     output:
-        discovery_count_rds="{project}/deseq2/discovery_count_matrix.rds",
-        validation_count_rds="{project}/deseq2/validation_count_matrix.rds",
-        discovery_vst_rds="{project}/deseq2/discovery_vst_matrix.rds",
-        validation_vst_rds="{project}/deseq2/validation_vst_matrix.rds",
+        discovery_count_rds="{project}/DEG/deseq2/discovery_count_matrix.rds",
+        validation_count_rds="{project}/DEG/deseq2/validation_count_matrix.rds",
+        discovery_vst_rds="{project}/DEG/deseq2/discovery_vst_matrix.rds",
+        validation_vst_rds="{project}/DEG/deseq2/validation_vst_matrix.rds",
     params:
         samples=config["samples"],
         project=project,
@@ -27,13 +27,13 @@ rule deseq2_init:
 
 rule deseq2:
     input:
-        discovery_count_rds="{project}/deseq2/discovery_count_matrix.rds",
-        validation_count_rds="{project}/deseq2/validation_count_matrix.rds",
+        discovery_count_rds="{project}/DEG/deseq2/discovery_count_matrix.rds",
+        validation_count_rds="{project}/DEG/deseq2/validation_count_matrix.rds",
     output:
-        discovery_deg_rds="{project}/deseq2/discovery_deg.rds",
-        validation_deg_rds="{project}/deseq2/validation_deg.rds",
-        discovery_deg_tsv="{project}/deseq2/discovery_deg.tsv",
-        validation_deg_tsv="{project}/deseq2/validation_deg.tsv",
+        discovery_deg_rds="{project}/DEG/deseq2/discovery_deg.rds",
+        validation_deg_rds="{project}/DEG/deseq2/validation_deg.rds",
+        discovery_deg_tsv="{project}/DEG/deseq2/discovery_deg.tsv",
+        validation_deg_tsv="{project}/DEG/deseq2/validation_deg.tsv",
     params:
         case_condition=case_condition,
         control_condition=control_condition,

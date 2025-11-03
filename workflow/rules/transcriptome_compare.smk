@@ -1,11 +1,11 @@
 rule transcript_compare_gffcompare:
     input:
-        predicted_gtf="{project}/assembly/merged.gtf",
+        predicted_gtf="{project}/assembly/stringtie/merged.gtf",
         reference_gtf="resources/genome.gtf",
     output:
-        cmp="{project}/assembly/gffcompare.annotated.gtf",
+        cmp="{project}/assembly/stringtie/gffcompare.annotated.gtf",
     params:
-        out_prefix="{project}/assembly/gffcompare",
+        out_prefix="{project}/assembly/stringtie/gffcompare",
         extra=config["gffcompare"]["extra"],
     container:
         (

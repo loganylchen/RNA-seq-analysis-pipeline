@@ -167,7 +167,7 @@ def get_final_output():
         # f"{sample_project}/quantification/STAR_fc_count_matrix_PUREE.txt",
         # f"{sample_project}/deseq2/discovery_count_matrix.rds",
         # f"{sample_project}/deseq2/validation_deg.rds",
-        # f"{sample_project}/visualization/Volcano_validation.pdf",
+        f"{sample_project}/visualization/Volcano_validation.pdf",
         # f"{sample_project}/enrichment/validation_gsea_enrichment.tsv",
     ]
 

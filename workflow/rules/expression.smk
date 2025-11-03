@@ -28,13 +28,13 @@ rule count_matrix:
 rule count_matrix_star_FC:
     input:
         expand(
-            "{project}/quantification/{sample}.star_counts.txt",
+            "{project}/quantification/featurecounts/{sample}.txt",
             project=project,
             sample=samples.index.tolist(),
         ),
     output:
-        count_matrix="{project}/quantification/STAR_fc_count_matrix.txt",
-        puree_count_matrix="{project}/quantification/STAR_fc_count_matrix_PUREE.txt",
+        count_matrix="{project}/quantification/STAR_FC/count_matrix.txt",
+        puree_count_matrix="{project}/quantification/STAR_FC/count_matrix_PUREE.txt",
     log:
         "logs/{project}/count-matrix_star2fc.log",
     params:
