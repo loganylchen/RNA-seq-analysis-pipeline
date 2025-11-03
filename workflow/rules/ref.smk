@@ -201,24 +201,24 @@ rule kallisto_index:
     output:
         index=directory("{project}/assembly/stringtie/transcriptome_kallisto_index"),
     params:
-        extra=config.get("salmon", {}).get("extra_index", ""),
-    threads: config["threads"]["salmon"]
+        extra=config.get("kallisto", {}).get("extra_index", ""),
+    threads: config["threads"].get("kallisto", 1)
     resources:
         mem_mb=1024 * 10,
     container:
         (
-            "docker://btrspg/salmon:1.10.3"
-            if config["container"].get("salmon", None) is None
-            else config["container"].get("salmon", None)
+            "docker://btrspg/kallisto:0.51.1"
+            if config["container"].get("kallisto", None) is None
+            else config["container"].get("kallisto", None)
         )
     log:
-        "logs/{project}/salmon_index.log",
+        "logs/{project}/kallisto_index.log",
     shell:
-        "salmon index "
-        "{params.extra} "
-        "-p {threads} "
-        "-t {input.fasta} "
+        "kallisto index "
         "-i {output.index} "
+        "{params.extra} "
+        "-t {threads} "
+        "{input.fasta} "
         "&> {log} "
 
 

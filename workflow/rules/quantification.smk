@@ -59,3 +59,38 @@ rule salmon_quantification:
         "-p {threads} "
         "-o {output.outdir} "
         "&> {log} "
+
+
+rule kallisto_quantification:
+    input:
+        unpack(get_clean_data),
+        idx="{project}/assembly/stringtie/transcriptome_kallisto_index",
+        rnaseq_qc="{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
+    output:
+        outdir=directory("{project}/quantification/kallisto/{sample}/"),
+        qc_log="{project}/qc/kallisto/{sample}/kallisto.log",
+    params:
+        extra=config.get("kallisto", {}).get("extra", ""),
+        strand_param=lambda wildcards, input: kallisto_strand_infer(input.rnaseq_qc),
+    threads: config["threads"].get("kallisto", 1)
+    resources:
+        mem_mb=1024 * 10,
+    container:
+        (
+            "docker://btrspg/kallisto:0.51.1"
+            if config["container"].get("kallisto", None) is None
+            else config["container"].get("kallisto", None)
+        )
+    log:
+        "logs/{project}/{sample}_kallisto_quantify.log",
+    shell:
+        "kallisto quant "
+        "-i {input.idx} "
+        "{params.strand_param} "
+        "{params.extra} "
+        "-t {threads} "
+        "-o {output.outdir} "
+        "{input.fq1} "
+        "{input.fq2} "
+        "&> {log}; "
+        "cp {log} {output.qc_log};"

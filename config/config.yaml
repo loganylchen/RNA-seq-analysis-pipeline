@@ -15,6 +15,7 @@ threads:
   rmats: 6
   salmon: 6
   deseq2: 10
+  kallisto: 10
 
 rmats:
   extra: " --variable-read-length --readLength 100 --novelSS --individual-counts "

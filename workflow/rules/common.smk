@@ -89,6 +89,16 @@ def salmon_strand_infer(qc_file):
         return " -l IU "
 
 
+def kallisto_strand_infer(qc_file):
+    strand = get_sequence_type(qc_file)
+    if strand == "FWD":
+        return " --fr-stranded "
+    elif strand == "REV":
+        return " --rf-stranded "
+    else:
+        return "  "
+
+
 def get_sra(wildcards):
     return samples.loc[wildcards.sample].loc["raw_data"]
 
