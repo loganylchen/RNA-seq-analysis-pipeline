@@ -31,7 +31,7 @@ rule featurecounts_quantification_star:
 rule salmon_quantification:
     input:
         unpack(get_clean_data),
-        idx="{project}/assembly/transcriptome_salmon_index",
+        idx="{project}/assembly/stringtie/transcriptome_salmon_index",
         rnaseq_qc="{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
     output:
         outdir=directory("{project}/quantification/salmon/{sample}/"),

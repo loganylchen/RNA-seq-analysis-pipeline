@@ -148,9 +148,9 @@ rule hisat2_index:
 rule get_transcript_sequence:
     input:
         fasta="resources/genome.fasta",
-        gtf="{project}/assembly/gffcompare.annotated.gtf",
+        gtf="{project}/assembly/stringtie/gffcompare.annotated.gtf",
     output:
-        fasta="{project}/assembly/transcriptome.fasta",
+        fasta="{project}/assembly/stringtie/transcriptome.fasta",
     params:
         extra=config.get("gffread", {}).get("extra", ""),
     threads: 1
@@ -170,9 +170,36 @@ rule get_transcript_sequence:
 
 rule salmon_index:
     input:
-        fasta="{project}/assembly/transcriptome.fasta",
+        fasta="{project}/assembly/stringtie/transcriptome.fasta",
     output:
-        index=directory("{project}/assembly/transcriptome_salmon_index"),
+        index=directory("{project}/assembly/stringtie/transcriptome_salmon_index"),
+    params:
+        extra=config.get("salmon", {}).get("extra_index", ""),
+    threads: config["threads"]["salmon"]
+    resources:
+        mem_mb=1024 * 10,
+    container:
+        (
+            "docker://btrspg/salmon:1.10.3"
+            if config["container"].get("salmon", None) is None
+            else config["container"].get("salmon", None)
+        )
+    log:
+        "logs/{project}/salmon_index.log",
+    shell:
+        "salmon index "
+        "{params.extra} "
+        "-p {threads} "
+        "-t {input.fasta} "
+        "-i {output.index} "
+        "&> {log} "
+
+
+rule kallisto_index:
+    input:
+        fasta="{project}/assembly/stringtie/transcriptome.fasta",
+    output:
+        index=directory("{project}/assembly/stringtie/transcriptome_kallisto_index"),
     params:
         extra=config.get("salmon", {}).get("extra_index", ""),
     threads: config["threads"]["salmon"]
