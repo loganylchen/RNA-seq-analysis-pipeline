@@ -5,7 +5,7 @@ rule star_align:
         gtf="resources/genome.gtf",
     output:
         aln="{project}/alignment/STAR/{sample}/{sample}.bam",
-        temp_dir=temp(directory("{project}/alignment/STAR_TMP/{sample}")),
+        temp_dir=directory("{project}/alignment/STAR_TMP/{sample}"),
         reads_per_gene="{project}/quantification/STAR/{sample}/{sample}.ReadsPerGene.out.tab",
         qc_log="{project}/qc/STAR/{sample}/{sample}.Log.final.out",
     log:
@@ -26,6 +26,7 @@ rule star_align:
         "--outFileNamePrefix {output.temp_dir}/ "
         "--outTmpDir {output.temp_dir}/_STARTMP "
         "--outStd BAM_SortedByCoordinate "
+        "--outReadsUnmapped Fastx"
         "{params.extra} "
         "--runThreadN {threads} "
         "> {output.aln} 2>{log};"
