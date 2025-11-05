@@ -14,7 +14,7 @@ rule qualimap_rnaseq_qc:
             if config["container"].get("qualimap", None) is None
             else config["container"].get("qualimap", None)
         )
-    threads: 1
+    threads: config["threads"].get("qualimap", 10)
     resources:
         mem_mb=1024 * 20,
     log:
