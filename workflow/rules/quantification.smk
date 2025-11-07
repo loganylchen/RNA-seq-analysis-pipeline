@@ -64,7 +64,7 @@ rule salmon_quantification:
 rule kallisto_quantification:
     input:
         unpack(get_clean_data),
-        idx="{project}/assembly/stringtie/transcriptome_kallisto_index",
+        idx="{project}/assembly/stringtie/transcriptome_kallisto.idx",
         rnaseq_qc="{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
     output:
         outdir=directory("{project}/quantification/kallisto/{sample}/"),

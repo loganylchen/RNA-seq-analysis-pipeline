@@ -199,7 +199,7 @@ rule kallisto_index:
     input:
         fasta="{project}/assembly/stringtie/transcriptome.fasta",
     output:
-        index=directory("{project}/assembly/stringtie/transcriptome_kallisto_index"),
+        index="{project}/assembly/stringtie/transcriptome_kallisto.idx",
     params:
         extra=config.get("kallisto", {}).get("extra_index", ""),
     threads: config["threads"].get("kallisto", 1)
