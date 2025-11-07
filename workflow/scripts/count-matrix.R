@@ -15,7 +15,7 @@ suppressPackageStartupMessages({
 making_count_matrix <- function(fc_count_files, count_matrix,puree_count_matrix) {
     df_list <- list()
     for(f in fc_count_files){
-        sample_name <- gsub('.star_counts.txt','',basename(f))
+        sample_name <- gsub('.txt','',basename(f))
         message(sample_name,':',f)
         tmp_df <- read_tsv(f, comment = "#", progress = FALSE) %>% 
                         dplyr::mutate(sample=sample_name)
