@@ -12,7 +12,7 @@ rule add_read_group:
             if config["container"].get("picard", None) is None
             else config["container"].get("picard", None)
         )
-    threads: 1
+    threads: 10
     shell:
         "picard AddOrReplaceReadGroups "
         "-I {input.aln} "
@@ -43,7 +43,7 @@ rule rnaseq_bam_split:
             if config["container"].get("gatk4", None) is None
             else config["container"].get("gatk4", None)
         )
-    threads: 1
+    threads: 10
     shell:
         "gatk --java-options '-Djava.io.tmpdir={resources.tmpdir}' "
         "SplitNCigarReads "
