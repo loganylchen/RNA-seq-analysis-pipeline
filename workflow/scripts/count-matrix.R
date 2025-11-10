@@ -27,6 +27,7 @@ making_count_matrix <- function(fc_count_files, count_matrix,puree_count_matrix)
     df_merge <- data.table::rbindlist(df_list) %>% 
                 dplyr::mutate(Count=as.integer(Count))%>%
                 tidyr::pivot_wider(id_cols=Geneid,names_from=Sample,values_from=Count)
+    message(head(df_merge))
     write.table(df_merge,count_matrix,quote=F,sep='\t',row.names=F)
     write.table(t(df_merge),puree_count_matrix,quote=F,sep='\t',row.names=T,col.names=F)
 
