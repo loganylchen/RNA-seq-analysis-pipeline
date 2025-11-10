@@ -29,6 +29,10 @@ rule pcatools_vis:
     output:
         pdf="{project}/visualization/pca.pdf",
         png="{project}/visualization/pca.png",
+        discovery_pdf="{project}/visualization/discovery_pca.pdf",
+        discovery_png="{project}/visualization/discovery_pca.png",
+        validation_pdf="{project}/visualization/validation_pca.pdf",
+        validation_png="{project}/visualization/validation_pca.png",
     params:
         samples=config["samples"],
         project=project,
