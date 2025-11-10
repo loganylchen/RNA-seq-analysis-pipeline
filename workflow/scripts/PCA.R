@@ -36,7 +36,7 @@ output_png=snakemake@output[['png']]
 
 coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t')
 cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
-cts <- cts[,rownames(coldata_validation)]
+cts <- cts[,rownames(coldata)]
 dds <- DESeqDataSetFromMatrix(countData=cts,
                               colData=coldata,
                               design=~sample_type+condition)
