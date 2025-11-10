@@ -184,6 +184,7 @@ def get_final_output():
 
     final_output += [
         f"{sample_project}/visualization/Volcano_validation.pdf",
+        f"{sample_project}/visualization/pca.png",
         f"{sample_project}/qc/multiqc/",
     ]
 

@@ -21,3 +21,28 @@ rule volcano_vis:
         "benchmarks/{project}/Volcano.benchmark.txt"
     script:
         "../scripts/volcano.R"
+
+
+rule pcatools_vis:
+    input:
+        counts="{project}/quantification/STAR_FC/count_matrix.txt",
+    output:
+        pdf="{project}/visualization/pca.pdf",
+        png="{project}/visualization/pca.png",
+    params:
+        samples=config["samples"],
+        project=project,
+        case_condition=case_condition,
+        control_condition=control_condition,
+        discovery_sample_type=discovery_sample_type,
+    container:
+        (
+            "docker://btrspg/rlan:20251027"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    log:
+        "logs/{project}/vis_pca.log",
+    threads: config["threads"]["deseq2"]
+    script:
+        "../scripts/PCA.R"
