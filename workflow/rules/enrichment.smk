@@ -1,7 +1,7 @@
 rule clusterprofiler_enrichment:
     input:
-        discovery_deg_tsv="{project}/deseq2/discovery_deg.tsv",
-        validation_deg_tsv="{project}/deseq2/validation_deg.tsv",
+        discovery_deg_tsv="{project}/DEG/deseq2/discovery_deg.tsv",
+        validation_deg_tsv="{project}/DEG/deseq2/validation_deg.tsv",
     output:
         enrichment="{project}/enrichment/clusterprofiler/all_enrichment.rds",
     log:
