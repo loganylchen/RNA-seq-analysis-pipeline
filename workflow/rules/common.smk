@@ -186,7 +186,7 @@ def get_final_output():
         f"{sample_project}/visualization/Volcano_validation.pdf",
         f"{sample_project}/visualization/pca.png",
         f"{sample_project}/qc/multiqc/",
-        f"{sample_project}/enrichment/clusterprofiler/validation_gsea_enrichment.tsv",
+        # f"{sample_project}/enrichment/clusterprofiler/validation_gsea_enrichment.tsv",
     ]
 
     return final_output
