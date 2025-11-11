@@ -16,4 +16,4 @@ rule multiqc_qc:
     threads: 1
     shell:
         "multiqc -f "
-        "--outdir {output.outdir} &>{log}"
+        "--outdir {output.outdir} {input} &>{log}"
