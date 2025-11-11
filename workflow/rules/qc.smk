@@ -14,6 +14,7 @@ rule multiqc_qc:
             else config["container"].get("multiqc", None)
         )
     threads: 1
+    priority: 10
     shell:
         "multiqc -f "
         "--outdir {output.outdir} {input} &>{log}"
