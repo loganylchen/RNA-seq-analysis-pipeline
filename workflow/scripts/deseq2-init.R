@@ -33,7 +33,7 @@ discovery_vst_rds<-snakemake@output[["discovery_vst_rds"]]
 validation_vst_rds<-snakemake@output[["validation_vst_rds"]]
 
 
-coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t')
+coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t',)
 coldata_discovery <- coldata %>% 
                     dplyr::filter(sample_type==discovery_sample_type)
 

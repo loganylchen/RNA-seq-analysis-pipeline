@@ -3,14 +3,13 @@ sink(log)
 sink(log, type="message")
 
 
-suppressPackageStartupMessages({
-    library(dplyr)
-    library(DESeq2)
-    library(PCAtools)
-    library(cowplot)
-    library(ggplotify)
-    library(ggsci)
-})
+library(dplyr)
+library(DESeq2)
+library(PCAtools)
+library(cowplot)
+library(ggplotify)
+library(ggsci)
+
 
 
 parallel <- FALSE

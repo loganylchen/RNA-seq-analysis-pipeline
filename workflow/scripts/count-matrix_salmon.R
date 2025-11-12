@@ -31,7 +31,7 @@ making_count_matrix <- function(fc_count_files, count_matrix) {
 }
 
 making_count_matrix(unname(unlist(snakemake@input)), 
-                    snakemake@output[['count_matrix']],
+                    snakemake@output[['count_matrix']]
                     )
 
 
