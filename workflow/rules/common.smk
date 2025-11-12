@@ -15,7 +15,7 @@ discovery_sample_type = config["discovery_sample_type"]
 
 
 samples = (
-    pd.read_csv(config["samples"], sep="\t", dtype={"sample_name": str})
+    pd.read_csv(config["samples"], sep="\t", dtype={"sample_name": str}, comment="#")
     .set_index("sample_name", drop=False)
     .sort_index()
 )
