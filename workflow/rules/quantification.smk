@@ -72,7 +72,7 @@ rule kallisto_quantification:
         qc_log="{project}/qc/kallisto/{sample}/kallisto.log",
     params:
         extra=config.get("kallisto", {}).get("extra", ""),
-        outdir=lambda wc, output: os.path.dirname(output),
+        outdir=lambda wc, output: os.path.dirname(output.quantification_file),
         strand_param=lambda wildcards, input: kallisto_strand_infer(input.rnaseq_qc),
     threads: config["threads"].get("kallisto", 1)
     resources:
