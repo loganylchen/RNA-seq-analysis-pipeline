@@ -35,6 +35,7 @@ rule salmon_quantification:
         rnaseq_qc="{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
     output:
         outdir=directory("{project}/quantification/salmon/{sample}/"),
+        quantification_file="{project}/quantification/salmon/{sample}/quant.sf",
     params:
         extra=config.get("salmon", {}).get("extra", ""),
         strand_param=lambda wildcards, input: salmon_strand_infer(input.rnaseq_qc),
@@ -67,10 +68,11 @@ rule kallisto_quantification:
         idx="{project}/assembly/stringtie/transcriptome_kallisto.idx",
         rnaseq_qc="{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
     output:
-        outdir=directory("{project}/quantification/kallisto/{sample}/"),
+        quantification_file="{project}/quantification/kallisto/{sample}/abundance.tsv",
         qc_log="{project}/qc/kallisto/{sample}/kallisto.log",
     params:
         extra=config.get("kallisto", {}).get("extra", ""),
+        outdir=lambda wc, output: os.path.dirname(output),
         strand_param=lambda wildcards, input: kallisto_strand_infer(input.rnaseq_qc),
     threads: config["threads"].get("kallisto", 1)
     resources:
@@ -89,7 +91,7 @@ rule kallisto_quantification:
         "{params.strand_param} "
         "{params.extra} "
         "-t {threads} "
-        "-o {output.outdir} "
+        "-o {params.outdir} "
         "{input.fq1} "
         "{input.fq2} "
         "&> {log}; "

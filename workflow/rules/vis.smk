@@ -50,3 +50,61 @@ rule pcatools_vis:
     threads: config["threads"]["deseq2"]
     script:
         "../scripts/PCA.R"
+
+
+rule pcatools_vis_salmon:
+    input:
+        counts="{project}/quantification/salmon/count_matrix.txt",
+    output:
+        pdf="{project}/visualization/salmon_pca.pdf",
+        png="{project}/visualization/salmon_pca.png",
+        discovery_pdf="{project}/visualization/salmon_discovery_pca.pdf",
+        discovery_png="{project}/visualization/salmon_discovery_pca.png",
+        validation_pdf="{project}/visualization/salmon_validation_pca.pdf",
+        validation_png="{project}/visualization/salmon_validation_pca.png",
+    params:
+        samples=config["samples"],
+        project=project,
+        case_condition=case_condition,
+        control_condition=control_condition,
+        discovery_sample_type=discovery_sample_type,
+    container:
+        (
+            "docker://btrspg/rlan:20251027"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    log:
+        "logs/{project}/vis_pca_salmon.log",
+    threads: config["threads"]["deseq2"]
+    script:
+        "../scripts/PCA.R"
+
+
+rule pcatools_vis_kallisto:
+    input:
+        counts="{project}/quantification/kallisto/count_matrix.txt",
+    output:
+        pdf="{project}/visualization/kallisto_pca.pdf",
+        png="{project}/visualization/kallisto_pca.png",
+        discovery_pdf="{project}/visualization/kallisto_discovery_pca.pdf",
+        discovery_png="{project}/visualization/kallisto_discovery_pca.png",
+        validation_pdf="{project}/visualization/kallisto_validation_pca.pdf",
+        validation_png="{project}/visualization/kallisto_validation_pca.png",
+    params:
+        samples=config["samples"],
+        project=project,
+        case_condition=case_condition,
+        control_condition=control_condition,
+        discovery_sample_type=discovery_sample_type,
+    container:
+        (
+            "docker://btrspg/rlan:20251027"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    log:
+        "logs/{project}/vis_pca_kallisto.log",
+    threads: config["threads"]["deseq2"]
+    script:
+        "../scripts/PCA.R"
