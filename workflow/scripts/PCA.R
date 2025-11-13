@@ -98,9 +98,14 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
     drawConnectors = FALSE,
     returnPlot = FALSE)
 
+
+    metavars<- c('condition','plot_condition')
+    if(length(unique(colData(dds)$sample_type))>1){
+        metavars <- c(metavars,'sample_type')
+    }
     peigencor <- eigencorplot(p,
     components = getComponents(p, 1:10),
-    metavars = c('condition','sample_type','plot_condition'),
+    metavars = metavars,
     cexCorval = 1.0,
     fontCorval = 2,
     posLab = 'all', 
