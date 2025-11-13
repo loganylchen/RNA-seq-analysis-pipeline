@@ -57,7 +57,7 @@ dds_validation <- DESeqDataSetFromMatrix(countData=cts_validation,
                               design=~condition)
 
 draw_pca <- function(dds,coldata,output_pdf,output_png){
-    dds<- DESeq(dds, parallel=parallel)
+    dds<- DESeq(dds)
     vst <- assay(vst(dds))
     p <- pca(vst, metadata = colData(dds), removeVar = 0.1)
     pscree <- screeplot(p, components = getComponents(p, 1:30),
@@ -68,28 +68,25 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
             triangle = TRUE, trianglelabSize = 12,
             hline = 0, vline = 0,
             pointSize = 0.8, gridlines.major = FALSE, gridlines.minor = FALSE,
-            colby = 'sample_type',
+            colby = 'plot_condition',
             title = '', plotaxes = FALSE,
             returnPlot = FALSE)
 
     pbiplot <- biplot(p,
         # loadings parameters
             lab=rownames(coldata),
-            showLoadings = TRUE,
-            lengthLoadingsArrowsFactor = 1.5,
-            sizeLoadingsNames = 4,
-            colLoadingsNames = 'red4',
-    # other parameters
-            colby = 'sample_type', 
+            showLoadings = FALSE,
+            colby = 'plot_condition', 
             hline = 0, vline = 0,
             gridlines.major = FALSE, gridlines.minor = FALSE,
             pointSize = 5,
-            legendPosition = 'none', legendLabSize = 16, legendIconSize = 8.0,
-            shape = 'condition', 
+            legendLabSize = 16, legendIconSize = 8.0,
             drawConnectors = TRUE,
+            encircle = TRUE,
+            encircleFill = TRUE,
             title = 'PCA bi-plot',
             subtitle = 'PC1 versus PC2',
-            returnPlot = FALSE) + scale_color_png()
+            returnPlot = FALSE,legendPosition = 'top') + scale_color_bmj()
 
     ploadings <- plotloadings(p, rangeRetain = 0.01, labSize = 4,
     title = 'Loadings plot', axisLabSize = 12,
@@ -97,19 +94,20 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
     caption = 'Top 1% variables',
     shape = 24, shapeSizeRange = c(4, 8),
     col = c('limegreen', 'black', 'red3'),
-    legendPosition = 'none',
+    legendPosition = 'top',
     drawConnectors = FALSE,
     returnPlot = FALSE)
 
     peigencor <- eigencorplot(p,
     components = getComponents(p, 1:10),
-    metavars = c('condition','sample_type'),
+    metavars = c('condition','sample_type','plot_condition'),
     cexCorval = 1.0,
     fontCorval = 2,
     posLab = 'all', 
     rotLabX = 45,
     scale = TRUE,
     main = "PC clinical correlates",
+    col = c('white', 'cornsilk1', 'gold', 'forestgreen', 'darkgreen'),
     cexMain = 1.5,
     plotRsquared = FALSE,
     corFUN = 'pearson',
@@ -142,10 +140,9 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
     fig<- plot_grid(top_row, bottom_row, ncol = 1,
         rel_heights = c(1.1, 0.9))
 
-    ggsave(output_pdf,fig,width=20,height=10)
-    ggsave(output_png,fig,width=20,height=10)
+    ggsave(output_pdf,fig,width=20,height=13)
+    ggsave(output_png,fig,width=20,height=13)
 }
-
 
 draw_pca(dds,coldata,output_pdf,output_png)
 draw_pca(dds_discovery,coldata_discovery,output_discovery_pdf,output_discovery_png)
