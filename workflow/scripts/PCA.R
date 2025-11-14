@@ -37,7 +37,8 @@ output_discovery_png=snakemake@output[['discovery_png']]
 output_validation_pdf=snakemake@output[['validation_pdf']]
 output_validation_png=snakemake@output[['validation_png']]
 
-coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t')
+coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t')%>% 
+            dplyr::mutate(plot_condition=paste0(sample_type,':',condition)) 
 cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
 cts <- cts[,rownames(coldata)]
 dds <- DESeqDataSetFromMatrix(countData=cts,
