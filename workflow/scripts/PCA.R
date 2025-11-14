@@ -57,13 +57,17 @@ dds_validation <- DESeqDataSetFromMatrix(countData=cts_validation,
                               design=~condition)
 
 draw_pca <- function(dds,coldata,output_pdf,output_png){
+    message('DESeq')
     dds<- DESeq(dds)
+    message('DESeq:vst')
     vst <- assay(vst(dds))
+    message('DESeq:PCA')
     p <- pca(vst, metadata = colData(dds), removeVar = 0.1)
+    message('DESeq:scree')
     pscree <- screeplot(p, components = getComponents(p, 1:30),
             hline = 80, axisLabSize = 14, titleLabSize = 20,
             returnPlot = FALSE) 
-
+    message('DESeq:parisplot')
     ppairs <- pairsplot(p, components = getComponents(p, c(1:5)),
             triangle = TRUE, trianglelabSize = 12,
             hline = 0, vline = 0,
@@ -71,7 +75,7 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
             colby = 'plot_condition',
             title = '', plotaxes = FALSE,
             returnPlot = FALSE)
-
+    message('DESeq:biplot')
     pbiplot <- biplot(p,
         # loadings parameters
             lab=rownames(coldata),
@@ -87,7 +91,7 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
             title = 'PCA bi-plot',
             subtitle = 'PC1 versus PC2',
             returnPlot = FALSE,legendPosition = 'top') + scale_color_bmj()
-
+    message('DESeq:plotloadings')
     ploadings <- plotloadings(p, rangeRetain = 0.01, labSize = 4,
     title = 'Loadings plot', axisLabSize = 12,
     subtitle = 'PC1, PC2, PC3, PC4, PC5',
@@ -103,6 +107,8 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
     if(length(unique(colData(dds)$sample_type))>1){
         metavars <- c(metavars,'sample_type')
     }
+    message(metavars)
+    message('DESeq:epigencorplot')
     peigencor <- eigencorplot(p,
     components = getComponents(p, 1:10),
     metavars = metavars,
