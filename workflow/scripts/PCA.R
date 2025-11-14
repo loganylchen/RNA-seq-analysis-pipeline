@@ -148,7 +148,9 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
     ggsave(output_pdf,fig,width=20,height=13)
     ggsave(output_png,fig,width=20,height=13)
 }
-
+message('ALL')
 draw_pca(dds,coldata,output_pdf,output_png)
+message('DISCOVERY')
 draw_pca(dds_discovery,coldata_discovery,output_discovery_pdf,output_discovery_png)
+message('VALIDATION')
 draw_pca(dds_validation,coldata_validation,output_validation_pdf,output_validation_png)
