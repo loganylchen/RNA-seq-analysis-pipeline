@@ -179,7 +179,7 @@ def get_final_output():
         sample_project = samples.loc[sample, "project"]
 
         final_output += [
-            f"{sample_project}/modification/modtect/{sample}/{sample}.modtect.combined.txt",
+            # f"{sample_project}/modification/modtect/{sample}/{sample}.modtect.combined.txt",
         ]
 
     final_output += [
