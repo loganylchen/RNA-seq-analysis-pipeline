@@ -42,7 +42,7 @@ merge_modtect_files <- function(mod_tect_files, merged_file) {
     write.table(df_merge,merged_file,quote=F,sep='\t',row.names=F)
 }
 
-making_count_matrix(unname(unlist(snakemake@input)), 
+merge_modtect_files(unname(unlist(snakemake@input)), 
                     snakemake@output[['output']]
                     )
 
