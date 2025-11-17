@@ -17,7 +17,7 @@ merge_modtect_files <- function(mod_tect_files, merged_file) {
     for(f in mod_tect_files){
         sample_name <- basename(dirname(f))
         message(sample_name,':',f)
-        tmp_df <- read_tsv(f, comment = "#", progress = FALSE,header=FALSE) %>% 
+        tmp_df <- read_tsv(f, comment = "#", progress = FALSE,col_names=FALSE) %>% 
                         dplyr::mutate(Sample=sample_name)
         colnames(tmp_df)<-c(
             'chrom',	'position',	'reference_nt',
