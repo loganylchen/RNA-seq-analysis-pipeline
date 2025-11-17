@@ -26,3 +26,27 @@ rule modtect_mod:
         "--threads {threads} --regionFile {input.bed} "
         "--label {params.label}"
         "&>{log}"
+
+
+rule modtect_mod_merge:
+    input:
+        bam=expand(
+            "{project}/modification/modtect/{sample}/{sample}.modtect.combined.txt",
+            project=project,
+            sample=samples.index.tolist(),
+        ),
+    output:
+        output="{project}/modification/modtect/merged.modtect.txt",
+    log:
+        log="logs/{project}/modtect_merged.log",
+    benchmark:
+        "benchmarks/{project}/modtect_merged.benchmark.txt"
+    container:
+        (
+            "docker://btrspg/rlan:20251110"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    threads: 1
+    script:
+        "../scripts/modtect_merge.R"
