@@ -21,16 +21,16 @@ merge_modtect_files <- function(mod_tect_files, merged_file) {
                         dplyr::mutate(Sample=sample_name)
         colnames(tmp_df)<-c(
             'chrom',	'position',	'reference_nt',
-            	'mono-alleleLogP'	,'bi-alleleLogP',	'tri-alleleLogP'	,
-                'tetra-alleleLogP',	'variant_proportion',	'depth'	,
-                'deletionCount',	'deletion_proportion',	'refUpperCount',
-                	'refLowerCount'	,'altUpperCount'	,'altLowerCount',
-                    	'refPlusProp',	'altPlusProp'	,'A_count'	,
-                        'T_count'	,'G_count'	,'C_count',
-                        	'a_count',	't_count',	'g_count',
-                            	'c_count',	'has_reference_nt'	,'types_of_nt',
-                                	'ModTect_score',	'variant_readposn_median_fwd',	'variant_readposn_median_rev',
-                                    	'median_abs_dev_fwd'	'median_abs_dev_rev', 'Sample'
+            'mono-alleleLogP'	,'bi-alleleLogP',	'tri-alleleLogP'	,
+            'tetra-alleleLogP',	'variant_proportion',	'depth'	,
+            'deletionCount',	'deletion_proportion',	'refUpperCount',
+            'refLowerCount'	,'altUpperCount'	,'altLowerCount',
+            'refPlusProp',	'altPlusProp'	,'A_count'	,
+            'T_count'	,'G_count'	,'C_count',
+            'a_count',	't_count',	'g_count',
+            'c_count',	'has_reference_nt'	,'types_of_nt',
+            'ModTect_score',	'variant_readposn_median_fwd',	'variant_readposn_median_rev',
+            'median_abs_dev_fwd',	'median_abs_dev_rev', 'Sample'
         )
         message('reading:',f)
         df_list[[sample_name]] <- tmp_df
