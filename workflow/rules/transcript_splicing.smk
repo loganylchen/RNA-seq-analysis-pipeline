@@ -11,8 +11,8 @@ rule preparing_rmats:
             sample=control_samples.index.tolist(),
         ),
     output:
-        case_bam_list_f="{project}/transcript_splicing/rmats/case.list",
-        control_bam_list_f="{project}/transcript_splicing/rmats/control.list",
+        case_bam_list_f="{project}/transcript_splicing/rmats-temp/case.list",
+        control_bam_list_f="{project}/transcript_splicing/rmats-temp/control.list",
     log:
         "logs/{project}/rmats_sample_list.log",
     threads: 1
@@ -24,11 +24,11 @@ rule preparing_rmats:
 
 rule splicing_rmats:
     input:
-        case_bam_list_f="{project}/transcript_splicing/rmats/case.list",
-        control_bam_list_f="{project}/transcript_splicing/rmats/control.list",
+        case_bam_list_f="{project}/transcript_splicing/rmats-temp/case.list",
+        control_bam_list_f="{project}/transcript_splicing/rmats-temp/control.list",
         gtf="{project}/assembly/stringtie/gffcompare.annotated.gtf",
     output:
-        outdir=directory("{project}/transcript_splicing/rmats"),
+        outdir=directory("{project}/transcript_splicing/rmats/"),
         temp_dir=temp(directory("{project}/transcript_splicing/rmats_temp")),
     log:
         "logs/{project}/splicing_rmats.log",
