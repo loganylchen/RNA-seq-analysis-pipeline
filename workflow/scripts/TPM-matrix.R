@@ -13,7 +13,7 @@ suppressPackageStartupMessages({
 
 
 
-making_TPM_matrix <- function(fc_count_files, count_matrix) {
+making_TPM_matrix <- function(fc_count_files, tpm_matrix) {
     df_list <- list()
     for(f in fc_count_files){
         sample_name <- gsub('.txt','',basename(f))
@@ -32,11 +32,11 @@ making_TPM_matrix <- function(fc_count_files, count_matrix) {
                 dplyr::mutate(TPM=tpm)%>%
                 tidyr::pivot_wider(id_cols=Geneid,names_from=Sample,values_from=TPM)
     message(head(df_merge))
-    write.table(df_merge,count_matrix,quote=F,sep='\t',row.names=F)
+    write.table(df_merge,tpm_matrix,quote=F,sep='\t',row.names=F)
 }
 
 making_TPM_matrix(unname(unlist(snakemake@input)), 
-                    snakemake@output[['count_matrix']]
+                    snakemake@output[['tpm_matrix']]
                     )
 
 

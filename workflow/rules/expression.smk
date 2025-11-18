@@ -72,6 +72,26 @@ rule TPM_matrix_star_FC:
         "../scripts/TPM-matrix.R"
 
 
+rule TPM_separate_matrix:
+    input:
+        tpm_matrix="{project}/quantification/STAR_FC4splicetool/TPM_matrix.txt",
+    output:
+        discovery_tpm_matrix="{project}/quantification/STAR_FC4splicetool/Discovery_TPM_matrix.txt",
+    log:
+        "logs/{project}/tpm-matrix_star2fc4splicetool_sep.log",
+    params:
+        case_samples=discovery_case_samples.index.tolist(),
+        control_samples=discovery_control_samples.index.tolist(),
+    container:
+        (
+            "docker://btrspg/rlan:20251110"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    script:
+        "../scripts/TPM-matrix_sep.R"
+
+
 rule count_matrix_salmon:
     input:
         expand(

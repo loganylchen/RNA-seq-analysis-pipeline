@@ -24,7 +24,12 @@ samples = samples.loc[samples["project"] == project]
 case_samples = samples.loc[samples["condition"] == case_condition]
 control_samples = samples.loc[samples["condition"] == control_condition]
 discovery_samples = samples.loc[samples["sample_type"] == discovery_sample_type]
-
+discovery_case_samples = discovery_samples.loc[
+    discovery_samples["condition"] == case_condition
+]
+discovery_control_samples = discovery_samples.loc[
+    discovery_samples["condition"] == control_condition
+]
 # project = samples["project"].unique().tolist()
 # assert len(project) == 1, "Only one project is allowed!"
 # project = project[0]
@@ -192,7 +197,7 @@ def get_final_output():
         f"{sample_project}/modification/modtect/merged.modtect.txt",
         f"{sample_project}/transcript_splicing/rmats",
         f"{sample_project}/assembly/stringtie/gffcompare.sorted.bed",
-        f"{sample_project}/quantification/STAR_FC4splicetool/TPM_matrix.txt",
+        f"{sample_project}/quantification/STAR_FC4splicetool/Discovery_TPM_matrix.txt",
     ]
 
     return final_output

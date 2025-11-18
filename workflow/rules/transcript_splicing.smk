@@ -3,12 +3,12 @@ rule preparing_rmats:
         case_bams=expand(
             "{project}/alignment/STAR/{sample}/{sample}.bam",
             project=project,
-            sample=case_samples.index.tolist(),
+            sample=discovery_case_samples.index.tolist(),
         ),
         control_bams=expand(
             "{project}/alignment/STAR/{sample}/{sample}.bam",
             project=project,
-            sample=control_samples.index.tolist(),
+            sample=discovery_control_samples.index.tolist(),
         ),
     output:
         case_bam_list_f="{project}/transcript_splicing/rmats-temp/case.list",
