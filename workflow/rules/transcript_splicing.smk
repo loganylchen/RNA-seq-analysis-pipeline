@@ -78,6 +78,6 @@ rule splicetools:
         control_n=len(discovery_control_samples.index),
         case_n=len(discovery_case_samples.index),
         fdr=config["splicetools"].get("fdr", 0.05),
-    threads: 1
+    threads: 5
     script:
         "../scripts/splicetools.sh"
