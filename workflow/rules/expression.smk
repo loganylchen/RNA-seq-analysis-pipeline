@@ -49,6 +49,29 @@ rule count_matrix_star_FC:
         "../scripts/count-matrix.R"
 
 
+rule TPM_matrix_star_FC:
+    input:
+        expand(
+            "{project}/quantification/featurecounts_novel/{sample}.txt",
+            project=project,
+            sample=samples.index.tolist(),
+        ),
+    output:
+        tpm_matrix="{project}/quantification/STAR_FC4splicetool/TPM_matrix.txt",
+    log:
+        "logs/{project}/tpm-matrix_star2fc4splicetool.log",
+    params:
+        samples=samples.index.tolist(),
+    container:
+        (
+            "docker://btrspg/rlan:20251110"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    script:
+        "../scripts/TPM-matrix.R"
+
+
 rule count_matrix_salmon:
     input:
         expand(

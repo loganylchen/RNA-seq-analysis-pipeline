@@ -28,6 +28,36 @@ rule featurecounts_quantification_star:
         "{input.bam} &>{log}  "
 
 
+rule featurecounts_quantification_star_for_splicetools:
+    input:
+        bam="{project}/alignment/STAR/{sample}/{sample}.bam",
+        rnaseq_qc="{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
+        gtf="{project}/assembly/stringtie/gffcompare.annotated.gtf",
+    output:
+        counts="{project}/quantification/featurecounts_novel/{sample}.txt",
+    params:
+        extra=config["featurecounts"]["extra"],
+        strand_param=lambda wildcards, input: featurecounts_strand_infer(
+            input.rnaseq_qc
+        ),
+    container:
+        (
+            "docker://btrspg/subread:2.1.1"
+            if config["container"].get("subread", None) is None
+            else config["container"].get("subread", None)
+        )
+    threads: config["threads"]["featurecounts"]
+    log:
+        "logs/{project}/{sample}_featurecounts_star_for_splicetools.log",
+    shell:
+        "featureCounts -T {threads} "
+        "{params.extra} "
+        "{params.strand_param} "
+        "-a {input.gtf} "
+        "-o {output.counts} "
+        "{input.bam} &>{log}  "
+
+
 rule salmon_quantification:
     input:
         unpack(get_clean_data),
