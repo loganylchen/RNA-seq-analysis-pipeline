@@ -36,7 +36,7 @@ making_TPM_matrix <- function(fc_count_files, count_matrix) {
     write.table(df_merge,count_matrix,quote=F,sep='\t',row.names=F)
 }
 
-making_tpm_matrix(unname(unlist(snakemake@input)), 
+making_TPM_matrix(unname(unlist(snakemake@input)), 
                     snakemake@output[['count_matrix']]
                     )
 
