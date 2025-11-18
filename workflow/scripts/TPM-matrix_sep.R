@@ -17,7 +17,7 @@ making_TPM_matrix <- function(tpm_matrix,case_samples,control_samples, discovery
     
     df_merge <- read.csv(tpm_matrix,sep='\t')
     df_merge <- df_merge[,c(control_samples,case_samples)]
-    write.table(df_merge,discovery_tpm_matrix,quote=F,sep='\t',row.names=F)
+    write.table(df_merge,discovery_tpm_matrix,quote=F,sep='\t',row.names=T)
 }
 
 making_TPM_matrix(
