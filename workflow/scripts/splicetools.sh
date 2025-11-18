@@ -22,6 +22,8 @@ fdr="${snakemake_params[fdr]}"
 
 output_dir="${snakemake_output[output_dir]}"
 
+mkdir -p "${output_dir}"
+
 perl /opt/SpliceTools/bin/RIMedley.pl \
 	-r ${ri_jcec} \
 	-a ${annotation_bed12} \
