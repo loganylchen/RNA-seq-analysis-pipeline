@@ -3,7 +3,8 @@ log=${snakemake_log[0]}
 
 exec > "${log}" 2>&1
 
-
+set -x
+set -e
 
 
 ri_jcec="${snakemake_input[ri_jcec]}"
