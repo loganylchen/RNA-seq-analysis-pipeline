@@ -75,8 +75,8 @@ rule splicetools:
     params:
         control_tpm_threshold=config["splicetools"].get("control_tpm_threshold", 1),
         case_tpm_threshold=config["splicetools"].get("case_tpm_threshold", 1),
-        control_n=length(discovery_control_samples.index),
-        case_n=length(discovery_case_samples.index),
+        control_n=len(discovery_control_samples.index),
+        case_n=len(discovery_case_samples.index),
         fdr=config["splicetools"].get("fdr", 0.05),
     threads: 1
     script:
