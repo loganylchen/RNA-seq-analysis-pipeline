@@ -39,3 +39,22 @@ rule gtf_to_bed12:
         )
     script:
         "../scripts/gtf2bed12.py"
+
+
+rule sort_bed12:
+    input:
+        bed="{project}/assembly/stringtie/gffcompare.annotated.bed",
+    output:
+        bed="{project}/assembly/stringtie/gffcompare.sorted.bed",
+    log:
+        "logs/{project}/sort_bed.log",
+    benchmark:
+        "benchmarks/{project}/sort_bed.benchmark.txt"
+    container:
+        (
+            "docker://btrspg/bedtools:2.31.1"
+            if config["container"].get("bedtools", None) is None
+            else config["container"].get("bedtools", None)
+        )
+    shell:
+        "bedtools sort -i {input.bed} > {output.bed} 2>{log}"
