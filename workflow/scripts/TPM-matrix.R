@@ -21,12 +21,11 @@ making_TPM_matrix <- function(fc_count_files, count_matrix) {
         tmp_df <- read_tsv(f, comment = "#", progress = FALSE) %>% 
                         dplyr::mutate(Sample=sample_name)
         colnames(tmp_df) <- c('Geneid','Chr','Start','End','Strand','Length','Count','Sample')
-        tmp_df %>% 
+        message('reading:',f)
+        df_list[[sample_name]] <- tmp_df %>% 
         dplyr::mutate(length_kb=Length/1000) %>%
         dplyr::mutate(rpk=Count/length_kb) %>%
-        dplyr::mutate(tpm=rpk/(sum(rpk)/1e6))
-        message('reading:',f)
-        df_list[[sample_name]] <- tmp_df
+        dplyr::mutate(tpm=rpk/(sum(rpk)/1e6)) 
     }
     message('merging')
     df_merge <- data.table::rbindlist(df_list) %>% 
