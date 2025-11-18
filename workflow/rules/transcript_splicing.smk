@@ -29,6 +29,8 @@ rule splicing_rmats:
         gtf="{project}/assembly/stringtie/gffcompare.annotated.gtf",
     output:
         outdir=directory("{project}/transcript_splicing/rmats/"),
+        ri_jcec="{project}/transcript_splicing/rmats/RI.MATS.JCEC.txt",
+        se_jcec="{project}/transcript_splicing/rmats/SE.MATS.JCEC.txt",
         temp_dir=temp(directory("{project}/transcript_splicing/rmats_temp")),
     log:
         "logs/{project}/splicing_rmats.log",
@@ -50,3 +52,32 @@ rule splicing_rmats:
         "--nthread {threads} "
         "--od {output.outdir} "
         "--tmp {output.temp_dir} &>{log}"
+
+
+rule splicetools:
+    input:
+        ri_jcec="{project}/transcript_splicing/rmats/RI.MATS.JCEC.txt",
+        se_jcec="{project}/transcript_splicing/rmats/SE.MATS.JCEC.txt",
+        input_dir="{project}/transcript_splicing/rmats/",
+        annotation_bed12="{project}/assembly/stringtie/gffcompare.sorted.bed",
+        genome_fasta="resources/genome.fasta",
+        tpm_file="{project}/quantification/STAR_FC4splicetool/Discovery_TPM_matrix.txt",
+    output:
+        output_dir=directory("{project}/transcript_splicing/splicetools/"),
+    log:
+        "logs/{project}/splicetools.log",
+    container:
+        (
+            "docker://btrspg/splicetools:1.1"
+            if config["container"].get("splicetools", None) is None
+            else config["container"].get("splicetools", None)
+        )
+    params:
+        control_tpm_threshold=config["splicetools"].get("control_tpm_threshold", 1),
+        case_tpm_threshold=config["splicetools"].get("case_tpm_threshold", 1),
+        control_n=length(discovery_control_samples.index),
+        case_n=length(discovery_case_samples.index),
+        fdr=config["splicetools"].get("fdr", 0.05),
+    threads: 1
+    script:
+        "../scripts/splicetools.sh"
