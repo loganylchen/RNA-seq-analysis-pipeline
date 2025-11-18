@@ -64,7 +64,7 @@ def gtf_to_bed12(gtf_file, bed_file):
             exons = sorted(data['exons'])
             chrom_start = exons[0][0]
             chrom_end = exons[-1][1]
-            
+            gene_id = data['gene_id']
             block_count = len(exons)
             block_sizes = ','.join(str(e[1] - e[0]) for e in exons)
             block_starts = ','.join(str(e[0] - chrom_start) for e in exons)
@@ -73,7 +73,7 @@ def gtf_to_bed12(gtf_file, bed_file):
                 data['chrom'],
                 str(chrom_start),
                 str(chrom_end),
-                transcript_id,
+                f"{transcript_id}_{gene_id}",
                 '0',
                 data['strand'],
                 str(chrom_start),
