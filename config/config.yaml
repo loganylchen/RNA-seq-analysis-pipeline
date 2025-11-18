@@ -19,6 +19,11 @@ threads:
   hisat2: 10
 
 
+splicetools:
+  fdr: 0.05
+  control_tpm_threshold: 1
+  case_tpm_threshold: 1
+
 rmats:
   extra: " --variable-read-length --readLength 100 --novelSS --individual-counts "
 
