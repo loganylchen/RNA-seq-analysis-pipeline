@@ -16,8 +16,8 @@ suppressPackageStartupMessages({
 making_TPM_matrix <- function(tpm_matrix,case_samples,control_samples, discovery_tpm_matrix) {
     
     df_merge <- read.csv(tpm_matrix,sep='\t')
-    df_merge <- df_merge[,c(control_samples,case_samples)]
-    write.table(df_merge,discovery_tpm_matrix,quote=F,sep='\t',row.names=T)
+    df_merge <- df_merge[,c('Geneid',control_samples,case_samples)]
+    write.table(df_merge,discovery_tpm_matrix,quote=F,sep='\t',row.names=F)
 }
 
 making_TPM_matrix(
