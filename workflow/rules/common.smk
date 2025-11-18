@@ -191,6 +191,7 @@ def get_final_output():
         f"{sample_project}/enrichment/clusterprofiler/validation_gsea_enrichment.tsv",
         f"{sample_project}/modification/modtect/merged.modtect.txt",
         f"{sample_project}/transcript_splicing/rmats",
+        f"{sample_project}/assembly/stringtie/gffcompare.annotated.bed",
     ]
 
     return final_output

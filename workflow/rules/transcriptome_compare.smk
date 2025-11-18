@@ -20,3 +20,22 @@ rule transcript_compare_gffcompare:
         "gffcompare -r {input.reference_gtf} "
         "-o {params.out_prefix} "
         "{input.predicted_gtf} &>{log}"
+
+
+rule gtf_to_bed12:
+    input:
+        gtf="{project}/assembly/stringtie/gffcompare.annotated.gtf",
+    output:
+        bed="{project}/assembly/stringtie/gffcompare.annotated.bed",
+    log:
+        "logs/{project}/gtf2bed12.log",
+    benchmark:
+        "benchmarks/{project}/gtf2bed12.benchmark.txt"
+    container:
+        (
+            "docker://btrspg/python3:20251024"
+            if config["container"].get("python3", None) is None
+            else config["container"].get("python3", None)
+        )
+    script:
+        "../scripts/gtf2bed12.py"
