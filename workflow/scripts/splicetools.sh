@@ -25,7 +25,7 @@ output_dir="${snakemake_output[output_dir]}"
 
 mkdir -p "${output_dir}"
 tmp_genome_fasta=${output_dir}/genome_chr.fa
-tmp_bed12 =${output_dir}/annotation_chr.bed12
+tmp_bed12=${output_dir}/annotation_chr.bed12
 
 sed 's/>/>chr/' ${genome_fasta} > ${tmp_genome_fasta}
 sed 's/^/chr/' ${annotation_bed12} > ${tmp_bed12}
