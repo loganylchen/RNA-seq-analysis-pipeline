@@ -30,6 +30,13 @@ tmp_bed12=${output_dir}/annotation_chr.bed12
 sed 's/>/>chr/' ${genome_fasta} > ${tmp_genome_fasta}
 sed 's/^/chr/' ${annotation_bed12} > ${tmp_bed12}
 
+
+perl /opt/SpliceTools/bin/SpliceCompare.pl \
+	-i ${input_dir} \
+	-o ${output_dir} \
+	-f ${fdr}
+
+
 perl /opt/SpliceTools/bin/RIMedley.pl \
 	-r ${ri_jcec} \
 	-a ${tmp_bed12} \
@@ -48,9 +55,5 @@ perl /opt/SpliceTools/bin/SEMedley.pl \
 	-SN ${control_n},${case_n} \
 	-f ${fdr}
 
-perl /opt/SpliceTools/bin/SpliceCompare.pl \
-	-i ${input_dir} \
-	-o ${output_dir} \
-	-f ${fdr}
 
 rm ${tmp_genome_fasta} ${tmp_bed12}
