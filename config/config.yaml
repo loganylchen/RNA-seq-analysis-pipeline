@@ -99,3 +99,4 @@ container:
   python3: "docker://btrspg/python3:20251024"
   r: "docker://btrspg/rlan:20251027"
   clusterprofiler: "docker://btrspg/clusterprofiler:4.14.0"
+  splicetools: "docker://btrspg/splicetools:c9fd38227fcdf43d1e08e919480372751f2ee5a4"

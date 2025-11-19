@@ -68,7 +68,7 @@ rule splicetools:
         "logs/{project}/splicetools.log",
     container:
         (
-            "docker://btrspg/splicetools:1.1"
+            "docker://btrspg/splicetools:c9fd38227fcdf43d1e08e919480372751f2ee5a4"
             if config["container"].get("splicetools", None) is None
             else config["container"].get("splicetools", None)
         )
