@@ -24,11 +24,16 @@ fdr="${snakemake_params[fdr]}"
 output_dir="${snakemake_output[output_dir]}"
 
 mkdir -p "${output_dir}"
+tmp_genome_fasta=${output_dir}/genome_chr.fa
+tmp_bed12 =${output_dir}/annotation_chr.bed12
+
+sed 's/>/>chr/' ${genome_fasta} > ${tmp_genome_fasta}
+sed 's/^/chr/' ${annotation_bed12} > ${tmp_bed12}
 
 perl /opt/SpliceTools/bin/RIMedley.pl \
 	-r ${ri_jcec} \
-	-a ${annotation_bed12} \
-	-g ${genome_fasta} \
+	-a ${tmp_bed12} \
+	-g ${tmp_genome_fasta} \
 	-e ${tpm_file} \
 	-TPM ${control_tpm_threshold},${case_tpm_threshold} \
 	-SN ${control_n},${case_n} \
@@ -36,8 +41,8 @@ perl /opt/SpliceTools/bin/RIMedley.pl \
 
 perl /opt/SpliceTools/bin/SEMedley.pl \
 	-s ${se_jcec} \
-	-a ${annotation_bed12} \
-	-g ${genome_fasta} \
+	-a ${tmp_bed12} \
+	-g ${tmp_genome_fasta} \
 	-e ${tpm_file} \
 	-TPM ${control_tpm_threshold},${case_tpm_threshold} \
 	-SN ${control_n},${case_n} \
@@ -47,3 +52,5 @@ perl /opt/SpliceTools/bin/SpliceCompareParallel.pl \
 	-i ${input_dir} \
 	-o ${output_dir} \
 	-f ${fdr}
+
+rm ${tmp_genome_fasta} ${tmp_bed12}
