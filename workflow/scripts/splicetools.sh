@@ -48,7 +48,7 @@ perl /opt/SpliceTools/bin/SEMedley.pl \
 	-SN ${control_n},${case_n} \
 	-f ${fdr}
 
-perl /opt/SpliceTools/bin/SpliceCompareParallel.pl \
+perl /opt/SpliceTools/bin/SpliceCompare.pl \
 	-i ${input_dir} \
 	-o ${output_dir} \
 	-f ${fdr}
