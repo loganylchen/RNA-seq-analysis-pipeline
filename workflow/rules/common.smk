@@ -197,6 +197,7 @@ def get_final_output():
         f"{sample_project}/modification/modtect/merged.modtect.txt",
         f"{sample_project}/transcript_splicing/rmats",
         f"{sample_project}/transcript_splicing/splicetools/",
+        f"{sample_project}/quantification/STAR_FC/TPM_matrix.txt",
     ]
 
     return final_output
