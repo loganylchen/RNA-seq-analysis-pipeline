@@ -87,3 +87,50 @@ rule splicetools:
         mem_mb=config["resources"]["mem_mb"].get("splicetools", 8192),
     script:
         "../scripts/splicetools.sh"
+
+
+rule analyze_rmats:
+    input:
+        rmats_dir="{project}/transcript_splicing/rmats/",
+    output:
+        output_dir=directory("{project}/transcript_splicing/rmats_analysis/"),
+        summary="{project}/transcript_splicing/rmats_analysis/summary_statistics.csv",
+    params:
+        fdr_threshold=0.05,
+        dpsi_threshold=0.1,
+    container:
+        (
+            "docker://btrspg/deseq2:1.46.0"
+            if config["container"].get("deseq2", None) is None
+            else config["container"].get("deseq2", None)
+        )
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
+    log:
+        "logs/{project}/analyze_rmats.log",
+    script:
+        "../scripts/rmats_analysis.R"
+
+
+rule analyze_splicetools:
+    input:
+        splicetools_dir="{project}/transcript_splicing/splicetools/",
+    output:
+        output_dir=directory("{project}/transcript_splicing/splicetools_analysis/"),
+        summary="{project}/transcript_splicing/splicetools_analysis/combined_summary.csv",
+    params:
+        fdr_threshold=0.05,
+    container:
+        (
+            "docker://btrspg/python3:20251024"
+            if config["container"].get("python3", None) is None
+            else config["container"].get("python3", None)
+        )
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
+    log:
+        "logs/{project}/analyze_splicetools.log",
+    script:
+        "../scripts/splicetools_analysis.py"
