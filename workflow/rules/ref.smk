@@ -258,6 +258,25 @@ rule gtf_to_bed:
         "../scripts/gtf2bed.sh"
 
 
+rule gtf_to_refflat:
+    input:
+        gtf="resources/genome.gtf",
+    output:
+        refflat="resources/genome.refFlat",
+    log:
+        "logs/gtf2refflat.log",
+    container:
+        (
+            "docker://btrspg/python3:20251024"
+            if config["container"].get("python3", None) is None
+            else config["container"].get("python3", None)
+        )
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
+    script:
+        "../scripts/gtf2refflat.py"
+
+
 rule ref_dict:
     input:
         fasta="resources/genome.fasta",

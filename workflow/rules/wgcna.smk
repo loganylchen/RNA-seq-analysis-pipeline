@@ -1,19 +1,21 @@
 rule wgcna:
     input:
-        normalized_matrix="results/deseq2/vst_count_matrix.tsv",
+        normalized_matrix="{project}/DEG/deseq2/discovery_vst_matrix.rds",
     output:
-        bwnet_rds="results/wgcna/wgcna.rds",
-        gene_module_key="results/wgcna/gene_module_key.tsv",
+        bwnet_rds="{project}/wgcna/wgcna.rds",
+        gene_module_key="{project}/wgcna/gene_module_key.tsv",
     params:
         samples=config["samples"],
-        phenotype=config["params"]["wgcna_phenotype"],
-        fig_outdir="results/wgcna/figures/",
+        project=project,
+        discovery_sample_type=discovery_sample_type,
+        phenotype=config.get("params", {}).get("wgcna_phenotype", "condition"),
+        fig_outdir="{project}/wgcna/figures/",
     conda:
         "../envs/wgcna.yaml"
     benchmark:
-        "benchmarks/wgcna.benchmark.txt"
+        "benchmarks/{project}/wgcna.benchmark.txt"
     log:
-        "logs/wgcna/init.log",
+        "logs/{project}/wgcna_init.log",
     threads: config["threads"].get("wgcna", 4)
     resources:
         mem_mb=config["resources"]["mem_mb"].get("wgcna", 16384),

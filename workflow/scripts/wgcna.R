@@ -9,6 +9,7 @@ library(ggplot2)
 library(limma)
 library(tibble)
 library(ComplexHeatmap)
+library(DESeq2)
 
 allowWGCNAThreads(snakemake@threads)
 
@@ -91,13 +92,27 @@ make_module_heatmap <- function(module_name,
 
 
 outdir <- dirname(snakemake@output[["bwnet_rds"]])
-if (!dir.exists(outdir)) {dir.create(outdir)}
+if (!dir.exists(outdir)) {dir.create(outdir, recursive=TRUE)}
 
 fig_outdir <- snakemake@params[["fig_outdir"]]
-if (!dir.exists(fig_outdir)) {dir.create(fig_outdir)}
+if (!dir.exists(fig_outdir)) {dir.create(fig_outdir, recursive=TRUE)}
 
-normalized_counts <- t(read.csv(snakemake@input[['normalized_matrix']],check.names=FALSE,row.names=1,header=TRUE,sep='\t'))
+# Load VST matrix from RDS file
+vsd <- readRDS(snakemake@input[['normalized_matrix']])
+normalized_counts <- t(assay(vsd))
+
+# Load metadata and filter for discovery samples
 metadata <- read.table(snakemake@params[["samples"]], header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t')
+project <- snakemake@params[["project"]]
+discovery_sample_type <- snakemake@params[["discovery_sample_type"]]
+
+# Filter metadata for discovery samples in this project
+metadata <- metadata %>% 
+    dplyr::filter(project == !!project, sample_type == discovery_sample_type)
+
+# Filter normalized counts to only include discovery samples
+normalized_counts <- normalized_counts[rownames(normalized_counts) %in% rownames(metadata), ]
+
 phenotype <- snakemake@params[['phenotype']]
 
 gsg <- goodSamplesGenes(normalized_counts, verbose = 3);
