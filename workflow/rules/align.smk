@@ -18,7 +18,9 @@ rule star_align:
         )
     params:
         extra=lambda wc, input: f' --quantMode GeneCounts --chimOutJunctionFormat 1 --outSAMtype BAM SortedByCoordinate --sjdbGTFfile {input.gtf} {config["star"]["extra"]}',
-    threads: config["threads"]["star"]
+    threads: config["threads"].get("star", 8)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("star_align", 40960),
     shell:
         "STAR --genomeDir {input.idx} "
         "--readFilesIn {input.reads} "
@@ -54,7 +56,9 @@ rule hisat2_align:
         extra=config["hisat2"]["extra"],
         prefix="resources/hisat2_genome/genome",
         strand_param=lambda wildcards, input: hisat2_strand_infer(input.rnaseq_qc),
-    threads: config["threads"].get("hisat2", 10)
+    threads: config["threads"].get("hisat2", 8)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("hisat2_align", 20480),
     shell:
         "hisat2 -x {params.prefix} "
         "-1 {input.fq1} "

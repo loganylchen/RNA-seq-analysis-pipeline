@@ -12,7 +12,9 @@ rule add_read_group:
             if config["container"].get("picard", None) is None
             else config["container"].get("picard", None)
         )
-    threads: 10
+    threads: config["threads"].get("picard", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     shell:
         "picard AddOrReplaceReadGroups "
         "-I {input.aln} "
@@ -33,8 +35,6 @@ rule rnaseq_bam_split:
         ref_dict="resources/genome.dict",
     output:
         split_bam=temp("{project}/alignment/STAR/{sample}/{sample}.split.bam"),
-    resources:
-        tmpdir="tmp_dir/",
     log:
         "logs/{project}/{sample}_bam_split.log",
     container:
@@ -43,7 +43,10 @@ rule rnaseq_bam_split:
             if config["container"].get("gatk4", None) is None
             else config["container"].get("gatk4", None)
         )
-    threads: 10
+    threads: config["threads"].get("gatk4", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
+        tmpdir="tmp_dir/",
     shell:
         "gatk --java-options '-Djava.io.tmpdir={resources.tmpdir}' "
         "SplitNCigarReads "

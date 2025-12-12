@@ -16,8 +16,39 @@ threads:
   salmon: 6
   deseq2: 10
   kallisto: 10
-  hisat2: 10
+  qualimap: 10
+  modtect: 4
+  wgcna: 4
 
+resources:
+  mem_mb:
+    default: 4096
+    sra: 4096
+    fastp: 8192
+    star_index: 102400
+    star_align: 40960
+    hisat2_index: 40960
+    hisat2_align: 20480
+    featurecounts: 8192
+    salmon: 10240
+    kallisto: 10240
+    stringtie: 10240
+    qualimap: 20480
+    lftp: 10240
+    annotation: 2048
+    filtering: 10240
+    faidx: 10240
+    gffread: 4096
+    picard: 8192
+    gatk4: 16384
+    rmats: 16384
+    splicetools: 8192
+    modtect: 8192
+    deseq2: 8192
+    wgcna: 16384
+    clusterprofiler: 8192
+    multiqc: 4096
+    gffcompare: 4096
 
 splicetools:
   fdr: 0.05

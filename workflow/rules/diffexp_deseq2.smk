@@ -20,7 +20,9 @@ rule deseq2_init:
         )
     log:
         "logs/{project}/deseq2_init.log",
-    threads: config["threads"]["deseq2"]
+    threads: config["threads"].get("deseq2", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
         "../scripts/deseq2-init.R"
 
@@ -47,7 +49,9 @@ rule deseq2:
         "benchmarks/{project}/deseq2.benchmark.txt"
     log:
         "logs/{project}/DESeq2_diffexp.log",
-    threads: config["threads"]["deseq2"]
+    threads: config["threads"].get("deseq2", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
         "../scripts/deseq2.R"
 
@@ -74,7 +78,9 @@ rule deseq2_init_salmon:
         )
     log:
         "logs/{project}/deseq2_salmon_init.log",
-    threads: config["threads"]["deseq2"]
+    threads: config["threads"].get("deseq2", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
         "../scripts/deseq2-init.R"
 
@@ -101,7 +107,9 @@ rule deseq2_init_kallisto:
         )
     log:
         "logs/{project}/deseq2_kallisto_init.log",
-    threads: config["threads"]["deseq2"]
+    threads: config["threads"].get("deseq2", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
         "../scripts/deseq2-init.R"
 
@@ -128,7 +136,9 @@ rule deseq2_salmon:
         "benchmarks/{project}/salmon_deseq2.benchmark.txt"
     log:
         "logs/{project}/DESeq2_salmon_diffexp.log",
-    threads: config["threads"]["deseq2"]
+    threads: config["threads"].get("deseq2", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
         "../scripts/deseq2.R"
 
@@ -155,6 +165,8 @@ rule deseq2_kallisto:
         "benchmarks/{project}/kallisto_deseq2.benchmark.txt"
     log:
         "logs/{project}/DESeq2_kallisto_diffexp.log",
-    threads: config["threads"]["deseq2"]
+    threads: config["threads"].get("deseq2", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
         "../scripts/deseq2.R"

@@ -16,7 +16,9 @@ rule clusterprofiler_enrichment:
         species=config["clusterprofiler"]["species"],
         padj_threshold=config["deg"].get("padj", 0.05),
         log2fc_threshold=config["deg"].get("log2fc", 2),
-    threads: 1
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("clusterprofiler", 8192),
     priority: 10
     script:
         "../scripts/clusterprofiler.R"
@@ -42,7 +44,9 @@ rule parse_clusterprofiler_enrichment:
             if config["container"].get("clusterprofiler", None) is None
             else config["container"].get("clusterprofiler", None)
         )
-    threads: 1
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("clusterprofiler", 8192),
     priority: 10
     script:
         "../scripts/parse_clusterprofiler.R"

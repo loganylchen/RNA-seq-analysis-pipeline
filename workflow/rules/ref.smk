@@ -11,10 +11,10 @@ rule get_genome:
         build=config["reference"]["build"],
         release=config["reference"]["release"],
     resources:
-        mem_mb=1024 * 10,
+        mem_mb=config["resources"]["mem_mb"].get("lftp", 10240),
     benchmark:
         "benchmarks/get_genome.benchmark.txt"
-    threads: config["threads"]["lftp"]
+    threads: config["threads"].get("lftp", 4)
     script:
         "../scripts/get_ensembl_sequence.sh"
 
@@ -30,9 +30,9 @@ rule get_annotation:
         flavor="",
     container:
         "docker://btrspg/lftp:latest"
-    threads: 1
+    threads: config["threads"].get("lftp", 1)
     resources:
-        mem_mb=1024 * 2,
+        mem_mb=config["resources"]["mem_mb"].get("annotation", 2048),
     log:
         "logs/ref/get_annotation.log",
     benchmark:
@@ -51,7 +51,7 @@ rule filtering_genome_and_annotation:
     log:
         "logs/ref/filtering_references.log",
     resources:
-        mem_mb=1024 * 10,
+        mem_mb=config["resources"]["mem_mb"].get("filtering", 10240),
     params:
         select_contigs=config["reference"]["select_contigs"],
     container:
@@ -70,7 +70,7 @@ rule genome_faidx:
     log:
         "logs/ref/genome-faidx.log",
     resources:
-        mem_mb=1024 * 10,
+        mem_mb=config["resources"]["mem_mb"].get("faidx", 10240),
     wrapper:
         "v1.21.4/bio/samtools/faidx"
 
@@ -81,9 +81,9 @@ rule star_index:
         gtf="resources/genome.gtf",
     output:
         directory("resources/star_genome"),
-    threads: config["threads"]["star"]
+    threads: config["threads"].get("star", 8)
     resources:
-        mem_mb=1024 * 100,
+        mem_mb=config["resources"]["mem_mb"].get("star_index", 102400),
     params:
         extra=config["star"]["index_extra"],
     log:
@@ -125,7 +125,7 @@ rule hisat2_index:
         prefix="resources/hisat2_genome/genome",
         extra=config["hisat2"]["index_extra"],
     resources:
-        mem_mb=1024 * 40,
+        mem_mb=config["resources"]["mem_mb"].get("hisat2_index", 40960),
     log:
         "logs/hisat2_index_genome.log",
     container:
@@ -134,7 +134,7 @@ rule hisat2_index:
             if config["container"].get("hisat2", None) is None
             else config["container"].get("hisat2", None)
         )
-    threads: config["threads"]["hisat2"]
+    threads: config["threads"].get("hisat2", 8)
     benchmark:
         "benchmarks/hisat2_index.benchmark.txt"
     shell:
@@ -153,9 +153,9 @@ rule get_transcript_sequence:
         fasta="{project}/assembly/stringtie/transcriptome.fasta",
     params:
         extra=config.get("gffread", {}).get("extra", ""),
-    threads: 1
+    threads: config["threads"].get("gffread", 1)
     resources:
-        mem_mb=1024 * 4,
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     container:
         (
             "docker://btrspg/gffread:0.12.7"
@@ -175,9 +175,9 @@ rule salmon_index:
         index=directory("{project}/assembly/stringtie/transcriptome_salmon_index"),
     params:
         extra=config.get("salmon", {}).get("extra_index", ""),
-    threads: config["threads"]["salmon"]
+    threads: config["threads"].get("salmon", 4)
     resources:
-        mem_mb=1024 * 10,
+        mem_mb=config["resources"]["mem_mb"].get("salmon", 10240),
     container:
         (
             "docker://btrspg/salmon:1.10.3"
@@ -202,9 +202,9 @@ rule kallisto_index:
         index="{project}/assembly/stringtie/transcriptome_kallisto.idx",
     params:
         extra=config.get("kallisto", {}).get("extra_index", ""),
-    threads: config["threads"].get("kallisto", 1)
+    threads: config["threads"].get("kallisto", 4)
     resources:
-        mem_mb=1024 * 10,
+        mem_mb=config["resources"]["mem_mb"].get("kallisto", 10240),
     container:
         (
             "docker://btrspg/kallisto:0.51.1"
@@ -231,6 +231,8 @@ rule geneid_to_genename:
         "logs/geneid2genename.log",
     benchmark:
         "benchmarks/geneid_to_genename.benchmark.txt"
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     script:
         "../scripts/get_genename.py"
 
@@ -250,6 +252,8 @@ rule gtf_to_bed:
             if config["container"].get("bedtools", None) is None
             else config["container"].get("bedtools", None)
         )
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     script:
         "../scripts/gtf2bed.sh"
 
@@ -267,7 +271,9 @@ rule ref_dict:
             if config["container"].get("picard", None) is None
             else config["container"].get("picard", None)
         )
-    threads: 1
+    threads: config["threads"].get("picard", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("picard", 8192),
     shell:
         "picard CreateSequenceDictionary "
         "-R {input.fasta} "

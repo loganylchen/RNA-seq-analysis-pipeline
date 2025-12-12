@@ -20,7 +20,9 @@ rule modtect_mod:
             if config["container"].get("modtect", None) is None
             else config["container"].get("modtect", None)
         )
-    threads: config["threads"]["modtect"]
+    threads: config["threads"].get("modtect", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("modtect", 8192),
     shell:
         "modtect.py {input.bam} {input.genome} 0 0 0 "
         "--threads {threads} --regionFile {input.bed} "
@@ -47,6 +49,8 @@ rule modtect_mod_merge:
             if config["container"].get("r", None) is None
             else config["container"].get("r", None)
         )
-    threads: 1
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     script:
         "../scripts/modtect_merge.R"

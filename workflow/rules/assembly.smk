@@ -14,9 +14,9 @@ rule assembly_stringtie2:
             if config["container"].get("stringtie", None) is None
             else config["container"].get("stringtie", None)
         )
-    threads: config["threads"]["stringtie"]
+    threads: config["threads"].get("stringtie", 4)
     resources:
-        mem_mb=1024 * 20,
+        mem_mb=config["resources"]["mem_mb"].get("stringtie", 10240),
         tmpdir="./temp",
     log:
         "logs/{project}/{sample}_stringtie.log",
@@ -48,9 +48,9 @@ rule assembly_merge:
             if config["container"].get("stringtie", None) is None
             else config["container"].get("stringtie", None)
         )
-    threads: 1
+    threads: config["threads"].get("stringtie", 1)
     resources:
-        mem_mb=1024 * 20,
+        mem_mb=config["resources"]["mem_mb"].get("stringtie", 10240),
         tmpdir="./temp",
     log:
         "logs/{project}/stringtie_merge.log",

@@ -16,7 +16,9 @@ rule volcano_vis:
         )
     log:
         "logs/{project}/visualization_Volcano.diffexp.log",
-    threads: 1
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     benchmark:
         "benchmarks/{project}/Volcano.benchmark.txt"
     script:
@@ -47,7 +49,9 @@ rule pcatools_vis:
         )
     log:
         "logs/{project}/vis_pca.log",
-    threads: config["threads"]["deseq2"]
+    threads: config["threads"].get("deseq2", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
         "../scripts/PCA.R"
 
@@ -76,7 +80,9 @@ rule pcatools_vis_salmon:
         )
     log:
         "logs/{project}/vis_pca_salmon.log",
-    threads: config["threads"]["deseq2"]
+    threads: config["threads"].get("deseq2", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
         "../scripts/PCA.R"
 
@@ -105,6 +111,8 @@ rule pcatools_vis_kallisto:
         )
     log:
         "logs/{project}/vis_pca_kallisto.log",
-    threads: config["threads"]["deseq2"]
+    threads: config["threads"].get("deseq2", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
         "../scripts/PCA.R"

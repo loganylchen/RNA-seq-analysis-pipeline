@@ -16,7 +16,9 @@ rule featurecounts_quantification_star:
             if config["container"].get("subread", None) is None
             else config["container"].get("subread", None)
         )
-    threads: config["threads"]["featurecounts"]
+    threads: config["threads"].get("featurecounts", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("featurecounts", 8192),
     log:
         "logs/{project}/{sample}_featurecounts_star.log",
     shell:
@@ -46,7 +48,9 @@ rule featurecounts_quantification_star_for_splicetools:
             if config["container"].get("subread", None) is None
             else config["container"].get("subread", None)
         )
-    threads: config["threads"]["featurecounts"]
+    threads: config["threads"].get("featurecounts", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("featurecounts", 8192),
     log:
         "logs/{project}/{sample}_featurecounts_star_for_splicetools.log",
     shell:
@@ -69,9 +73,9 @@ rule salmon_quantification:
     params:
         extra=config.get("salmon", {}).get("extra", ""),
         strand_param=lambda wildcards, input: salmon_strand_infer(input.rnaseq_qc),
-    threads: config["threads"]["salmon"]
+    threads: config["threads"].get("salmon", 4)
     resources:
-        mem_mb=1024 * 10,
+        mem_mb=config["resources"]["mem_mb"].get("salmon", 10240),
     container:
         (
             "docker://btrspg/salmon:1.10.3"
@@ -104,9 +108,9 @@ rule kallisto_quantification:
         extra=config.get("kallisto", {}).get("extra", ""),
         outdir=lambda wc, output: os.path.dirname(output.quantification_file),
         strand_param=lambda wildcards, input: kallisto_strand_infer(input.rnaseq_qc),
-    threads: config["threads"].get("kallisto", 1)
+    threads: config["threads"].get("kallisto", 4)
     resources:
-        mem_mb=1024 * 10,
+        mem_mb=config["resources"]["mem_mb"].get("kallisto", 10240),
     container:
         (
             "docker://btrspg/kallisto:0.51.1"

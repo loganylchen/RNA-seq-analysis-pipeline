@@ -13,7 +13,9 @@ rule multiqc_qc:
             if config["container"].get("multiqc") is None
             else config["container"].get("multiqc", None)
         )
-    threads: 1
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("multiqc", 4096),
     priority: 10
     shell:
         "multiqc -f "

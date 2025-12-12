@@ -13,7 +13,9 @@ rule transcript_compare_gffcompare:
             if config["container"].get("gffcompare", None) is None
             else config["container"].get("gffcompare", None)
         )
-    threads: 1
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("gffcompare", 4096),
     log:
         "logs/{project}/gffcompare.log",
     shell:
@@ -37,6 +39,8 @@ rule gtf_to_bed12:
             if config["container"].get("python3", None) is None
             else config["container"].get("python3", None)
         )
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     script:
         "../scripts/gtf2bed12.py"
 
@@ -56,5 +60,7 @@ rule sort_bed12:
             if config["container"].get("bedtools", None) is None
             else config["container"].get("bedtools", None)
         )
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     shell:
         "bedtools sort -i {input.bed} > {output.bed} 2>{log}"

@@ -26,6 +26,8 @@ rule fastp:
     params:
         pe=is_pe,
         extra=config["fastp"]["extra"],
-    threads: config["threads"]["fastp"]
+    threads: config["threads"].get("fastp", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("fastp", 8192),
     script:
         "../scripts/fastp.sh"

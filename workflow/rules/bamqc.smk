@@ -16,7 +16,7 @@ rule qualimap_rnaseq_qc:
         )
     threads: config["threads"].get("qualimap", 10)
     resources:
-        mem_mb=1024 * 20,
+        mem_mb=config["resources"]["mem_mb"].get("qualimap", 20480),
     log:
         "logs/{project}/{sample}_qualimap-rnaseq-qc.log",
     shell:

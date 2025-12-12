@@ -15,7 +15,9 @@ rule preparing_rmats:
         control_bam_list_f="{project}/transcript_splicing/rmats-temp/control.list",
     log:
         "logs/{project}/rmats_sample_list.log",
-    threads: 1
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     shell:
         "echo {input.case_bams} | sed 's/ /,/g' > {output.case_bam_list_f}; "
         "echo {input.control_bams} | sed 's/ /,/g' > {output.control_bam_list_f}; "
@@ -42,7 +44,9 @@ rule splicing_rmats:
         )
     params:
         extra=config["rmats"]["extra"],
-    threads: config["threads"]["rmats"]
+    threads: config["threads"].get("rmats", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("rmats", 16384),
     shell:
         "rmats.py "
         "--b1 {input.case_bam_list_f} "
@@ -78,6 +82,8 @@ rule splicetools:
         control_n=len(discovery_control_samples.index),
         case_n=len(discovery_case_samples.index),
         fdr=config["splicetools"].get("fdr", 0.05),
-    threads: 5
+    threads: config["threads"].get("splicetools", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("splicetools", 8192),
     script:
         "../scripts/splicetools.sh"

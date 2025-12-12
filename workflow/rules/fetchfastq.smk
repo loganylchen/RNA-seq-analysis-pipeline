@@ -17,7 +17,7 @@ rule get_fastq:
     container:
         "docker://btrspg/sratools:3.2.1"
     resources:
-        mem_mb=10 * 1024,
-    threads: config["threads"]["sra"]
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
+    threads: config["threads"].get("sra", 4)
     script:
         "../scripts/fetchsra.sh"
