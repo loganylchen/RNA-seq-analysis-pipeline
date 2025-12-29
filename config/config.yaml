@@ -20,6 +20,7 @@ threads:
   modtect: 4
   wgcna: 4
   dcb: 4
+  deg_vis: 4
 
 resources:
   mem_mb:
@@ -51,6 +52,7 @@ resources:
     multiqc: 4096
     gffcompare: 4096
     dcb: 8192
+    deg_vis: 16384
 
 
 clusterprofiler:
@@ -104,6 +106,10 @@ dcb:
   case_detection_rate: 0.3      # Min detection rate in cancer cfRNA (>= 30%)
   log2fc: 2                     # Minimum log2FC in tissue (tumor vs normal)
 
+# DEG Visualization parameters
+deg_vis:
+  heatmap_top_n: 100           # Number of top DEGs to show in heatmap
+
 reference:
   # Ensembl species name
   species: homo_sapiens
@@ -148,6 +154,6 @@ container:
   gffcompare: "docker://btrspg/gffcompare:0.12.10"
   gffread: "docker://btrspg/gffread:0.12.7"
   python3: "docker://btrspg/python3:20251024"
-  r: "docker://btrspg/rlan:20251027"
+  r: "docker://btrspg/rlan:20251229"
   clusterprofiler: "docker://btrspg/clusterprofiler:4.14.0"
   splicetools: "docker://btrspg/splicetools:e7c81ca0674c4166bace543364bbcb3698b4443e"

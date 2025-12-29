@@ -207,6 +207,9 @@ def get_final_output():
         f"{sample_project}/quantification/STAR_FC/TPM_matrix.txt",
         f"{sample_project}/dcb/discovery_dcb.tsv",
         f"{sample_project}/dcb/validation_dcb.tsv",
+        f"{sample_project}/DEG/visualization/deg_heatmap.png",
+        f"{sample_project}/DEG/visualization/discovery_vs_validation_scatter.png",
+        f"{sample_project}/DEG/visualization/significant_genes_boxplot.png",
     ]
 
     return final_output
