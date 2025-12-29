@@ -186,19 +186,26 @@ cat("Summary of gene categories:\n")
 print(table(comparison_data$significance))
 
 # ============================================================================
-# 3. Create heatmap of top DEGs
+# 3. Create heatmap of common DEGs
 # ============================================================================
 cat("\n--- Creating DEG heatmap ---\n")
 
-# Get discovery DEGs
-discovery_deg_names <- discovery_deg %>%
-  filter(abs(log2FoldChange) > log2fc_threshold, padj < padj_threshold) %>%
-  rownames()
+# Get common DEGs (significant in both discovery and validation)
+common_deg_genes <- comparison_data %>%
+  filter(
+    padj_discovery < padj_threshold,
+    padj_validation < padj_threshold,
+    abs(log2FoldChange_discovery) >= log2fc_threshold,
+    abs(log2FoldChange_validation) >= log2fc_threshold
+  ) %>%
+  pull(gene_id)
 
-# Take top N genes by absolute log2FC for heatmap
-if (length(discovery_deg_names) > 0) {
-  top_n <- min(heatmap_top_n, length(discovery_deg_names))
-  top_deg_names <- discovery_deg[discovery_deg_names, ] %>%
+cat(sprintf("Found %d common DEGs for heatmap\n", length(common_deg_genes)))
+
+# Take top N genes by absolute discovery log2FC for heatmap
+if (length(common_deg_genes) > 0) {
+  top_n <- min(heatmap_top_n, length(common_deg_genes))
+  top_deg_names <- discovery_deg[common_deg_genes, ] %>%
     arrange(desc(abs(log2FoldChange))) %>%
     head(top_n) %>%
     rownames()
@@ -229,8 +236,8 @@ if (length(discovery_deg_names) > 0) {
     show_column_dend = TRUE,
     use_raster = TRUE,
     raster_quality = 2,
-    column_title = sprintf("Discovery Cohort (%s)", discovery_sample_type),
-    row_title = sprintf("Top %d DEGs", top_n),
+    column_title = sprintf("Discovery Cohort (%s) - Common DEGs", discovery_sample_type),
+    row_title = sprintf("Top %d Common DEGs", top_n),
     heatmap_legend_param = list(title = "Z-score"),
     border = TRUE
   )
@@ -247,10 +254,10 @@ if (length(discovery_deg_names) > 0) {
 
   cat(sprintf("Heatmap saved to: %s\n", heatmap_output))
 } else {
-  cat("No DEGs found for heatmap\n")
+  cat("No common DEGs found for heatmap\n")
   # Create empty placeholder
   plot.new()
-  text(0.5, 0.5, "No DEGs found")
+  text(0.5, 0.5, "No common DEGs found")
   dev.copy(png, heatmap_output, width = 6, height = 4, units = "in", res = 150)
   dev.off()
 
@@ -264,13 +271,9 @@ if (length(discovery_deg_names) > 0) {
 # ============================================================================
 cat("\n--- Creating boxplots for significant genes ---\n")
 
+# Get both_sig_genes dataframe (already computed common_deg_genes contains gene_ids)
 both_sig_genes <- comparison_data %>%
-  filter(
-    padj_discovery < padj_threshold,
-    padj_validation < padj_threshold,
-    abs(log2FoldChange_discovery) >= log2fc_threshold,
-    abs(log2FoldChange_validation) >= log2fc_threshold
-  )
+  filter(gene_id %in% common_deg_genes)
 
 cat(sprintf("Found %d genes significant in both datasets\n", nrow(both_sig_genes)))
 
@@ -308,10 +311,14 @@ if (nrow(both_sig_genes) > 0) {
   # Calculate number of facets
   n_facets <- length(unique(combined_data$significance))
 
+  # Order dataset factor for proper facet display
+  combined_data$dataset <- factor(combined_data$dataset, levels = c("Discovery", "Validation"))
+
   p_boxplot <- ggplot(combined_data,
                       aes(x = gene_name, y = expression, fill = condition)) +
     geom_boxplot(outlier.shape = NA, alpha = 0.7) +
-    facet_wrap(~ significance, scales = "free_x", drop = FALSE) +
+    facet_grid(dataset ~ significance, scales = "free_x", drop = FALSE,
+               space = "free_x") +
     scale_fill_manual(values = c("Normal" = "#4DAF4A", "Tumor" = "#E41A1C")) +
     coord_flip() +
     labs(
@@ -323,6 +330,7 @@ if (nrow(both_sig_genes) > 0) {
     theme_pubr() +
     theme(
       strip.text = element_text(size = 10, face = "bold"),
+      strip.background = element_rect(color = "gray70", fill = "gray95"),
       axis.text.y = element_text(size = 8),
       legend.position = "bottom",
       plot.title = element_text(hjust = 0.5, face = "bold")
