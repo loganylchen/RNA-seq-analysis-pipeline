@@ -134,28 +134,3 @@ rule picard_gc_bias_metrics:
         "-R {input.ref} "
         "&>{log}"
 
-
-rule picard_duplicate_metrics:
-    input:
-        bam="{project}/alignment/STAR/{sample}/{sample}.bam",
-    output:
-        metrics="{project}/qc/picard/{sample}/{sample}.duplicate_metrics.txt",
-        marked_bam=temp("{project}/qc/picard/{sample}/{sample}.marked_duplicates.bam"),
-    container:
-        (
-            "docker://btrspg/picard:3.4.0"
-            if config["container"].get("picard", None) is None
-            else config["container"].get("picard", None)
-        )
-    threads: config["threads"].get("picard", 1)
-    resources:
-        mem_mb=config["resources"]["mem_mb"].get("picard", 8192),
-    log:
-        "logs/{project}/{sample}_picard_duplicate_metrics.log",
-    shell:
-        "picard MarkDuplicates "
-        "-I {input.bam} "
-        "-O {output.marked_bam} "
-        "-M {output.metrics} "
-        "-REMOVE_DUPLICATES false "
-        "&>{log}"
