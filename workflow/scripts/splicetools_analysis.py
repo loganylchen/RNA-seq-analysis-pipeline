@@ -6,8 +6,11 @@ Creates summary reports and visualizations.
 
 import os
 import sys
+import time
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
@@ -18,7 +21,8 @@ plt.rcParams['figure.dpi'] = 300
 
 # Parse Snakemake inputs
 splicetools_dir = snakemake.input["splicetools_dir"]
-output_dir = snakemake.output["output_dir"]
+output_dir = snakemake.output["output_dir"].rstrip('/')  # Remove trailing slash
+summary_file = snakemake.output["summary"]  # Get the exact output path from snakemake
 fdr_threshold = snakemake.params["fdr_threshold"]
 
 # Create output directory
@@ -205,11 +209,11 @@ def plot_se_summary(se_results, output_dir, fdr_threshold):
             
             print(f"SE Summary: {summary}")
 
-def create_combined_summary(ri_results, se_results, output_dir):
+def create_combined_summary(ri_results, se_results, output_dir, summary_file):
     """Create combined summary across analyses."""
-    
+
     summary_data = []
-    
+
     for event_type, results in [('RI', ri_results), ('SE', se_results)]:
         key = f"{event_type}.MATS.JCEC.txt"
         if key in results:
@@ -222,32 +226,38 @@ def create_combined_summary(ri_results, se_results, output_dir):
                     'Mean dPSI': df['IncLevelDifference'].mean(),
                     'Median dPSI': df['IncLevelDifference'].median()
                 })
-    
+
     if summary_data:
         summary_df = pd.DataFrame(summary_data)
-        summary_df.to_csv(os.path.join(output_dir, 'combined_summary.csv'), 
-                         index=False)
-        
+        # Use the exact output path from Snakemake
+        summary_df.to_csv(summary_file, index=False)
+        # Ensure the file is written to disk
+        import time
+        time.sleep(0.1)  # Small delay to ensure file sync
+
         # Bar plot
         fig, ax = plt.subplots(figsize=(8, 5))
         x = np.arange(len(summary_df))
         width = 0.35
-        
-        ax.bar(x - width/2, summary_df['Total Events'], width, 
+
+        ax.bar(x - width/2, summary_df['Total Events'], width,
                label='Total', alpha=0.8)
-        ax.bar(x + width/2, summary_df['Significant (FDR<0.05)'], width, 
+        ax.bar(x + width/2, summary_df['Significant (FDR<0.05)'], width,
                label='Significant', alpha=0.8)
-        
+
         ax.set_xlabel('Event Type', fontsize=12)
         ax.set_ylabel('Number of Events', fontsize=12)
         ax.set_title('SpliceTools Event Summary', fontsize=14, fontweight='bold')
         ax.set_xticks(x)
         ax.set_xticklabels(summary_df['Event Type'])
         ax.legend()
-        
+
         plt.tight_layout()
-        plt.savefig(os.path.join(output_dir, 'combined_summary.pdf'))
+        plot_path = os.path.join(output_dir, 'combined_summary.pdf')
+        plt.savefig(plot_path)
         plt.close()
+        # Close any remaining figures
+        plt.close('all')
 
 # Main analysis
 print("Analyzing SpliceTools results...")
@@ -265,6 +275,7 @@ if se_results:
     plot_se_summary(se_results, output_dir, fdr_threshold)
 
 # Combined summary
-create_combined_summary(ri_results, se_results, output_dir)
+create_combined_summary(ri_results, se_results, output_dir, summary_file)
 
 print(f"\nSpliceTools analysis complete! Results saved to: {output_dir}")
+print(f"Summary file: {summary_file}")
