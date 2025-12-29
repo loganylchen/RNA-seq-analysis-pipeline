@@ -205,6 +205,8 @@ def get_final_output():
         f"{sample_project}/transcript_splicing/rmats_analysis/summary_statistics.csv",
         f"{sample_project}/transcript_splicing/splicetools_analysis/combined_summary.csv",
         f"{sample_project}/quantification/STAR_FC/TPM_matrix.txt",
+        f"{sample_project}/dcb/discovery_dcb.tsv",
+        f"{sample_project}/dcb/validation_dcb.tsv",
     ]
 
     return final_output

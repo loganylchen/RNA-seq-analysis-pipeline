@@ -14,9 +14,12 @@ refFlat format is a tab-separated format with the following columns:
 9. exonCount - Number of exons
 10. exonStarts - Comma-separated list of exon start positions (0-based)
 11. exonEnds - Comma-separated list of exon end positions (1-based)
+
+Snakemake script interface:
+- Input: snakemake.input[0] - GTF file
+- Output: snakemake.output[0] - refFlat file
 """
 
-import sys
 from collections import defaultdict
 
 
@@ -46,54 +49,54 @@ def gtf_to_refflat(gtf_file, output_file):
         'exons': [],
         'cds': [],
     })
-    
+
     # Read GTF file
     with open(gtf_file, 'r') as f:
         for line in f:
             if line.startswith('#'):
                 continue
-            
+
             fields = line.strip().split('\t')
             if len(fields) < 9:
                 continue
-            
+
             chrom, source, feature, start, end, score, strand, frame, attributes = fields
             attr_dict = parse_attributes(attributes)
-            
+
             # Skip if no transcript_id
             if 'transcript_id' not in attr_dict:
                 continue
-            
+
             transcript_id = attr_dict['transcript_id']
             gene_name = attr_dict.get('gene_name', attr_dict.get('gene_id', 'unknown'))
-            
+
             # Initialize transcript info
             if not transcripts[transcript_id]['chrom']:
                 transcripts[transcript_id]['chrom'] = chrom
                 transcripts[transcript_id]['strand'] = strand
                 transcripts[transcript_id]['gene_name'] = gene_name
                 transcripts[transcript_id]['transcript_id'] = transcript_id
-            
+
             # Collect exons and CDS
             if feature == 'exon':
                 transcripts[transcript_id]['exons'].append((int(start) - 1, int(end)))  # Convert to 0-based
             elif feature == 'CDS':
                 transcripts[transcript_id]['cds'].append((int(start) - 1, int(end)))  # Convert to 0-based
-    
+
     # Write refFlat format
     with open(output_file, 'w') as out:
         for transcript_id, data in sorted(transcripts.items()):
             if not data['exons']:
                 continue
-            
+
             # Sort exons and CDS
             exons = sorted(data['exons'], key=lambda x: x[0])
             cds = sorted(data['cds'], key=lambda x: x[0])
-            
+
             # Get transcript boundaries
             tx_start = exons[0][0]
             tx_end = exons[-1][1]
-            
+
             # Get CDS boundaries (if any)
             if cds:
                 cds_start = cds[0][0]
@@ -102,11 +105,11 @@ def gtf_to_refflat(gtf_file, output_file):
                 # Non-coding transcript
                 cds_start = tx_end
                 cds_end = tx_end
-            
+
             # Format exon starts and ends
             exon_starts = ','.join(str(e[0]) for e in exons) + ','
             exon_ends = ','.join(str(e[1]) for e in exons) + ','
-            
+
             # Write refFlat line
             out.write('\t'.join([
                 data['gene_name'],
@@ -123,13 +126,9 @@ def gtf_to_refflat(gtf_file, output_file):
             ]) + '\n')
 
 
-if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} <input.gtf> <output.refFlat>", file=sys.stderr)
-        sys.exit(1)
-    
-    gtf_file = sys.argv[1]
-    output_file = sys.argv[2]
-    
-    gtf_to_refflat(gtf_file, output_file)
-    print(f"Converted {gtf_file} to {output_file}", file=sys.stderr)
+# Snakemake script interface
+gtf_file = snakemake.input[0]
+output_file = snakemake.output[0]
+
+gtf_to_refflat(gtf_file, output_file)
+print(f"Converted {gtf_file} to {output_file}")

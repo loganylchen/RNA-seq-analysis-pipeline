@@ -19,6 +19,7 @@ threads:
   qualimap: 10
   modtect: 4
   wgcna: 4
+  dcb: 4
 
 resources:
   mem_mb:
@@ -49,6 +50,11 @@ resources:
     clusterprofiler: 8192
     multiqc: 4096
     gffcompare: 4096
+    dcb: 8192
+
+
+clusterprofiler:
+  species: "human"
 
 splicetools:
   fdr: 0.05
@@ -86,6 +92,18 @@ deg:
   padj: 0.00001
   log2fc: 2
 
+# Dark Channel Biomarker (DCB) analysis parameters
+# DCB workflow: Discovery (tissue) -> Validation (cfRNA)
+# DCB criteria:
+#   1. Upregulated in tumor tissue (vs normal tissue)
+#   2. Detected in cancer cfRNA but absent in normal cfRNA
+dcb:
+  control_tpm_threshold: 1      # TPM threshold for cfRNA detection (gene "detected" if TPM > this)
+  case_tpm_threshold: 1         # Minimum mean TPM in tumor tissue for DCB
+  control_detection_rate: 0.1   # Max detection rate in normal cfRNA (< 10% = dark region)
+  case_detection_rate: 0.3      # Min detection rate in cancer cfRNA (>= 30%)
+  log2fc: 2                     # Minimum log2FC in tissue (tumor vs normal)
+
 reference:
   # Ensembl species name
   species: homo_sapiens
@@ -117,6 +135,8 @@ reference:
     - "21"
     - "22"
     - "X"
+    - "Y"
+    - "MT"
 
 container:
   star: "docker://btrspg/star:2.7.11b"
@@ -130,4 +150,4 @@ container:
   python3: "docker://btrspg/python3:20251024"
   r: "docker://btrspg/rlan:20251027"
   clusterprofiler: "docker://btrspg/clusterprofiler:4.14.0"
-  splicetools: "docker://btrspg/splicetools:c9fd38227fcdf43d1e08e919480372751f2ee5a4"
+  splicetools: "docker://btrspg/splicetools:e7c81ca0674c4166bace543364bbcb3698b4443e"
