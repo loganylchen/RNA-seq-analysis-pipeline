@@ -186,7 +186,7 @@ cat("Summary of gene categories:\n")
 print(table(comparison_data$significance))
 
 # ============================================================================
-# 3. Create heatmap of common DEGs
+# 3. Create heatmap of common DEGs (discovery and validation panels)
 # ============================================================================
 cat("\n--- Creating DEG heatmap ---\n")
 
@@ -205,45 +205,97 @@ cat(sprintf("Found %d common DEGs for heatmap\n", length(common_deg_genes)))
 # Take top N genes by absolute discovery log2FC for heatmap
 if (length(common_deg_genes) > 0) {
   top_n <- min(heatmap_top_n, length(common_deg_genes))
-  top_deg_names <- discovery_deg[common_deg_genes, ] %>%
+  top_deg_data <- discovery_deg[common_deg_genes, ] %>%
     arrange(desc(abs(log2FoldChange))) %>%
-    head(top_n) %>%
-    rownames()
+    head(top_n)
 
-  # Prepare heatmap matrix
-  mat <- discovery_expression[top_deg_names, ]
-  mat_scaled <- t(scale(t(mat)))
+  top_deg_names <- rownames(top_deg_data)
 
-  # Create annotation
-  ha <- HeatmapAnnotation(
-    Condition = sample_info[colnames(discovery_expression), "condition"],
-    Patient = sample_info[colnames(discovery_expression), "patient"],
+  # Prepare heatmap matrices for both datasets
+  mat_discovery <- discovery_expression[top_deg_names, ]
+  mat_validation <- validation_expression[top_deg_names, ]
+
+  # Scale matrices
+  mat_discovery_scaled <- t(scale(t(mat_discovery)))
+  mat_validation_scaled <- t(scale(t(mat_validation)))
+
+  # Combine matrices horizontally
+  mat_combined <- cbind(mat_discovery_scaled, mat_validation_scaled)
+
+  # Create column annotations for discovery
+  ha_discovery <- HeatmapAnnotation(
+    Dataset = "Discovery",
+    Condition = sample_info[colnames(mat_discovery), "condition"],
+    Patient = sample_info[colnames(mat_discovery), "patient"],
     col = list(
-      Condition = c("Normal" = "#4DAF4A", "Tumor" = "#E41A1C")
-    )
+      Dataset = c("Discovery" = "#377EB8", "Validation" = "#4DAF4A"),
+      Condition = c("Normal" = "#999999", "Tumor" = "#E41A1C")
+    ),
+    show_legend = c(Dataset = FALSE, Condition = TRUE, Patient = TRUE)
+  )
+
+  # Create column annotations for validation
+  ha_validation <- HeatmapAnnotation(
+    Dataset = "Validation",
+    Condition = sample_info[colnames(mat_validation), "condition"],
+    Patient = sample_info[colnames(mat_validation), "patient"],
+    col = list(
+      Dataset = c("Discovery" = "#377EB8", "Validation" = "#4DAF4A"),
+      Condition = c("Normal" = "#999999", "Tumor" = "#E41A1C")
+    ),
+    show_legend = c(Dataset = TRUE, Condition = FALSE, Patient = FALSE)
+  )
+
+  # Combine column annotations
+  ha_combined <- cbind(
+    ha_discovery,
+    ha_validation
+  )
+
+  # Get log2FC values for row annotation
+  log2fc_values <- comparison_data %>%
+    filter(gene_id %in% top_deg_names) %>%
+    arrange(match(gene_id, top_deg_names)) %>%
+    pull(log2FoldChange_discovery)
+
+  # Create row annotation with log2FC as a bar plot
+  log2fc_colors <- ifelse(log2fc_values > 0, "#E41A1C", "#377EB8")
+  row_ha <- rowAnnotation(
+    `log2FC (Discovery)` = anno_barplot(
+      log2fc_values,
+      bar_width = 0.8,
+      gp = gpar(fill = log2fc_colors, col = NA),
+      baseline = 0,
+      axis = TRUE,
+      axis_param = list(side = "left", gp = gpar(fontsize = 6))
+    ),
+    width = unit(2, "cm")
   )
 
   # Create heatmap
   ht <- Heatmap(
-    mat_scaled,
-    top_annotation = ha,
+    mat_combined,
+    top_annotation = ha_combined,
     name = "Z-score",
-    show_row_names = nrow(mat_scaled) <= 50,
-    show_column_names = FALSE,
+    show_row_names = nrow(mat_combined) <= 50,
+    show_column_names = TRUE,
+    column_names_gp = gpar(fontsize = 6),
     cluster_columns = TRUE,
     cluster_rows = TRUE,
     show_row_dend = TRUE,
     show_column_dend = TRUE,
     use_raster = TRUE,
     raster_quality = 2,
-    column_title = sprintf("Discovery Cohort (%s) - Common DEGs", discovery_sample_type),
+    column_split = c(rep(1, ncol(mat_discovery)), rep(2, ncol(mat_validation))),
+    column_gap = unit(0.5, "cm"),
     row_title = sprintf("Top %d Common DEGs", top_n),
     heatmap_legend_param = list(title = "Z-score"),
-    border = TRUE
+    border = TRUE,
+    left_annotation = row_ha
   )
 
   # Save heatmap
-  png(heatmap_output, width = 12, height = 10, units = "in", res = 300)
+  png(heatmap_output, width = 16, height = 10, units = "in", res = 300)
   draw(ht, heatmap_legend_side = "right", annotation_legend_side = "right")
   dev.off()
 
