@@ -222,9 +222,12 @@ if (length(common_deg_genes) > 0) {
   # Combine matrices horizontally
   mat_combined <- cbind(mat_discovery_scaled, mat_validation_scaled)
 
-  # Create column annotations for discovery
+  # Create column annotations for discovery (use rep for Dataset to match sample count)
+  n_discovery <- ncol(mat_discovery)
+  n_validation <- ncol(mat_validation)
+
   ha_discovery <- HeatmapAnnotation(
-    Dataset = "Discovery",
+    Dataset = rep("Discovery", n_discovery),
     Condition = sample_info[colnames(mat_discovery), "condition"],
     Patient = sample_info[colnames(mat_discovery), "patient"],
     col = list(
@@ -236,7 +239,7 @@ if (length(common_deg_genes) > 0) {
 
   # Create column annotations for validation
   ha_validation <- HeatmapAnnotation(
-    Dataset = "Validation",
+    Dataset = rep("Validation", n_validation),
     Condition = sample_info[colnames(mat_validation), "condition"],
     Patient = sample_info[colnames(mat_validation), "patient"],
     col = list(
