@@ -87,6 +87,10 @@ validation_deg_list_df <- validation_deg %>%
 write_tsv(discovery_deg_list_df, discovery_deg_list)
 write_tsv(validation_deg_list_df, validation_deg_list)
 
+# Flush file buffers
+flush.console()
+Sys.sleep(0.2)
+
 # ============================================================================
 # 2. Create scatter plot comparing discovery vs validation
 # ============================================================================
@@ -172,6 +176,11 @@ p_scatter <- ggplot(comparison_data, aes(x = log2FoldChange_discovery,
 
 ggsave(scatter_output, p_scatter, width = 10, height = 8, dpi = 300)
 
+# Flush and sync file
+flush.console()
+Sys.sleep(0.2)
+gc()
+
 cat(sprintf("Scatter plot saved to: %s\n", scatter_output))
 cat("Summary of gene categories:\n")
 print(table(comparison_data$significance))
@@ -231,6 +240,11 @@ if (length(discovery_deg_names) > 0) {
   draw(ht, heatmap_legend_side = "right", annotation_legend_side = "right")
   dev.off()
 
+  # Flush and sync file
+  flush.console()
+  Sys.sleep(0.2)
+  gc()
+
   cat(sprintf("Heatmap saved to: %s\n", heatmap_output))
 } else {
   cat("No DEGs found for heatmap\n")
@@ -239,6 +253,10 @@ if (length(discovery_deg_names) > 0) {
   text(0.5, 0.5, "No DEGs found")
   dev.copy(png, heatmap_output, width = 6, height = 4, units = "in", res = 150)
   dev.off()
+
+  # Flush and sync file
+  flush.console()
+  Sys.sleep(0.2)
 }
 
 # ============================================================================
@@ -313,6 +331,11 @@ if (nrow(both_sig_genes) > 0) {
   # Save boxplot
   ggsave(boxplot_output, p_boxplot, width = 12, height = max(6, nrow(both_sig_genes) * 0.3), dpi = 300)
 
+  # Flush and sync file
+  flush.console()
+  Sys.sleep(0.2)
+  gc()
+
   cat(sprintf("Boxplot saved to: %s\n", boxplot_output))
 } else {
   cat("No genes significant in both datasets for boxplot\n")
@@ -321,6 +344,10 @@ if (nrow(both_sig_genes) > 0) {
   text(0.5, 0.5, "No genes significant in both datasets")
   dev.copy(png, boxplot_output, width = 6, height = 4, units = "in", res = 150)
   dev.off()
+
+  # Flush and sync file
+  flush.console()
+  Sys.sleep(0.2)
 }
 
 # ============================================================================
@@ -333,6 +360,12 @@ comparison_table_df <- comparison_data %>%
                 log2FoldChange_validation, padj_validation, significance)
 
 write_tsv(comparison_table_df, comparison_table)
+
+# Flush and sync file
+flush.console()
+Sys.sleep(0.2)
+gc()
+
 cat(sprintf("Comparison table saved to: %s\n", comparison_table))
 
 cat("\n=== DEG Visualization Complete ===\n")
