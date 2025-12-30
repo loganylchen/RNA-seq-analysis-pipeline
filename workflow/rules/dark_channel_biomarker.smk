@@ -4,6 +4,7 @@
 # 2. Recurrently detected in case/cancer samples
 # Based on cfRNA cancer detection methodology (Circulating Cell-free Genome Atlas)
 
+
 rule dcb_analysis:
     """
     Detect Dark Channel Biomarker (DCB) genes from RNA-seq count/expression data.
@@ -36,8 +37,8 @@ rule dcb_analysis:
     container:
         (
             "docker://btrspg/rlan:20251027"
-            if config["container"].get("dcb", None) is None
-            else config["container"].get("dcb", None)
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
         )
     benchmark:
         "benchmarks/{project}/dcb_analysis.benchmark.txt"
