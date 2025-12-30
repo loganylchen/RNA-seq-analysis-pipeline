@@ -145,6 +145,10 @@ tissue_tumor_mean_tpm <- rowMeans(tpm_data[, tissue_tumor_cols, drop = FALSE], n
 tissue_normal_mean_tpm <- rowMeans(tpm_data[, tissue_normal_cols, drop = FALSE], na.rm = TRUE)
 tissue_log2fc <- log2((tissue_tumor_mean_tpm + 0.01) / (tissue_normal_mean_tpm + 0.01))
 
+cat("Calculating tissue expression statistics...\n")
+cat(tissue_tumor_mean_tpm[1:5], "\n")
+cat(tissue_normal_mean_tpm[1:5], "\n")
+cat(tissue_log2fc[1:5], "\n")
 # Identify tissue-upregulated genes (candidate DCBs)
 discovery_genes <- tpm_data %>%
   mutate(
