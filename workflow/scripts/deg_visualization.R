@@ -226,37 +226,21 @@ if (length(common_deg_genes) > 0) {
   # Combine matrices horizontally
   mat_combined <- cbind(mat_discovery_scaled, mat_validation_scaled)
 
-  # Create column annotations for discovery (use rep for Dataset to match sample count)
+  # Create combined column annotations
   n_discovery <- ncol(mat_discovery)
   n_validation <- ncol(mat_validation)
 
-  ha_discovery <- HeatmapAnnotation(
-    Dataset = rep("Discovery", n_discovery),
-    Condition = sample_info[colnames(mat_discovery), "condition"],
-    Patient = sample_info[colnames(mat_discovery), "patient"],
+  ha_combined <- HeatmapAnnotation(
+    Dataset = c(rep("Discovery", n_discovery), rep("Validation", n_validation)),
+    Condition = c(sample_info[colnames(mat_discovery), "condition"],
+                  sample_info[colnames(mat_validation), "condition"]),
+    Patient = c(sample_info[colnames(mat_discovery), "patient"],
+                sample_info[colnames(mat_validation), "patient"]),
     col = list(
       Dataset = c("Discovery" = "#377EB8", "Validation" = "#4DAF4A"),
       Condition = c("Normal" = "#999999", "Tumor" = "#E41A1C")
     ),
-    show_legend = c(Dataset = FALSE, Condition = TRUE, Patient = TRUE)
-  )
-
-  # Create column annotations for validation
-  ha_validation <- HeatmapAnnotation(
-    Dataset = rep("Validation", n_validation),
-    Condition = sample_info[colnames(mat_validation), "condition"],
-    Patient = sample_info[colnames(mat_validation), "patient"],
-    col = list(
-      Dataset = c("Discovery" = "#377EB8", "Validation" = "#4DAF4A"),
-      Condition = c("Normal" = "#999999", "Tumor" = "#E41A1C")
-    ),
-    show_legend = c(Dataset = TRUE, Condition = FALSE, Patient = FALSE)
-  )
-
-  # Combine column annotations
-  ha_combined <- cbind(
-    ha_discovery,
-    ha_validation
+    show_legend = c(Dataset = TRUE, Condition = TRUE, Patient = TRUE)
   )
 
   # Get log2FC values for row annotation

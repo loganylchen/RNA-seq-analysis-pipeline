@@ -8,6 +8,10 @@
 # 1. Are highly expressed in tumor tissue (discovery cohort)
 # 2. Are detected in cancer cfRNA but absent in normal cfRNA (validation cohort)
 # 3. Reside in "low-noise" genomic regions (not detected in normal cfRNA)
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
+
 
 suppressPackageStartupMessages({
   library(tidyverse)
