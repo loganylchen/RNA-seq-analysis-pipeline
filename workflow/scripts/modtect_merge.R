@@ -37,7 +37,7 @@ merge_modtect_files <- function(mod_tect_files, merged_file) {
     }
     message('merging')
     df_merge <- data.table::rbindlist(df_list) %>% 
-                tidyr::pivot_wider(id_cols=c(chrom,position,reference_nt),names_from=Sample,values_from=ModTect_score)
+                tidyr::pivot_wider(id_cols=c(chrom,position,reference_nt),names_from=Sample,values_from=c(ModTect_score,variant_proportion))
     message(head(df_merge))
     write.table(df_merge,merged_file,quote=F,sep='\t',row.names=F)
 }
