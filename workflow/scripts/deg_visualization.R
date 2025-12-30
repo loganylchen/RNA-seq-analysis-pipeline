@@ -5,6 +5,10 @@
 # - Heatmap of DEGs using ComplexHeatmap
 # - Scatter plot comparing discovery vs validation log2FC
 # - Boxplots for genes significant in both cohorts
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
+
 
 suppressPackageStartupMessages({
   library(dplyr)
@@ -298,6 +302,7 @@ if (length(common_deg_genes) > 0) {
   )
 
   # Save heatmap
+  cat(sprintf("Saving heatmap with %d genes\n", top_n))
   png(heatmap_output, width = 16, height = 10, units = "in", res = 300)
   draw(ht, heatmap_legend_side = "right", annotation_legend_side = "right")
   dev.off()
@@ -392,6 +397,7 @@ if (nrow(both_sig_genes) > 0) {
     )
 
   # Save boxplot
+  cat(sprintf("Saving boxplot with %d genes\n", nrow(both_sig_genes)))
   ggsave(boxplot_output, p_boxplot, width = 12, height = max(6, nrow(both_sig_genes) * 0.3), dpi = 300)
 
   # Flush and sync file
