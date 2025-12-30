@@ -139,8 +139,8 @@ rule deg_lasso_classifier:
     input:
         discovery_deg_rds="{project}/DEG/deseq2/discovery_deg.rds",
         validation_deg_rds="{project}/DEG/deseq2/validation_deg.rds",
-        discovery_vst_rds="{project}/DEG/deseq2/discovery_vst_matrix.rds",
-        validation_vst_rds="{project}/DEG/deseq2/validation_vst_matrix.rds",
+        discovery_tpm="{project}/quantification/STAR_FC/TPM_matrix.txt",
+        validation_tpm="{project}/quantification/STAR_FC/TPM_matrix.txt",
         samples=config["samples"],
     output:
         signature="{project}/classifier/DEG/lasso_signature_genes.tsv",
@@ -180,8 +180,8 @@ rule deg_lasso_classifier_salmon:
     input:
         discovery_deg_rds="{project}/DEG/deseq2/salmon_discovery_deg.rds",
         validation_deg_rds="{project}/DEG/deseq2/salmon_validation_deg.rds",
-        discovery_vst_rds="{project}/DEG/deseq2/salmon_discovery_vst_matrix.rds",
-        validation_vst_rds="{project}/DEG/deseq2/salmon_validation_vst_matrix.rds",
+        discovery_tpm="{project}/quantification/salmon/TPM_matrix.txt",
+        validation_tpm="{project}/quantification/salmon/TPM_matrix.txt",
         samples=config["samples"],
     output:
         signature="{project}/DEG/classifier/salmon_lasso_signature_genes.tsv",
@@ -221,8 +221,8 @@ rule deg_lasso_classifier_kallisto:
     input:
         discovery_deg_rds="{project}/DEG/deseq2/kallisto_discovery_deg.rds",
         validation_deg_rds="{project}/DEG/deseq2/kallisto_validation_deg.rds",
-        discovery_vst_rds="{project}/DEG/deseq2/kallisto_discovery_vst_matrix.rds",
-        validation_vst_rds="{project}/DEG/deseq2/kallisto_validation_vst_matrix.rds",
+        discovery_tpm="{project}/quantification/kallisto/TPM_matrix.txt",
+        validation_tpm="{project}/quantification/kallisto/TPM_matrix.txt",
         samples=config["samples"],
     output:
         signature="{project}/DEG/classifier/kallisto_lasso_signature_genes.tsv",
