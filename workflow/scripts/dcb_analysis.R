@@ -72,6 +72,9 @@ count_data <- read_tsv(count_file, show_col_types = FALSE)
 # Extract gene names column
 gene_col <- colnames(tpm_data)[1]
 
+cat(sprintf("TPM data dimensions: %d rows x %d columns\n", nrow(tpm_data), ncol(tpm_data)))
+cat(sprintf("First column (gene names): %s\n", gene_col))
+
 # Split samples by sample_type (tissue vs cfRNA)
 tissue_samples <- samples %>%
   filter(sample_type == discovery_sample_type)
@@ -104,10 +107,18 @@ cat(sprintf("Validation cohort (cfRNA): %d cancer, %d normal\n",
             length(cfrna_cancer_samples), length(cfrna_normal_samples)))
 
 # Get sample columns that exist in the data
+cat(sprintf("\nLooking for samples in TPM data columns...\n"))
+cat(sprintf("Tissue tumor samples from samples file: %s\n", paste(tissue_tumor_samples, collapse = ", ")))
+cat(sprintf("Tissue normal samples from samples file: %s\n", paste(tissue_normal_samples, collapse = ", ")))
+
 tissue_tumor_cols <- intersect(tissue_tumor_samples, colnames(tpm_data))
 tissue_normal_cols <- intersect(tissue_normal_samples, colnames(tpm_data))
 cfrna_cancer_cols <- intersect(cfrna_cancer_samples, colnames(tpm_data))
 cfrna_normal_cols <- intersect(cfrna_normal_samples, colnames(tpm_data))
+
+cat(sprintf("TPM data columns (first 10): %s\n", paste(head(colnames(tpm_data), 10), collapse = ", ")))
+cat(sprintf("Tissue tumor cols found: %s\n", paste(tissue_tumor_cols, collapse = ", ")))
+cat(sprintf("Tissue normal cols found: %s\n", paste(tissue_normal_cols, collapse = ", ")))
 
 cat(sprintf("\nAvailable samples in TPM data:\n"))
 cat(sprintf("  Tissue tumor: %d\n", length(tissue_tumor_cols)))
