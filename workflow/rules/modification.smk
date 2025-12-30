@@ -82,3 +82,25 @@ rule modtect_statistical_analysis:
         mem_mb=config["resources"]["mem_mb"].get("default", 8192),
     script:
         "../scripts/modtect_statistical_analysis.R"
+
+
+rule modtect_annotate:
+    input:
+        merged="{project}/modification/modtect/merged.modtect.txt",
+        gtf="resources/genome.gtf",
+    output:
+        annotated="{project}/modification/modtect/annotated_modifications.tsv",
+        summary="{project}/modification/modtect/annotation_summary.txt",
+    log:
+        log="logs/{project}/modtect_annotate.log",
+    container:
+        (
+            "docker://btrspg/rlan:20251110"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 8192),
+    script:
+        "../scripts/modtect_annotate.R"
