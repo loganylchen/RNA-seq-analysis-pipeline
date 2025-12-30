@@ -111,13 +111,28 @@ perform_site_test <- function(site_data) {
       statistic = NA,
       method = "insufficient_data",
       n_case = n_case,
-      n_control = n_control
+      n_control = n_control,
+      mean_case = NA,
+      mean_control = NA,
+      case_gt10_str = NA,
+      control_gt10_str = NA,
+      case_gt10_prop = NA,
+      control_gt10_prop = NA,
+      log2fc = NA
     ))
   }
 
   # Calculate means
   mean_case <- mean(case_values, na.rm = TRUE)
   mean_control <- mean(control_values, na.rm = TRUE)
+
+  # Calculate proportion of samples with value > 10
+  case_gt10 <- sum(case_values > 10, na.rm = TRUE)
+  control_gt10 <- sum(control_values > 10, na.rm = TRUE)
+  case_gt10_str <- sprintf("%d/%d", case_gt10, n_case)
+  control_gt10_str <- sprintf("%d/%d", control_gt10, n_control)
+  case_gt10_prop <- case_gt10 / n_case
+  control_gt10_prop <- control_gt10 / n_control
 
   # Calculate fold change (log2)
   # Add small pseudocount to avoid division by zero
@@ -136,6 +151,10 @@ perform_site_test <- function(site_data) {
       n_control = n_control,
       mean_case = mean_case,
       mean_control = mean_control,
+      case_gt10_str = case_gt10_str,
+      control_gt10_str = control_gt10_str,
+      case_gt10_prop = case_gt10_prop,
+      control_gt10_prop = control_gt10_prop,
       log2fc = log2fc,
       sd_case = sd(case_values),
       sd_control = sd(control_values)
@@ -149,6 +168,10 @@ perform_site_test <- function(site_data) {
       n_control = n_control,
       mean_case = mean_case,
       mean_control = mean_control,
+      case_gt10_str = case_gt10_str,
+      control_gt10_str = control_gt10_str,
+      case_gt10_prop = case_gt10_prop,
+      control_gt10_prop = control_gt10_prop,
       log2fc = log2fc
     ))
   })
@@ -181,6 +204,10 @@ for (i in 1:nrow(analysis_data)) {
     n_control = test_result$n_control,
     mean_case = ifelse(is.null(test_result$mean_case), NA, test_result$mean_case),
     mean_control = ifelse(is.null(test_result$mean_control), NA, test_result$mean_control),
+    case_gt10_str = ifelse(is.null(test_result$case_gt10_str), NA, test_result$case_gt10_str),
+    control_gt10_str = ifelse(is.null(test_result$control_gt10_str), NA, test_result$control_gt10_str),
+    case_gt10_prop = ifelse(is.null(test_result$case_gt10_prop), NA, test_result$case_gt10_prop),
+    control_gt10_prop = ifelse(is.null(test_result$control_gt10_prop), NA, test_result$control_gt10_prop),
     log2fc = ifelse(is.null(test_result$log2fc), NA, test_result$log2fc),
     sd_case = ifelse(is.null(test_result$sd_case), NA, test_result$sd_case),
     sd_control = ifelse(is.null(test_result$sd_control), NA, test_result$sd_control)
@@ -238,12 +265,24 @@ summary_text <- c(
   paste("Significant sites (FDR < 0.05):", sum(results_df$significant, na.rm = TRUE)),
   paste("Percentage significant:", round(sum(results_df$significant, na.rm = TRUE) / sum(!is.na(results_df$p_value)) * 100, 2), "%"),
   "",
+  "--- Column Descriptions ---",
+  "mean_case: Mean ModTect score in case samples",
+  "mean_control: Mean ModTect score in control samples",
+  "case_gt10_str: Proportion of case samples with score > 10 (e.g., '1/11')",
+  "control_gt10_str: Proportion of control samples with score > 10 (e.g., '0/10')",
+  "case_gt10_prop: Proportion of case samples with score > 10 (float, e.g., 0.09)",
+  "control_gt10_prop: Proportion of control samples with score > 10 (float, e.g., 0.00)",
+  "",
   "--- Top Significant Sites ---",
   if (nrow(significant_df) > 0) {
     head(significant_df) %>%
       transmute(Site = site_id,
                 Chrom = chrom,
                 Pos = position,
+                `Mean Case` = round(mean_case, 3),
+                `Mean Control` = round(mean_control, 3),
+                `Case >10` = case_gt10_str,
+                `Control >10` = control_gt10_str,
                 `log2FC` = round(log2fc, 3),
                 `P-value` = formatC(p_value, format = "e", digits = 2),
                 FDR = formatC(padj, format = "e", digits = 2)) %>%

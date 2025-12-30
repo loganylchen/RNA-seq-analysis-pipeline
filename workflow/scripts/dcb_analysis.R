@@ -147,7 +147,6 @@ tissue_log2fc <- log2((tissue_tumor_mean_tpm + 0.01) / (tissue_normal_mean_tpm +
 
 # Identify tissue-upregulated genes (candidate DCBs)
 discovery_genes <- tpm_data %>%
-  select(1) %>%
   mutate(
     gene = !!gene_col,
     tissue_tumor_mean_tpm = tissue_tumor_mean_tpm,
