@@ -157,9 +157,9 @@ cat(sprintf("Annotated results written to: %s\n", output_annotated))
 # Generate summary statistics
 summary_stats <- list(
   n_total_sites = nrow(final_annotated),
-  n_sites_with_genes = sum(final_annotated$n_genes > 0),
-  n_intergenic_sites = sum(final_annotated$genomic_region == "intergenic"),
-  n_genes_detected = sum(final_annotated$n_genes),
+  n_sites_with_genes = sum(final_annotated$n_genes > 0, na.rm = TRUE),
+  n_intergenic_sites = sum(final_annotated$genomic_region == "intergenic", na.rm = TRUE),
+  n_genes_detected = sum(final_annotated$n_genes, na.rm = TRUE),
   n_samples_in_data = length(sample_cols),
   chromosomes = paste(unique(final_annotated$chrom), collapse = ", ")
 )
