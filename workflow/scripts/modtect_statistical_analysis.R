@@ -48,12 +48,33 @@ cat("Discovery samples:", nrow(sample_info), "\n")
 cat("Case samples:", sum(sample_info$condition == case_condition), "\n")
 cat("Control samples:", sum(sample_info$condition == control_condition), "\n")
 
-# Get sample columns (all columns except chrom, position, reference_nt)
-sample_cols <- colnames(modtect_data)[!colnames(modtect_data) %in% c("chrom", "position", "reference_nt")]
+# The merged data has columns: chrom, position, reference_nt, then for each sample:
+# - SampleName_ModTect_score
+# - SampleName_variant_proportion
+# We need to separate these
+
+cat("\n--- Parsing merged ModTect data ---\n")
+cat("Total columns:", ncol(modtect_data), "\n")
+cat("Column names:", head(colnames(modtect_data), 10), "\n")
+
+# Get all column names except the first 3 (chrom, position, reference_nt)
+all_cols <- colnames(modtect_data)[-(1:3)]
+
+# Extract sample names from column names
+# Sample columns end with _ModTect_score or _variant_proportion
+score_cols <- all_cols[grepl("_ModTect_score$", all_cols)]
+prop_cols <- all_cols[grepl("_variant_proportion$", all_cols)]
+
+# Extract sample names by removing the suffix
+sample_names_score <- gsub("_ModTect_score$", "", score_cols)
+sample_names_prop <- gsub("_variant_proportion$", "", prop_cols)
+
+# Get unique sample names
+all_samples <- unique(c(sample_names_score, sample_names_prop))
+cat("Unique samples found in data:", length(all_samples), "\n")
 
 # Filter to only discovery samples
-discovery_samples <- intersect(sample_cols, rownames(sample_info))
-cat("Samples in merged data:", length(sample_cols), "\n")
+discovery_samples <- intersect(all_samples, rownames(sample_info))
 cat("Discovery samples found:", length(discovery_samples), "\n")
 
 if (length(discovery_samples) == 0) {
@@ -72,37 +93,81 @@ cat("Case samples in data:", length(intersect(case_samples, discovery_samples)),
 cat("Control samples in data:", length(intersect(control_samples, discovery_samples)), "\n")
 
 # Prepare data for statistical analysis
+# We need to work with variant_proportion for statistics
+# And ModTect_score for counting > 10
+
 cat("\n--- Preparing data for statistical analysis ---\n")
-analysis_data <- modtect_data %>%
-  select(all_of(c("chrom", "position", "reference_nt", discovery_samples))) %>%
-  mutate(
-    site_id = paste(chrom, position, reference_nt, sep = ":")
-  ) %>%
-  select(site_id, all_of(discovery_samples))
 
-cat("Total sites:", nrow(analysis_data), "\n")
+# Create site_id
+modtect_data <- modtect_data %>%
+  mutate(site_id = paste(chrom, position, reference_nt, sep = ":"))
 
-# Add condition information
+# Get case and control sample columns
 case_cols <- intersect(discovery_samples, case_samples)
 control_cols <- intersect(discovery_samples, control_samples)
 
+# Build the proportion column names for case and control
+case_prop_cols <- paste0(case_cols, "_variant_proportion")
+control_prop_cols <- paste0(control_cols, "_variant_proportion")
+
+# Build the score column names for case and control
+case_score_cols <- paste0(case_cols, "_ModTect_score")
+control_score_cols <- paste0(control_cols, "_ModTect_score")
+
+# Check which columns exist in data
+case_prop_cols <- intersect(case_prop_cols, colnames(modtect_data))
+control_prop_cols <- intersect(control_prop_cols, colnames(modtect_data))
+case_score_cols <- intersect(case_score_cols, colnames(modtect_data))
+control_score_cols <- intersect(control_score_cols, colnames(modtect_data))
+
+cat("Case proportion columns found:", length(case_prop_cols), "\n")
+cat("Control proportion columns found:", length(control_prop_cols), "\n")
+cat("Case score columns found:", length(case_score_cols), "\n")
+cat("Control score columns found:", length(control_score_cols), "\n")
+
+if (length(case_prop_cols) == 0 || length(control_prop_cols) == 0) {
+  stop("Insufficient proportion columns for statistical analysis!")
+}
+
+# Extract the data we need
+analysis_data <- modtect_data %>%
+  select(site_id, all_of(c(case_prop_cols, control_prop_cols, case_score_cols, control_score_cols)))
+
+cat("Total sites:", nrow(analysis_data), "\n")
+
+# Extract sample names from column names (remove suffix)
+case_sample_names <- gsub("_variant_proportion$", "", case_prop_cols)
+control_sample_names <- gsub("_variant_proportion$", "", control_prop_cols)
+
 # Function to perform statistical test for each site
 perform_site_test <- function(site_data) {
-  # Extract values for case and control
-  case_values <- site_data[case_cols]
-  control_values <- site_data[control_cols]
+  # Extract proportion values for case and control
+  case_prop_values <- site_data[case_prop_cols]
+  control_prop_values <- site_data[control_prop_cols]
+
+  # Extract score values for counting > 10
+  case_score_values <- site_data[case_score_cols]
+  control_score_values <- site_data[control_score_cols]
 
   # Convert to numeric
-  case_values <- as.numeric(case_values)
-  control_values <- as.numeric(control_values)
+  case_prop_values <- as.numeric(case_prop_values)
+  control_prop_values <- as.numeric(control_prop_values)
+  case_score_values <- as.numeric(case_score_values)
+  control_score_values <- as.numeric(control_score_values)
 
-  # Handle missing values (NA)
-  case_values <- case_values[!is.na(case_values)]
-  control_values <- control_values[!is.na(control_values)]
+  # Handle missing values (NA) - remove from both prop and score together
+  # For statistics, use only non-NA proportion values
+  case_na <- is.na(case_prop_values)
+  control_na <- is.na(control_prop_values)
+
+  case_prop_values <- case_prop_values[!case_na]
+  control_prop_values <- control_prop_values[!control_na]
+  case_score_values <- case_score_values[!case_na]
+  control_score_values <- control_score_values[!control_na]
 
   # Calculate summary statistics
-  n_case <- length(case_values)
-  n_control <- length(control_values)
+  n_case <- length(case_prop_values)
+  n_control <- length(control_prop_values)
 
   # Check if we have enough data
   if (n_case < 2 || n_control < 2) {
@@ -112,36 +177,36 @@ perform_site_test <- function(site_data) {
       method = "insufficient_data",
       n_case = n_case,
       n_control = n_control,
-      mean_case = NA,
-      mean_control = NA,
-      case_gt10_str = NA,
-      control_gt10_str = NA,
-      case_gt10_prop = NA,
-      control_gt10_prop = NA,
+      mean_prop_case = NA,
+      mean_prop_control = NA,
+      case_score_gt10_str = NA,
+      control_score_gt10_str = NA,
+      case_score_gt10_prop = NA,
+      control_score_gt10_prop = NA,
       log2fc = NA
     ))
   }
 
-  # Calculate means
-  mean_case <- mean(case_values, na.rm = TRUE)
-  mean_control <- mean(control_values, na.rm = TRUE)
+  # Calculate means of variant proportion
+  mean_prop_case <- mean(case_prop_values, na.rm = TRUE)
+  mean_prop_control <- mean(control_prop_values, na.rm = TRUE)
 
-  # Calculate proportion of samples with value > 10
-  case_gt10 <- sum(case_values > 10, na.rm = TRUE)
-  control_gt10 <- sum(control_values > 10, na.rm = TRUE)
-  case_gt10_str <- sprintf("%d/%d", case_gt10, n_case)
-  control_gt10_str <- sprintf("%d/%d", control_gt10, n_control)
-  case_gt10_prop <- case_gt10 / n_case
-  control_gt10_prop <- control_gt10 / n_control
+  # Calculate proportion of samples with ModTect_score > 10
+  case_score_gt10 <- sum(case_score_values > 10, na.rm = TRUE)
+  control_score_gt10 <- sum(control_score_values > 10, na.rm = TRUE)
+  case_score_gt10_str <- sprintf("%d/%d", case_score_gt10, n_case)
+  control_score_gt10_str <- sprintf("%d/%d", control_score_gt10, n_control)
+  case_score_gt10_prop <- case_score_gt10 / n_case
+  control_score_gt10_prop <- control_score_gt10 / n_control
 
-  # Calculate fold change (log2)
+  # Calculate fold change (log2) using variant proportion
   # Add small pseudocount to avoid division by zero
   pseudocount <- 1e-6
-  log2fc <- log2((mean_case + pseudocount) / (mean_control + pseudocount))
+  log2fc <- log2((mean_prop_case + pseudocount) / (mean_prop_control + pseudocount))
 
-  # Perform Wilcoxon rank-sum test (non-parametric)
+  # Perform Wilcoxon rank-sum test on variant proportion (non-parametric)
   tryCatch({
-    test_result <- wilcox.test(case_values, control_values, exact = FALSE, correct = TRUE)
+    test_result <- wilcox.test(case_prop_values, control_prop_values, exact = FALSE, correct = TRUE)
 
     return(list(
       p_value = test_result$p.value,
@@ -149,15 +214,15 @@ perform_site_test <- function(site_data) {
       method = "wilcoxon_rank_sum",
       n_case = n_case,
       n_control = n_control,
-      mean_case = mean_case,
-      mean_control = mean_control,
-      case_gt10_str = case_gt10_str,
-      control_gt10_str = control_gt10_str,
-      case_gt10_prop = case_gt10_prop,
-      control_gt10_prop = control_gt10_prop,
+      mean_prop_case = mean_prop_case,
+      mean_prop_control = mean_prop_control,
+      case_score_gt10_str = case_score_gt10_str,
+      control_score_gt10_str = control_score_gt10_str,
+      case_score_gt10_prop = case_score_gt10_prop,
+      control_score_gt10_prop = control_score_gt10_prop,
       log2fc = log2fc,
-      sd_case = sd(case_values),
-      sd_control = sd(control_values)
+      sd_prop_case = sd(case_prop_values),
+      sd_prop_control = sd(control_prop_values)
     ))
   }, error = function(e) {
     return(list(
@@ -166,12 +231,12 @@ perform_site_test <- function(site_data) {
       method = "error",
       n_case = n_case,
       n_control = n_control,
-      mean_case = mean_case,
-      mean_control = mean_control,
-      case_gt10_str = case_gt10_str,
-      control_gt10_str = control_gt10_str,
-      case_gt10_prop = case_gt10_prop,
-      control_gt10_prop = control_gt10_prop,
+      mean_prop_case = mean_prop_case,
+      mean_prop_control = mean_prop_control,
+      case_score_gt10_str = case_score_gt10_str,
+      control_score_gt10_str = control_score_gt10_str,
+      case_score_gt10_prop = case_score_gt10_prop,
+      control_score_gt10_prop = control_score_gt10_prop,
       log2fc = log2fc
     ))
   })
@@ -202,15 +267,15 @@ for (i in 1:nrow(analysis_data)) {
     test_method = test_result$method,
     n_case = test_result$n_case,
     n_control = test_result$n_control,
-    mean_case = ifelse(is.null(test_result$mean_case), NA, test_result$mean_case),
-    mean_control = ifelse(is.null(test_result$mean_control), NA, test_result$mean_control),
-    case_gt10_str = ifelse(is.null(test_result$case_gt10_str), NA, test_result$case_gt10_str),
-    control_gt10_str = ifelse(is.null(test_result$control_gt10_str), NA, test_result$control_gt10_str),
-    case_gt10_prop = ifelse(is.null(test_result$case_gt10_prop), NA, test_result$case_gt10_prop),
-    control_gt10_prop = ifelse(is.null(test_result$control_gt10_prop), NA, test_result$control_gt10_prop),
+    mean_prop_case = ifelse(is.null(test_result$mean_prop_case), NA, test_result$mean_prop_case),
+    mean_prop_control = ifelse(is.null(test_result$mean_prop_control), NA, test_result$mean_prop_control),
+    case_score_gt10_str = ifelse(is.null(test_result$case_score_gt10_str), NA, test_result$case_score_gt10_str),
+    control_score_gt10_str = ifelse(is.null(test_result$control_score_gt10_str), NA, test_result$control_score_gt10_str),
+    case_score_gt10_prop = ifelse(is.null(test_result$case_score_gt10_prop), NA, test_result$case_score_gt10_prop),
+    control_score_gt10_prop = ifelse(is.null(test_result$control_score_gt10_prop), NA, test_result$control_score_gt10_prop),
     log2fc = ifelse(is.null(test_result$log2fc), NA, test_result$log2fc),
-    sd_case = ifelse(is.null(test_result$sd_case), NA, test_result$sd_case),
-    sd_control = ifelse(is.null(test_result$sd_control), NA, test_result$sd_control)
+    sd_prop_case = ifelse(is.null(test_result$sd_prop_case), NA, test_result$sd_prop_case),
+    sd_prop_control = ifelse(is.null(test_result$sd_prop_control), NA, test_result$sd_prop_control)
   )
 }
 
@@ -266,12 +331,13 @@ summary_text <- c(
   paste("Percentage significant:", round(sum(results_df$significant, na.rm = TRUE) / sum(!is.na(results_df$p_value)) * 100, 2), "%"),
   "",
   "--- Column Descriptions ---",
-  "mean_case: Mean ModTect score in case samples",
-  "mean_control: Mean ModTect score in control samples",
-  "case_gt10_str: Proportion of case samples with score > 10 (e.g., '1/11')",
-  "control_gt10_str: Proportion of control samples with score > 10 (e.g., '0/10')",
-  "case_gt10_prop: Proportion of case samples with score > 10 (float, e.g., 0.09)",
-  "control_gt10_prop: Proportion of control samples with score > 10 (float, e.g., 0.00)",
+  "mean_prop_case: Mean variant proportion in case samples",
+  "mean_prop_control: Mean variant proportion in control samples",
+  "case_score_gt10_str: Case samples with ModTect_score > 10 (e.g., '1/11')",
+  "control_score_gt10_str: Control samples with ModTect_score > 10 (e.g., '0/10')",
+  "case_score_gt10_prop: Proportion of case samples with ModTect_score > 10 (float, e.g., 0.09)",
+  "control_score_gt10_prop: Proportion of control samples with ModTect_score > 10 (float, e.g., 0.00)",
+  "log2fc: log2 fold change of variant proportion (case/control)",
   "",
   "--- Top Significant Sites ---",
   if (nrow(significant_df) > 0) {
@@ -279,10 +345,10 @@ summary_text <- c(
       transmute(Site = site_id,
                 Chrom = chrom,
                 Pos = position,
-                `Mean Case` = round(mean_case, 3),
-                `Mean Control` = round(mean_control, 3),
-                `Case >10` = case_gt10_str,
-                `Control >10` = control_gt10_str,
+                `Mean Prop Case` = round(mean_prop_case, 4),
+                `Mean Prop Control` = round(mean_prop_control, 4),
+                `Case Score>10` = case_score_gt10_str,
+                `Control Score>10` = control_score_gt10_str,
                 `log2FC` = round(log2fc, 3),
                 `P-value` = formatC(p_value, format = "e", digits = 2),
                 FDR = formatC(padj, format = "e", digits = 2)) %>%
