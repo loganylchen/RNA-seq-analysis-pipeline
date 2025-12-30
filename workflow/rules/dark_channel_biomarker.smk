@@ -15,7 +15,6 @@ rule dcb_analysis:
         # Use TPM matrix for detection rate analysis
         tpm="{project}/quantification/STAR_FC/TPM_matrix.txt",
         count_matrix="{project}/quantification/STAR_FC/count_matrix.txt",
-        samples=config["samples"],
     output:
         discovery_dcb_tsv="{project}/dcb/discovery_dcb.tsv",
         discovery_dcb_rds="{project}/dcb/discovery_dcb.rds",
@@ -26,6 +25,7 @@ rule dcb_analysis:
         discovery_plot="{project}/dcb/discovery_dcb_distribution.png",
         validation_plot="{project}/dcb/validation_dcb_distribution.png",
     params:
+        samples=config["samples"],
         project=project,
         case_condition=case_condition,
         control_condition=control_condition,
@@ -58,7 +58,6 @@ rule dcb_analysis_salmon:
     input:
         tpm="{project}/quantification/salmon/TPM_matrix.txt",
         count_matrix="{project}/quantification/salmon/count_matrix.txt",
-        samples=config["samples"],
     output:
         discovery_dcb_tsv="{project}/dcb/salmon_discovery_dcb.tsv",
         discovery_dcb_rds="{project}/dcb/salmon_discovery_dcb.rds",
@@ -69,6 +68,7 @@ rule dcb_analysis_salmon:
         discovery_plot="{project}/dcb/salmon_discovery_dcb_distribution.png",
         validation_plot="{project}/dcb/salmon_validation_dcb_distribution.png",
     params:
+        samples=config["samples"],
         project=project,
         case_condition=case_condition,
         control_condition=control_condition,
@@ -101,7 +101,6 @@ rule dcb_analysis_kallisto:
     input:
         tpm="{project}/quantification/kallisto/TPM_matrix.txt",
         count_matrix="{project}/quantification/kallisto/count_matrix.txt",
-        samples=config["samples"],
     output:
         discovery_dcb_tsv="{project}/dcb/kallisto_discovery_dcb.tsv",
         discovery_dcb_rds="{project}/dcb/kallisto_discovery_dcb.rds",
@@ -112,6 +111,7 @@ rule dcb_analysis_kallisto:
         discovery_plot="{project}/dcb/kallisto_discovery_dcb_distribution.png",
         validation_plot="{project}/dcb/kallisto_validation_dcb_distribution.png",
     params:
+        samples=config["samples"],
         project=project,
         case_condition=case_condition,
         control_condition=control_condition,
