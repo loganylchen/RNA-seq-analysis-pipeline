@@ -270,7 +270,7 @@ if (length(common_deg_genes) > 0) {
       gp = gpar(fill = log2fc_colors, col = NA),
       baseline = 0,
       axis = TRUE,
-      axis_param = list(side = "left", gp = gpar(fontsize = 6))
+      axis_param = list(side = "bottom", gp = gpar(fontsize = 6))
     ),
     width = unit(2, "cm")
   )
