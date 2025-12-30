@@ -1,6 +1,7 @@
 # DEG Visualization Rules
 # Create heatmaps, scatter plots, and boxplots for DEG results
 
+
 rule deg_visualization:
     """
     Generate visualizations for DEG results including:
@@ -142,12 +143,12 @@ rule deg_lasso_classifier:
         validation_vst_rds="{project}/DEG/deseq2/validation_vst_matrix.rds",
         samples=config["samples"],
     output:
-        signature="{project}/DEG/classifier/lasso_signature_genes.tsv",
-        coefficients="{project}/DEG/classifier/lasso_coefficients.tsv",
-        discovery_predictions="{project}/DEG/classifier/discovery_predictions.tsv",
-        validation_predictions="{project}/DEG/classifier/validation_predictions.tsv",
-        roc_plot="{project}/DEG/classifier/lasso_roc_curve.png",
-        summary="{project}/DEG/classifier/lasso_summary.txt",
+        signature="{project}/classifier/DEG/lasso_signature_genes.tsv",
+        coefficients="{project}/classifier/DEG/lasso_coefficients.tsv",
+        discovery_predictions="{project}/classifier/DEG/discovery_predictions.tsv",
+        validation_predictions="{project}/classifier/DEG/validation_predictions.tsv",
+        roc_plot="{project}/classifier/DEG/lasso_roc_curve.png",
+        summary="{project}/classifier/DEG/lasso_summary.txt",
     params:
         project=project,
         case_condition=case_condition,
@@ -157,9 +158,9 @@ rule deg_lasso_classifier:
         padj_threshold=config.get("deg", {}).get("padj", 0.05),
     container:
         (
-            "docker://btrspg/rlan:20251230"
-            if config["container"].get("deg_vis", None) is None
-            else config["container"].get("deg_vis", None)
+            "docker://btrspg/glmnet:4.1_10"
+            if config["container"].get("lasso", None) is None
+            else config["container"].get("lasso", None)
         )
     benchmark:
         "benchmarks/{project}/deg_lasso_classifier.benchmark.txt"

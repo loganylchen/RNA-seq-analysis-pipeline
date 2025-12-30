@@ -21,8 +21,8 @@ suppressPackageStartupMessages({
 # Get parameters from Snakemake
 discovery_deg_rds <- snakemake@input[["discovery_deg_rds"]]
 validation_deg_rds <- snakemake@input[["validation_deg_rds"]]
-discovery_vst_rds <- snakemake@input[["discovery_vst_rds"]]
-validation_vst_rds <- snakemake@input[["validation_vst_rds"]]
+discovery_tpm_file <- snakemake@input[["discovery_tpm"]]
+validation_tpm_file <- snakemake@input[["validation_tpm"]]
 samples_file <- snakemake@params[["samples"]]
 project <- snakemake@params[["project"]]
 case_condition <- snakemake@params[["case_condition"]]
@@ -51,8 +51,20 @@ cat("Padj threshold:", padj_threshold, "\n")
 cat("\n--- Loading data ---\n")
 discovery_deg <- readRDS(discovery_deg_rds)
 validation_deg <- readRDS(validation_deg_rds)
-discovery_vst <- readRDS(discovery_vst_rds)
-validation_vst <- readRDS(validation_vst_rds)
+
+# Load TPM matrices
+discovery_tpm <- read_tsv(discovery_tpm_file, show_col_types = FALSE)
+validation_tpm <- read_tsv(validation_tpm_file, show_col_types = FALSE)
+
+# Get gene names column (first column)
+gene_col_discovery <- colnames(discovery_tpm)[1]
+gene_col_validation <- colnames(validation_tpm)[1]
+
+# Set row names as gene IDs
+discovery_tpm <- discovery_tpm %>%
+  column_to_rownames(var = gene_col_discovery)
+validation_tpm <- validation_tpm %>%
+  column_to_rownames(var = gene_col_validation)
 
 sample_info <- read_tsv(samples_file, show_col_types = FALSE) %>%
   filter(project == !!project) %>%
@@ -60,6 +72,8 @@ sample_info <- read_tsv(samples_file, show_col_types = FALSE) %>%
 
 cat("Discovery DEGs:", nrow(discovery_deg), "\n")
 cat("Validation DEGs:", nrow(validation_deg), "\n")
+cat("Discovery TPM:", nrow(discovery_tpm), "genes x", ncol(discovery_tpm), "samples\n")
+cat("Validation TPM:", nrow(validation_tpm), "genes x", ncol(validation_tpm), "samples\n")
 
 # Get significant DEGs from discovery
 cat("\n--- Selecting significant DEGs from discovery ---\n")
@@ -71,12 +85,12 @@ discovery_sig_genes <- discovery_deg %>%
 
 cat("Significant DEGs in discovery:", length(discovery_sig_genes), "\n")
 
-# Get intersection with available VST genes
-discovery_available <- intersect(discovery_sig_genes, rownames(discovery_vst))
-validation_available <- intersect(discovery_available, rownames(validation_vst))
+# Get intersection with available TPM genes
+discovery_available <- intersect(discovery_sig_genes, rownames(discovery_tpm))
+validation_available <- intersect(discovery_available, rownames(validation_tpm))
 
-cat("DEGs available in discovery VST:", length(discovery_available), "\n")
-cat("DEGs available in validation VST:", length(validation_available), "\n")
+cat("DEGs available in discovery TPM:", length(discovery_available), "\n")
+cat("DEGs available in validation TPM:", length(validation_available), "\n")
 
 if (length(validation_available) < 5) {
   stop("Too few DEGs available for LASSO classification!")
@@ -88,7 +102,7 @@ cat("Using", length(feature_genes), "genes for classification\n")
 
 # Prepare discovery data
 cat("\n--- Preparing discovery dataset ---\n")
-discovery_samples <- colnames(discovery_vst)
+discovery_samples <- colnames(discovery_tpm)
 discovery_sample_info <- sample_info[discovery_samples, , drop = FALSE]
 
 # Filter to discovery sample type only
@@ -99,7 +113,8 @@ discovery_samples_filtered <- discovery_sample_info %>%
 cat("Discovery samples (filtered):", length(discovery_samples_filtered), "\n")
 
 # Create design matrix and response
-x_discovery <- t(discovery_vst[feature_genes, discovery_samples_filtered, drop = FALSE])
+# Use log2(TPM + 1) for better numerical stability
+x_discovery <- t(log2(discovery_tpm[feature_genes, discovery_samples_filtered, drop = FALSE] + 1))
 y_discovery <- ifelse(discovery_sample_info[discovery_samples_filtered, "condition"] == case_condition, 1, 0)
 
 cat("Case samples:", sum(y_discovery), "\n")
@@ -107,7 +122,7 @@ cat("Control samples:", sum(1 - y_discovery), "\n")
 
 # Prepare validation data
 cat("\n--- Preparing validation dataset ---\n")
-validation_samples <- colnames(validation_vst)
+validation_samples <- colnames(validation_tpm)
 validation_sample_info <- sample_info[validation_samples, , drop = FALSE]
 
 # Filter to NON-discovery sample type (validation cohort)
@@ -117,7 +132,7 @@ validation_samples_filtered <- validation_sample_info %>%
 
 cat("Validation samples (filtered):", length(validation_samples_filtered), "\n")
 
-x_validation <- t(validation_vst[feature_genes, validation_samples_filtered, drop = FALSE])
+x_validation <- t(log2(validation_tpm[feature_genes, validation_samples_filtered, drop = FALSE] + 1))
 y_validation <- ifelse(validation_sample_info[validation_samples_filtered, "condition"] == case_condition, 1, 0)
 
 cat("Case samples:", sum(y_validation), "\n")
