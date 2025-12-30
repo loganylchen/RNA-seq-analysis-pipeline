@@ -61,13 +61,13 @@ cat("Column names:", head(colnames(modtect_data), 10), "\n")
 all_cols <- colnames(modtect_data)[-(1:3)]
 
 # Extract sample names from column names
-# Sample columns end with _ModTect_score or _variant_proportion
-score_cols <- all_cols[grepl("_ModTect_score$", all_cols)]
-prop_cols <- all_cols[grepl("_variant_proportion$", all_cols)]
+# Sample columns have prefix ModTect_score_ or variant_proportion_
+score_cols <- all_cols[grepl("^ModTect_score_", all_cols)]
+prop_cols <- all_cols[grepl("^variant_proportion_", all_cols)]
 
-# Extract sample names by removing the suffix
-sample_names_score <- gsub("_ModTect_score$", "", score_cols)
-sample_names_prop <- gsub("_variant_proportion$", "", prop_cols)
+# Extract sample names by removing the prefix
+sample_names_score <- gsub("^ModTect_score_", "", score_cols)
+sample_names_prop <- gsub("^variant_proportion_", "", prop_cols)
 
 # Get unique sample names
 all_samples <- unique(c(sample_names_score, sample_names_prop))
@@ -107,12 +107,12 @@ case_cols <- intersect(discovery_samples, case_samples)
 control_cols <- intersect(discovery_samples, control_samples)
 
 # Build the proportion column names for case and control
-case_prop_cols <- paste0(case_cols, "_variant_proportion")
-control_prop_cols <- paste0(control_cols, "_variant_proportion")
+case_prop_cols <- paste0("variant_proportion_", case_cols)
+control_prop_cols <- paste0("variant_proportion_", control_cols)
 
 # Build the score column names for case and control
-case_score_cols <- paste0(case_cols, "_ModTect_score")
-control_score_cols <- paste0(control_cols, "_ModTect_score")
+case_score_cols <- paste0("ModTect_score_", case_cols)
+control_score_cols <- paste0("ModTect_score_", control_cols)
 
 # Check which columns exist in data
 case_prop_cols <- intersect(case_prop_cols, colnames(modtect_data))
@@ -135,9 +135,9 @@ analysis_data <- modtect_data %>%
 
 cat("Total sites:", nrow(analysis_data), "\n")
 
-# Extract sample names from column names (remove suffix)
-case_sample_names <- gsub("_variant_proportion$", "", case_prop_cols)
-control_sample_names <- gsub("_variant_proportion$", "", control_prop_cols)
+# Extract sample names from column names (remove prefix)
+case_sample_names <- gsub("^variant_proportion_", "", case_prop_cols)
+control_sample_names <- gsub("^variant_proportion_", "", control_prop_cols)
 
 # Function to perform statistical test for each site
 perform_site_test <- function(site_data) {
