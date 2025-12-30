@@ -149,6 +149,7 @@ cat("Calculating tissue expression statistics...\n")
 cat(tissue_tumor_mean_tpm[1:5], "\n")
 cat(tissue_normal_mean_tpm[1:5], "\n")
 cat(tissue_log2fc[1:5], "\n")
+cat(length((tissue_tumor_mean_tpm >= tissue_tpm_threshold) & (abs(tissue_log2fc) >= tissue_fc_threshold)), "\n")
 # Identify tissue-upregulated genes (candidate DCBs)
 discovery_genes <- tpm_data %>%
   mutate(
@@ -156,8 +157,7 @@ discovery_genes <- tpm_data %>%
     tissue_tumor_mean_tpm = tissue_tumor_mean_tpm,
     tissue_normal_mean_tpm = tissue_normal_mean_tpm,
     tissue_log2fc = tissue_log2fc,
-    is_tissue_upregulated = (tissue_tumor_mean_tpm >= tissue_tpm_threshold) &
-                             (abs(tissue_log2fc) >= tissue_fc_threshold)
+    is_tissue_upregulated = (tissue_tumor_mean_tpm >= tissue_tpm_threshold) & (abs(tissue_log2fc) >= tissue_fc_threshold)
   )
 
 # Summary statistics
