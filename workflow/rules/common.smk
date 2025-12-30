@@ -217,6 +217,9 @@ def get_final_output():
         f"{sample_project}/DEG/visualization/deg_heatmap.png",
         f"{sample_project}/DEG/visualization/discovery_vs_validation_scatter.png",
         f"{sample_project}/DEG/visualization/significant_genes_boxplot.png",
+        f"{sample_project}/DEG/classifier/lasso_signature_genes.tsv",
+        f"{sample_project}/DEG/classifier/lasso_coefficients.tsv",
+        f"{sample_project}/DEG/classifier/lasso_roc_curve.png",
     ]
 
     return final_output
