@@ -238,8 +238,8 @@ output_cols <- c(
 final_annotated <- final_annotated %>%
   select(all_of(output_cols))
 
-# Write annotated results
-write_tsv(final_annotated, output_annotated)
+# Write annotated results (without quoting strings)
+write_tsv(final_annotated, output_annotated, quote = "none")
 
 cat(sprintf("Annotated results written to: %s\n", output_annotated))
 

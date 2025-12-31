@@ -54,7 +54,7 @@ discovery_deg <- read.csv(discovery_deg_tsv,sep='\t',check.names=FALSE, row.name
 # Load TPM matrices
 expression_tpm <- read_tsv(expression_tpm_file, show_col_types = FALSE) %>%
                   column_to_rownames(var = colnames(.)[1])
-sample_info <- read_tsv(samples_file, show_col_types = FALSE) %>%
+sample_info <- read_tsv(samples_file, show_col_types = FALSE,comment='#') %>%
   filter(project == !!project) %>%
   column_to_rownames(var = "sample_name")
 
