@@ -44,7 +44,7 @@ limma_trend_pipeline <- function(count,coldata,
                             condition,
                             case_condition, 
                             control_condition, parallel=TRUE) {
-    group <- coldata %>% mutate(condition = factor(!!rlang::sym(condition),levels=c(case_condition,control_condition)))[['condition']]
+    group <- coldata %>% mutate(condition = factor(!!condition,levels=c(case_condition,control_condition)))[['condition']]
     cts <- count[,rownames(coldata)]
     y <- DGEList(counts = cts, 
                 group = group)
