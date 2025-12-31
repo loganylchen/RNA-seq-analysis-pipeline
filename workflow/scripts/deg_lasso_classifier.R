@@ -303,8 +303,8 @@ cat("Coefficients written to:", coefficients_output, "\n")
 # Write prediction results
 cat("\n--- Writing prediction results ---\n")
 discovery_pred_df <- data.frame(
-  sample = discovery_samples_filtered,
-  condition = discovery_sample_info[discovery_samples_filtered, "condition"],
+  sample = discovery_samples,
+  condition = discovery_sample_info[discovery_samples, "condition"],
   actual = y_discovery,
   predicted_prob = as.numeric(discovery_pred_prob),
   predicted_class = discovery_pred_class
@@ -312,8 +312,8 @@ discovery_pred_df <- data.frame(
 write_tsv(discovery_pred_df, discovery_predictions)
 
 validation_pred_df <- data.frame(
-  sample = validation_samples_filtered,
-  condition = validation_sample_info[validation_samples_filtered, "condition"],
+  sample = validation_samples,
+  condition = validation_sample_info[validation_samples, "condition"],
   actual = y_validation,
   predicted_prob = as.numeric(validation_pred_prob),
   predicted_class = validation_pred_class
@@ -376,7 +376,7 @@ summary_text <- c(
     ""
   },
   "--- Discovery Performance ---",
-  paste("Samples:", length(discovery_samples_filtered)),
+  paste("Samples:", length(discovery_samples)),
   paste("  Case:", sum(y_discovery)),
   paste("  Control:", sum(1 - y_discovery)),
   sprintf("Accuracy: %.3f", discovery_accuracy),
@@ -385,7 +385,7 @@ summary_text <- c(
   sprintf("AUC: %.3f", discovery_auc),
   "",
   "--- Validation Performance ---",
-  paste("Samples:", length(validation_samples_filtered)),
+  paste("Samples:", length(validation_samples)),
   paste("  Case:", sum(y_validation)),
   paste("  Control:", sum(1 - y_validation)),
   sprintf("Accuracy: %.3f", validation_accuracy),
