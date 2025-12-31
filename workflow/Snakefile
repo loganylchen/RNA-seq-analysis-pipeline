@@ -44,8 +44,8 @@ include: "rules/analysis/deg/deseq2.smk"
 include: "rules/analysis/enrichment.smk"
 include: "rules/analysis/dark_channel_biomarker.smk"
 # visualization
-include: "rules/vis/vis.smk"
-include: "rules/vis/deg_visualization.smk"
+include: "rules/visualization/vis.smk"
+include: "rules/visualization/deg_visualization.smk"
 # qc
 include: "rules/qc/qc.smk"
 include: "rules/qc/bamqc.smk"
