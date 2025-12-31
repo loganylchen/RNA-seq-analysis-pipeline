@@ -77,16 +77,58 @@ cat("Validation TPM:", nrow(validation_tpm), "genes x", ncol(validation_tpm), "s
 
 # Get significant DEGs from discovery
 cat("\n--- Selecting significant DEGs from discovery ---\n")
-discovery_sig_genes <- discovery_deg %>%
+discovery_sig_deg <- discovery_deg %>%
   as.data.frame() %>%
   tibble::rownames_to_column("gene_id") %>%
-  filter(padj < padj_threshold, abs(log2FoldChange) >= log2fc_threshold) %>%
-  pull(gene_id)
+  filter(padj < padj_threshold, abs(log2FoldChange) >= log2fc_threshold)
 
-cat("Significant DEGs in discovery:", length(discovery_sig_genes), "\n")
+cat("Significant DEGs in discovery:", nrow(discovery_sig_deg), "\n")
+
+# Filter genes by expression level and variance for robustness
+cat("\n--- Filtering genes by expression and variance ---\n")
+
+# Calculate mean TPM and variance for each gene in discovery samples
+discovery_samples_filtered <- colnames(discovery_tpm)[colnames(discovery_tpm) %in% rownames(sample_info)]
+discovery_sample_info <- sample_info[discovery_samples_filtered, , drop = FALSE]
+
+# Filter to discovery sample type only
+discovery_samples_filtered <- discovery_sample_info %>%
+  filter(sample_type == !!discovery_sample_type) %>%
+  rownames()
+
+# Get expression matrix for discovery
+expr_matrix <- log2(discovery_tpm[, discovery_samples_filtered, drop = FALSE] + 1)
+
+# Calculate mean expression and variance for each gene
+gene_stats <- data.frame(
+  gene_id = rownames(expr_matrix),
+  mean_expr = rowMeans(expr_matrix, na.rm = TRUE),
+  var_expr = apply(expr_matrix, 1, var, na.rm = TRUE),
+  stringsAsFactors = FALSE
+)
+
+# Filter genes: mean expression > 1 (log2 TPM) and variance > 0.01
+expressed_genes <- gene_stats$gene_id[gene_stats$mean_expr > 1 & gene_stats$var_expr > 0.01]
+cat("Genes passing expression/variance filter:", length(expressed_genes), "\n")
+
+# Get intersection with significant DEGs
+discovery_sig_genes <- intersect(discovery_sig_deg$gene_id, expressed_genes)
+cat("Significant DEGs passing expression filter:", length(discovery_sig_genes), "\n")
+
+# Rank DEGs by statistical significance and effect size for pre-filtering
+# Use smaller p-value and larger absolute log2FC as criteria
+discovery_sig_deg_filtered <- discovery_sig_deg %>%
+  filter(gene_id %in% discovery_sig_genes) %>%
+  mutate(rank_score = -log10(padj) * abs(log2FoldChange)) %>%
+  arrange(desc(rank_score))
+
+# Pre-filter to top N genes to avoid overfitting with too many features
+max_features <- min(500, nrow(discovery_sig_deg_filtered))  # Limit to 500 genes
+top_genes <- discovery_sig_deg_filtered$gene_id[1:max_features]
+cat("Using top", length(top_genes), "ranked DEGs for LASSO\n")
 
 # Get intersection with available TPM genes
-discovery_available <- intersect(discovery_sig_genes, rownames(discovery_tpm))
+discovery_available <- intersect(top_genes, rownames(discovery_tpm))
 validation_available <- intersect(discovery_available, rownames(validation_tpm))
 
 cat("DEGs available in discovery TPM:", length(discovery_available), "\n")
@@ -100,16 +142,8 @@ if (length(validation_available) < 5) {
 feature_genes <- validation_available
 cat("Using", length(feature_genes), "genes for classification\n")
 
-# Prepare discovery data
+# Prepare discovery data (already computed above)
 cat("\n--- Preparing discovery dataset ---\n")
-discovery_samples <- colnames(discovery_tpm)
-discovery_sample_info <- sample_info[discovery_samples, , drop = FALSE]
-
-# Filter to discovery sample type only
-discovery_samples_filtered <- discovery_sample_info %>%
-  filter(sample_type == !!discovery_sample_type) %>%
-  rownames()
-
 cat("Discovery samples (filtered):", length(discovery_samples_filtered), "\n")
 
 # Create design matrix and response
@@ -119,6 +153,16 @@ y_discovery <- ifelse(discovery_sample_info[discovery_samples_filtered, "conditi
 
 cat("Case samples:", sum(y_discovery), "\n")
 cat("Control samples:", sum(1 - y_discovery), "\n")
+
+# Check for class imbalance
+class_ratio <- min(sum(y_discovery), sum(1 - y_discovery)) / max(sum(y_discovery), sum(1 - y_discovery))
+cat("Class ratio:", round(class_ratio, 3), "\n")
+
+# Standardize features for better convergence
+cat("\n--- Standardizing features ---\n")
+x_discovery_scaled <- scale(x_discovery)
+# Handle any NaN values from scaling (constant features)
+x_discovery_scaled[is.nan(x_discovery_scaled)] <- 0
 
 # Prepare validation data
 cat("\n--- Preparing validation dataset ---\n")
@@ -138,26 +182,48 @@ y_validation <- ifelse(validation_sample_info[validation_samples_filtered, "cond
 cat("Case samples:", sum(y_validation), "\n")
 cat("Control samples:", sum(1 - y_validation), "\n")
 
+# Scale validation data using the same centering and scaling as discovery
+x_validation_scaled <- scale(x_validation, center = attr(x_discovery_scaled, "scaled:center"),
+                            scale = attr(x_discovery_scaled, "scaled:scale"))
+# Handle NaN values (features with zero variance in discovery)
+x_validation_scaled[is.nan(x_validation_scaled)] <- 0
+
 # Fit LASSO logistic regression with cross-validation
 cat("\n--- Fitting LASSO model with cross-validation ---\n")
 set.seed(42)
 
+# Determine number of folds based on sample size
+min_class_size <- min(sum(y_discovery), sum(1 - y_discovery))
+n_folds <- min(10, min_class_size)  # Use up to 10 folds, limited by smaller class
+
+if (n_folds < 3) {
+  warning("Very small sample size - using leave-one-out cross-validation")
+  n_folds <- min_class_size
+}
+
+cat("Using", n_folds, "folds for cross-validation\n")
+
 # Use cv.glmnet for cross-validation
 cv_fit <- cv.glmnet(
-  x = x_discovery,
+  x = x_discovery_scaled,
   y = y_discovery,
   family = "binomial",
   alpha = 1,  # LASSO
-  nfolds = min(5, sum(y_discovery), sum(1 - y_discovery)),  # Ensure both classes in each fold
-  type.measure = "deviance"
+  nfolds = n_folds,
+  type.measure = "class",  # Use misclassification error for more robust lambda selection
+  standardize = FALSE  # Already standardized
 )
 
 cat("Cross-validation complete\n")
 cat("Optimal lambda:", cv_fit$lambda.min, "\n")
 cat("Lambda within 1 SE:", cv_fit$lambda.1se, "\n")
 
+# Use lambda.1se for more parsimonious model (fewer genes, more robust)
+use_lambda <- "lambda.1se"
+cat("Using", use_lambda, "for final model\n")
+
 # Get coefficients at optimal lambda
-coefs <- coef(cv_fit, s = "lambda.min")
+coefs <- coef(cv_fit, s = use_lambda)
 selected_genes <- rownames(coefs)[coefs[,1] != 0][-1]  # Exclude intercept
 
 cat("Number of selected genes:", length(selected_genes), "\n")
@@ -167,7 +233,7 @@ if (length(selected_genes) > 0) {
 
 # Make predictions on discovery data
 cat("\n--- Evaluating on discovery dataset ---\n")
-discovery_pred_prob <- predict(cv_fit, newx = x_discovery, s = "lambda.min", type = "response")
+discovery_pred_prob <- predict(cv_fit, newx = x_discovery_scaled, s = use_lambda, type = "response")
 discovery_pred_class <- ifelse(discovery_pred_prob > 0.5, 1, 0)
 
 # Discovery performance
@@ -187,7 +253,7 @@ cat("Discovery AUC:", round(discovery_auc, 3), "\n")
 
 # Make predictions on validation data
 cat("\n--- Evaluating on validation dataset ---\n")
-validation_pred_prob <- predict(cv_fit, newx = x_validation, s = "lambda.min", type = "response")
+validation_pred_prob <- predict(cv_fit, newx = x_validation_scaled, s = use_lambda, type = "response")
 validation_pred_class <- ifelse(validation_pred_prob > 0.5, 1, 0)
 
 # Validation performance
@@ -298,6 +364,9 @@ summary_text <- c(
   "--- Feature Selection ---",
   paste("Total DEGs tested:", length(feature_genes)),
   paste("Signature genes selected:", length(selected_genes)),
+  paste("Lambda used:", use_lambda),
+  paste("Class ratio:", round(class_ratio, 3)),
+  paste("Cross-validation folds:", n_folds),
   if (length(selected_genes) > 0) {
     c(paste("Selected genes:", paste(selected_genes, collapse = ", ")),
       "")
