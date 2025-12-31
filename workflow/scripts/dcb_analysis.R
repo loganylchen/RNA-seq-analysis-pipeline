@@ -149,6 +149,7 @@ cat("Calculating tissue expression statistics...\n")
 cat(tissue_tumor_mean_tpm[1:5], "\n")
 cat(tissue_normal_mean_tpm[1:5], "\n")
 cat(tissue_log2fc[1:5], "\n")
+cat('--------------------------------\n')
 cat(sprintf("Tissue TPM threshold: %.2f, Tissue log2FC threshold: %.2f\n", tissue_tpm_threshold, tissue_fc_threshold))
 # Identify tissue-upregulated genes (candidate DCBs)
 discovery_genes <- tpm_data %>%

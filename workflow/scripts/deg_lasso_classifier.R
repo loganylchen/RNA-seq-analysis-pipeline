@@ -16,6 +16,7 @@ suppressPackageStartupMessages({
   library(caret)
   library(ggplot2)
   library(ggsci)
+  library(tibble)
 })
 
 # Get parameters from Snakemake
