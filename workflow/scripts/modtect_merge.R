@@ -12,7 +12,7 @@ suppressPackageStartupMessages({
 })
 
 
-merge_modtect_files <- function(mod_tect_files, merged_file) {
+merge_modtect_files <- function(mod_tect_files, merged_file,score_threshold) {
     df_list <- list()
     for(f in mod_tect_files){
         sample_name <- basename(dirname(f))
@@ -35,15 +35,31 @@ merge_modtect_files <- function(mod_tect_files, merged_file) {
         message('reading:',f)
         df_list[[sample_name]] <- tmp_df
     }
+
+
+
     message('merging')
-    df_merge <- data.table::rbindlist(df_list) %>% 
+    tmp_merge <- data.table::rbindlist(df_list) 
+
+    selected_locs = tmp_merge %>% group_by(chrom,position,reference_nt) %>% 
+                        summarise(sig = ifelse(max(ModTect_score)>score_threshold, TRUE, FALSE)) %>%
+                        filter(sig==TRUE) %>% 
+                        select(chrom,position,reference_nt) %>%
+                        ungroup()%>%
+                        mutate(site_id=paste0(chrom,':',position,'_',reference_nt)) %>%
+                        pull(site_id)
+    
+    df_merge <- tmp_merge %>% 
+                mutate(site_id=paste0(chrom,':',position,'_',reference_nt)) %>%
+                filter(site_id %in% selected_locs) %>%
                 tidyr::pivot_wider(id_cols=c(chrom,position,reference_nt),names_from=Sample,values_from=c(ModTect_score,variant_proportion))
     message(head(df_merge))
     write.table(df_merge,merged_file,quote=F,sep='\t',row.names=F)
 }
 
 merge_modtect_files(unname(unlist(snakemake@input)), 
-                    snakemake@output[['output']]
+                    snakemake@output[['output']],
+                    as.numeric(snakemake@params[['score_threshold']])
                     )
 
 
