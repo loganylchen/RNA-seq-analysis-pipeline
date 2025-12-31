@@ -279,7 +279,7 @@ for (i in 1:nrow(analysis_data)) {
   )
 }
 
-results_df <- bind_rows(results_list)
+results_df <- bind_rows(results_list) %>% dplyr::filter(!is.na(p_value)) 
 
 # Adjust p-values for multiple testing (FDR using Benjamini-Hochberg)
 cat("\n--- Adjusting p-values (FDR) ---\n")
