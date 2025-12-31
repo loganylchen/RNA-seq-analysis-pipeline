@@ -143,12 +143,12 @@ rule deg_lasso_classifier:
         validation_tpm="{project}/quantification/STAR_FC/TPM_matrix.txt",
         samples=config["samples"],
     output:
-        signature="{project}/classifier/DEG/lasso_signature_genes.tsv",
-        coefficients="{project}/classifier/DEG/lasso_coefficients.tsv",
-        discovery_predictions="{project}/classifier/DEG/discovery_predictions.tsv",
-        validation_predictions="{project}/classifier/DEG/validation_predictions.tsv",
-        roc_plot="{project}/classifier/DEG/lasso_roc_curve.png",
-        summary="{project}/classifier/DEG/lasso_summary.txt",
+        signature="{project}/DEG/classifier/lasso_signature_genes.tsv",
+        coefficients="{project}/DEG/classifier/lasso_coefficients.tsv",
+        discovery_predictions="{project}/DEG/classifier/discovery_predictions.tsv",
+        validation_predictions="{project}/DEG/classifier/validation_predictions.tsv",
+        roc_plot="{project}/DEG/classifier/lasso_roc_curve.png",
+        summary="{project}/DEG/classifier/lasso_summary.txt",
     params:
         project=project,
         case_condition=case_condition,
