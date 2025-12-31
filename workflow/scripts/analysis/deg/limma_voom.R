@@ -43,7 +43,7 @@ cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep
 limma_voom_pipeline <- function(count,coldata,
                             case_condition, 
                             control_condition, parallel=TRUE) {
-    group <- coldata %>% mutate(condition = as.factor(condition,levels=c(case_condition,control_condition)))[['condition']]
+    group <- coldata %>% mutate(condition = factor(condition,levels=c(case_condition,control_condition)))[['condition']]
     cts <- count[,rownames(coldata)]
     y <- DGEList(counts = cts, 
                 group = group)
