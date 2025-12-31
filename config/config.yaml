@@ -60,11 +60,14 @@ clusterprofiler:
 
 splicetools:
   fdr: 0.05
+  fdr_threshold: 0.05           # FDR threshold for splicetools analysis
   control_tpm_threshold: 1
   case_tpm_threshold: 1
 
 rmats:
   extra: " --variable-read-length --readLength 100 --novelSS --individual-counts "
+  fdr_threshold: 0.05         # FDR threshold for rMATS analysis
+  dpsi_threshold: 0.1         # Delta PSI threshold for rMATS analysis
 
 fastp:
   extra: " -c "

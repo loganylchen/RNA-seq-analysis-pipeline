@@ -96,8 +96,8 @@ rule analyze_rmats:
         output_dir=directory("{project}/transcript_splicing/rmats_analysis/"),
         summary="{project}/transcript_splicing/rmats_analysis/summary_statistics.csv",
     params:
-        fdr_threshold=0.05,
-        dpsi_threshold=0.1,
+        fdr_threshold=config.get("rmats", {}).get("fdr_threshold", 0.05),
+        dpsi_threshold=config.get("rmats", {}).get("dpsi_threshold", 0.1),
     container:
         (
             "docker://btrspg/deseq2:1.46.0"
@@ -120,7 +120,7 @@ rule analyze_splicetools:
         output_dir=directory("{project}/transcript_splicing/splicetools_analysis/"),
         summary="{project}/transcript_splicing/splicetools_analysis/combined_summary.csv",
     params:
-        fdr_threshold=0.05,
+        fdr_threshold=config.get("splicetools", {}).get("fdr_threshold", 0.05),
     container:
         (
             "docker://btrspg/python3:20251024"

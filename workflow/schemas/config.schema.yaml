@@ -8,6 +8,18 @@ properties:
   samples:
     type: string
 
+  project:
+    type: string
+
+  case_condition:
+    type: string
+
+  control_condition:
+    type: string
+
+  discovery_sample_type:
+    type: string
+
   ref:
     type: object
     properties:
@@ -25,6 +37,89 @@ properties:
       - species
       - release
       - build
+
+  # Differential expression analysis parameters
+  deg:
+    type: object
+    properties:
+      padj:
+        type: number
+        default: 0.05
+      log2fc:
+        type: number
+        default: 2
+
+  # DEG visualization parameters
+  deg_vis:
+    type: object
+    properties:
+      heatmap_top_n:
+        type: integer
+        default: 100
+
+  # Dark Channel Biomarker analysis parameters
+  dcb:
+    type: object
+    properties:
+      control_tpm_threshold:
+        type: number
+        default: 1
+        description: TPM threshold for cfRNA detection
+      case_tpm_threshold:
+        type: number
+        default: 1
+        description: Minimum mean TPM in tumor tissue
+      control_detection_rate:
+        type: number
+        default: 0.1
+        description: Max detection rate in normal cfRNA
+      case_detection_rate:
+        type: number
+        default: 0.3
+        description: Min detection rate in cancer cfRNA
+      log2fc:
+        type: number
+        default: 2
+        description: Minimum log2FC in tissue
+
+  # Splicing analysis parameters
+  splicetools:
+    type: object
+    properties:
+      fdr:
+        type: number
+        default: 0.05
+      fdr_threshold:
+        type: number
+        default: 0.05
+      control_tpm_threshold:
+        type: number
+        default: 1
+      case_tpm_threshold:
+        type: number
+        default: 1
+
+  rmats:
+    type: object
+    properties:
+      extra:
+        type: string
+      fdr_threshold:
+        type: number
+        default: 0.05
+        description: FDR threshold for rMATS analysis
+      dpsi_threshold:
+        type: number
+        default: 0.1
+        description: Delta PSI threshold for rMATS analysis
+
+  # ClusterProfiler parameters
+  clusterprofiler:
+    type: object
+    properties:
+      species:
+        type: string
+        default: "human"
 
 
 
