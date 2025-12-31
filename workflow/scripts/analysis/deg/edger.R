@@ -40,10 +40,10 @@ coldata_validation <- coldata %>%
 cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
 
 edger_pipeline <- function(count,coldata,
-                            condition,
+                            condition_col,
                             case_condition, 
                             control_condition, parallel=TRUE) {
-    group <- coldata %>% mutate(condition = factor({{ condition }},levels=c(case_condition,control_condition)))[['condition']]
+    group <- coldata %>% mutate(condition = factor({{ condition_col }},levels=c(case_condition,control_condition))) %>% pull(condition)
     cts <- count[,rownames(coldata)]
     y <- DGEList(counts = cts, 
                 group = group)
@@ -65,7 +65,7 @@ edger_pipeline <- function(count,coldata,
 
 cat("Processing discovery set...\n")
 res_discovery <- edger_pipeline(cts, coldata_discovery,
-                                condition= "condition",
+                                condition_col= "condition",
                                 case_condition,
                                 control_condition)
 saveRDS(res_discovery, discovery_deg_rds)
@@ -73,7 +73,7 @@ write.table(res_discovery, discovery_deg_tsv, sep='\t', quote=FALSE, row.names=F
 
 cat("Processing validation set...\n")
 res_validation <- edger_pipeline(cts, coldata_validation,
-                                condition= "condition",
+                                condition_col= "condition",
                                 case_condition,
                                 control_condition)
 saveRDS(res_validation, validation_deg_rds)
