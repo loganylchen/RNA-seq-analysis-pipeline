@@ -362,7 +362,7 @@ summary_text <- c(
   }
 )
 
-writeLines(summary_text, summary_output)
+writeLines(as.character(summary_text), summary_output)
 cat("Summary written to:", summary_output, "\n")
 
 cat("\n=== ModTect Statistical Analysis Complete ===\n")
