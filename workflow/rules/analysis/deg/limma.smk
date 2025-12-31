@@ -15,7 +15,7 @@ rule limma_trend:
         discovery_sample_type=discovery_sample_type,
     container:
         (
-            "docker://btrspg/limma:4.4.0"
+            "docker://btrspg/limma:3.62.1"
             if config["container"].get("limma", None) is None
             else config["container"].get("limma", None)
         )
