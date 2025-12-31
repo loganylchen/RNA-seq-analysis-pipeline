@@ -141,7 +141,6 @@ rule deg_lasso_classifier:
         validation_deg_rds="{project}/DEG/deseq2/validation_deg.rds",
         discovery_tpm="{project}/quantification/STAR_FC/TPM_matrix.txt",
         validation_tpm="{project}/quantification/STAR_FC/TPM_matrix.txt",
-        samples=config["samples"],
     output:
         signature="{project}/DEG/classifier/lasso_signature_genes.tsv",
         coefficients="{project}/DEG/classifier/lasso_coefficients.tsv",
@@ -151,6 +150,7 @@ rule deg_lasso_classifier:
         summary="{project}/DEG/classifier/lasso_summary.txt",
     params:
         project=project,
+        samples=config["samples"],
         case_condition=case_condition,
         control_condition=control_condition,
         discovery_sample_type=discovery_sample_type,
@@ -182,7 +182,6 @@ rule deg_lasso_classifier_salmon:
         validation_deg_rds="{project}/DEG/deseq2/salmon_validation_deg.rds",
         discovery_tpm="{project}/quantification/salmon/TPM_matrix.txt",
         validation_tpm="{project}/quantification/salmon/TPM_matrix.txt",
-        samples=config["samples"],
     output:
         signature="{project}/DEG/classifier/salmon_lasso_signature_genes.tsv",
         coefficients="{project}/DEG/classifier/salmon_lasso_coefficients.tsv",
@@ -192,6 +191,7 @@ rule deg_lasso_classifier_salmon:
         summary="{project}/DEG/classifier/salmon_lasso_summary.txt",
     params:
         project=project,
+        samples=config["samples"],
         case_condition=case_condition,
         control_condition=control_condition,
         discovery_sample_type=discovery_sample_type,
@@ -223,7 +223,6 @@ rule deg_lasso_classifier_kallisto:
         validation_deg_rds="{project}/DEG/deseq2/kallisto_validation_deg.rds",
         discovery_tpm="{project}/quantification/kallisto/TPM_matrix.txt",
         validation_tpm="{project}/quantification/kallisto/TPM_matrix.txt",
-        samples=config["samples"],
     output:
         signature="{project}/DEG/classifier/kallisto_lasso_signature_genes.tsv",
         coefficients="{project}/DEG/classifier/kallisto_lasso_coefficients.tsv",
@@ -233,6 +232,7 @@ rule deg_lasso_classifier_kallisto:
         summary="{project}/DEG/classifier/kallisto_lasso_summary.txt",
     params:
         project=project,
+        samples=config["samples"],
         case_condition=case_condition,
         control_condition=control_condition,
         discovery_sample_type=discovery_sample_type,
