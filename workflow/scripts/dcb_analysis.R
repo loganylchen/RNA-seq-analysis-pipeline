@@ -155,7 +155,7 @@ cat("Calculating tissue expression statistics...\n")
 cat(tissue_tumor_mean_tpm[1:5], "\n")
 cat(tissue_normal_mean_tpm[1:5], "\n")
 cat('--------------------------------\n')
-print(head(tmp_data))
+print(head(tpm_data))
 print(gene_col)
 # Identify tissue-upregulated genes (candidate DCBs)
 discovery_genes <- tpm_data %>%
