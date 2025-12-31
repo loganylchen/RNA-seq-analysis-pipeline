@@ -23,7 +23,9 @@ suppressPackageStartupMessages({
 
 # Get parameters from Snakemake
 tpm_file <- snakemake@input[["tpm"]]
-count_file <- snakemake@input[["count_matrix"]]
+discovery_deg_tsv <- snakemake@input[["discovery_deg_tsv"]]
+validation_deg_tsv <- snakemake@input[["validation_deg_tsv"]]
+
 samples_file <- snakemake@params[["samples"]]
 project <- snakemake@params[["project"]]
 case_condition <- snakemake@params[["case_condition"]]
@@ -32,7 +34,8 @@ discovery_sample_type <- snakemake@params[["discovery_sample_type"]]
 
 # DCB detection thresholds
 tissue_tpm_threshold <- as.numeric(snakemake@params[["case_tpm_threshold"]])      # Min TPM in tumor tissue
-tissue_fc_threshold <- as.numeric(snakemake@params[["log2fc"]])                  # Min log2FC in tissue
+fc_threshold <- as.numeric(snakemake@params[["log2fc"]])                  # Min log2FC in tissue
+padj_threshold <- as.numeric(snakemake@params[["tissue_padj"]])              # Max adjusted p-value in tissue
 normal_cfrna_detection_rate <- as.numeric(snakemake@params[["control_detection_rate"]])  # Max detection rate in normal cfRNA
 cancer_cfrna_detection_rate <- as.numeric(snakemake@params[["case_detection_rate"]])    # Min detection rate in cancer cfRNA
 cfrna_tpm_threshold <- as.numeric(snakemake@params[["control_tpm_threshold"]])  # TPM threshold for cfRNA detection
@@ -62,12 +65,15 @@ cat(sprintf("  Normal cfRNA max detection rate: %.0f%%\n", normal_cfrna_detectio
 cat(sprintf("  Cancer cfRNA min detection rate: %.0f%%\n", cancer_cfrna_detection_rate * 100))
 
 # Read sample information
-samples <- read_tsv(samples_file, show_col_types = FALSE) %>%
+samples <- read_tsv(samples_file, show_col_types = FALSE, comment = "#") %>%
   filter(project == !!project)
 
 # Read TPM and count matrices
 tpm_data <- read_tsv(tpm_file, show_col_types = FALSE)
-count_data <- read_tsv(count_file, show_col_types = FALSE)
+discovery_deg <-read.csv(discovery_deg_tsv, sep = "\t", header = TRUE, comment.char = "#") %>%
+  filter(padj <= padj_threshold, abs(log2FoldChange) >= fc_threshold) %>% rownames()
+validation_deg <-read.csv(validation_deg_tsv, sep = "\t", header = TRUE, comment.char = "#") %>%
+  filter(padj <= padj_threshold, abs(log2FoldChange) >= fc_threshold) %>% rownames()
 
 # Extract gene names column
 gene_col <- colnames(tpm_data)[1]
@@ -143,12 +149,11 @@ cat("\n=== Step 1: Discovery Analysis (Tissue) ===\n")
 # Calculate tissue expression statistics
 tissue_tumor_mean_tpm <- rowMeans(tpm_data[, tissue_tumor_cols, drop = FALSE], na.rm = TRUE)
 tissue_normal_mean_tpm <- rowMeans(tpm_data[, tissue_normal_cols, drop = FALSE], na.rm = TRUE)
-tissue_log2fc <- log2((tissue_tumor_mean_tpm + 0.01) / (tissue_normal_mean_tpm + 0.01))
+
 
 cat("Calculating tissue expression statistics...\n")
 cat(tissue_tumor_mean_tpm[1:5], "\n")
 cat(tissue_normal_mean_tpm[1:5], "\n")
-cat(tissue_log2fc[1:5], "\n")
 cat('--------------------------------\n')
 cat(sprintf("Tissue TPM threshold: %.2f, Tissue log2FC threshold: %.2f\n", tissue_tpm_threshold, tissue_fc_threshold))
 # Identify tissue-upregulated genes (candidate DCBs)
@@ -157,14 +162,11 @@ discovery_genes <- tpm_data %>%
     gene = !!gene_col,
     tissue_tumor_mean_tpm = tissue_tumor_mean_tpm,
     tissue_normal_mean_tpm = tissue_normal_mean_tpm,
-    tissue_log2fc = tissue_log2fc,
-    is_tissue_upregulated = (tissue_tumor_mean_tpm >= tissue_tpm_threshold) & (abs(tissue_log2fc) >= tissue_fc_threshold)
+    deg = (gene %in% discovery_deg),
   )
 
 # Summary statistics
-tissue_upregulated_count <- sum(discovery_genes$is_tissue_upregulated, na.rm = TRUE)
-cat(sprintf("Tissue-upregulated genes (TPM >= %.2f, |log2FC| >= %.2f): %d\n",
-            tissue_tpm_threshold, tissue_fc_threshold, tissue_upregulated_count))
+
 
 #############################################################################
 # Step 2: Validation Analysis (cfRNA)
@@ -200,9 +202,8 @@ full_dcb_analysis <- discovery_genes %>%
     # 1. Upregulated in tumor tissue
     # 2. Low detection rate in normal cfRNA (dark region)
     # 3. High detection rate in cancer cfRNA
-    is_dcb = is_tissue_upregulated &
-            (cfrna_normal_detection_rate < normal_cfrna_detection_rate) &
-            (cfrna_cancer_detection_rate >= cancer_cfrna_detection_rate)
+    is_dcb = (cfrna_normal_detection_rate < normal_cfrna_detection_rate) &
+             (cfrna_cancer_detection_rate >= cancer_cfrna_detection_rate) 
   ) %>%
   arrange(desc(is_dcb), desc(tissue_log2fc), desc(cfrna_cancer_detection_rate))
 

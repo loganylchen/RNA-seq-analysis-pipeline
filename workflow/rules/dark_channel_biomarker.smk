@@ -14,7 +14,8 @@ rule dcb_analysis:
     input:
         # Use TPM matrix for detection rate analysis
         tpm="{project}/quantification/STAR_FC/TPM_matrix.txt",
-        count_matrix="{project}/quantification/STAR_FC/count_matrix.txt",
+        discovery_deg_tsv="{project}/DEG/deseq2/discovery_deg.tsv",
+        validation_deg_tsv="{project}/DEG/deseq2/validation_deg.tsv",
     output:
         discovery_dcb_tsv="{project}/dcb/discovery_dcb.tsv",
         discovery_dcb_rds="{project}/dcb/discovery_dcb.rds",
@@ -31,6 +32,7 @@ rule dcb_analysis:
         control_condition=control_condition,
         discovery_sample_type=discovery_sample_type,
         log2fc=config.get("dcb", {}).get("log2fc", 1),
+        padj=config.get("dcb", {}).get("padj", 0.05),
         control_tpm_threshold=config.get("dcb", {}).get("control_tpm_threshold", 1),
         case_tpm_threshold=config.get("dcb", {}).get("case_tpm_threshold", 1),
         control_detection_rate=config.get("dcb", {}).get("control_detection_rate", 0.1),
