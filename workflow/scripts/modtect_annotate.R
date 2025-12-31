@@ -275,7 +275,7 @@ summary_text <- c(
   "--- Genomic Region Distribution ---",
   if (nrow(region_counts) > 0) {
     apply(region_counts, 1, function(row) {
-      sprintf("  %s: %d", row["gene_region"], row["n"])
+      sprintf("  %s: %s", row["gene_region"], row["n"])
     })
   } else {
     "  No gene-overlapping sites found"
