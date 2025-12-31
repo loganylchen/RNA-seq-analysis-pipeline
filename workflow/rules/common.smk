@@ -199,6 +199,10 @@ def get_final_output():
             f"{sample_project}/DEG/deseq2/{tool}/validation_deg.tsv",
             f"{sample_project}/DEG/edger/{tool}/discovery_deg.tsv",
             f"{sample_project}/DEG/edger/{tool}/validation_deg.tsv",
+            f"{sample_project}/DEG/limma_trend/{tool}/discovery_deg.tsv",
+            f"{sample_project}/DEG/limma_trend/{tool}/validation_deg.tsv",
+            f"{sample_project}/DEG/limma_voom/{tool}/discovery_deg.tsv",
+            f"{sample_project}/DEG/limma_voom/{tool}/validation_deg.tsv",
         ]
     final_output += [
         # f"{sample_project}/visualization/Volcano_validation.pdf",

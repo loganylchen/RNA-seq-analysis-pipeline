@@ -42,6 +42,7 @@ include: "rules/preprocessing/modification.smk"
 # analysis
 include: "rules/analysis/deg/deseq2.smk"
 include: "rules/analysis/deg/edger.smk"
+include: "rules/analysis/deg/limma.smk"
 include: "rules/analysis/enrichment.smk"
 include: "rules/analysis/dark_channel_biomarker.smk"
 # visualization
