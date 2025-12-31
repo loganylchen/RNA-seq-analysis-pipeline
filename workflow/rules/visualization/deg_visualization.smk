@@ -14,7 +14,7 @@ rule deg_upset_plot:
         limma_trend="{project}/DEG/limma_trend/{tool}/discovery_deg.tsv",
         limma_voom="{project}/DEG/limma_voom/{tool}/discovery_deg.tsv",
     output:
-        upset_plot="{project}/visualization/DEG_{tool}_upset_8sets.pdf",
+        upset_plot="{project}/visualization/DEG_{tool}_upset.pdf",
         upset_data="{project}/DEG/{tool}_upset_data.tsv",
         summary="{project}/DEG/{tool}_upset_summary.txt",
     params:
