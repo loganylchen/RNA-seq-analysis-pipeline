@@ -356,7 +356,7 @@ summary_text <- c(
                 `log2FC` = round(log2fc, 3),
                 `P-value` = formatC(p_value, format = "e", digits = 2),
                 FDR = formatC(padj, format = "e", digits = 2)) %>%
-      as.data.frame() %>% cat(.)
+      as.data.frame() %>% print()
   } else {
     "No significant sites found"
   }
