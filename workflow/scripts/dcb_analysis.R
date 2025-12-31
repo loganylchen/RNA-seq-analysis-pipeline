@@ -59,7 +59,7 @@ cat("  1. Highly expressed in tumor tissue (vs normal tissue)\n")
 cat("  2. Detected in cancer cfRNA but absent in normal cfRNA\n")
 cat("\nParameters:\n")
 cat(sprintf("  Tissue TPM threshold: %.2f\n", tissue_tpm_threshold))
-cat(sprintf("  Tissue log2FC threshold: %.2f\n", tissue_fc_threshold))
+cat(sprintf("  Tissue log2FC threshold: %.2f\n", fc_threshold))
 cat(sprintf("  cfRNA TPM detection threshold: %.2f\n", cfrna_tpm_threshold))
 cat(sprintf("  Normal cfRNA max detection rate: %.0f%%\n", normal_cfrna_detection_rate * 100))
 cat(sprintf("  Cancer cfRNA min detection rate: %.0f%%\n", cancer_cfrna_detection_rate * 100))
@@ -155,7 +155,7 @@ cat("Calculating tissue expression statistics...\n")
 cat(tissue_tumor_mean_tpm[1:5], "\n")
 cat(tissue_normal_mean_tpm[1:5], "\n")
 cat('--------------------------------\n')
-cat(sprintf("Tissue TPM threshold: %.2f, Tissue log2FC threshold: %.2f\n", tissue_tpm_threshold, tissue_fc_threshold))
+
 # Identify tissue-upregulated genes (candidate DCBs)
 discovery_genes <- tpm_data %>%
   mutate(
@@ -241,7 +241,7 @@ discovery_summary_text <- c(
   "",
   "Parameters:",
   sprintf("  Tissue TPM threshold: %.2f", tissue_tpm_threshold),
-  sprintf("  Tissue log2FC threshold: %.2f", tissue_fc_threshold),
+
   sprintf("  cfRNA TPM detection threshold: %.2f", cfrna_tpm_threshold),
   sprintf("  Normal cfRNA max detection rate: %.0f%%", normal_cfrna_detection_rate * 100),
   sprintf("  Cancer cfRNA min detection rate: %.0f%%", cancer_cfrna_detection_rate * 100),
@@ -272,7 +272,7 @@ validation_summary_text <- c(
   "",
   "Parameters:",
   sprintf("  Tissue TPM threshold: %.2f", tissue_tpm_threshold),
-  sprintf("  Tissue log2FC threshold: %.2f", tissue_fc_threshold),
+  sprintf("  Tissue log2FC threshold: %.2f", fc_threshold),
   sprintf("  cfRNA TPM detection threshold: %.2f", cfrna_tpm_threshold),
   sprintf("  Normal cfRNA max detection rate: %.0f%%", normal_cfrna_detection_rate * 100),
   sprintf("  Cancer cfRNA min detection rate: %.0f%%", cancer_cfrna_detection_rate * 100),
@@ -366,11 +366,11 @@ plot_discovery_dcb <- function(dcb_df, title, output_file) {
         geom_col(aes(fill = tissue_tumor_mean_tpm), show.legend = FALSE) +
         coord_flip() +
         scale_fill_gradient(low = "#FFF3E0", high = "#FF6F00") +
-        geom_hline(yintercept = tissue_fc_threshold, linetype = "dashed", color = "red") +
+        geom_hline(yintercept = fc_threshold, linetype = "dashed", color = "red") +
         labs(
           title = sprintf("Top %d Tissue-Upregulated Genes by log2FC", min(20, sum(dcb_df$is_dcb, na.rm = TRUE))),
           x = "Gene",
-          y = sprintf("Tissue log2FC (threshold >= %.2f)", tissue_fc_threshold)
+          y = sprintf("Tissue log2FC (threshold >= %.2f)", fc_threshold)
         ) +
         theme_minimal(base_size = 12) +
         theme(
