@@ -204,14 +204,14 @@ perform_site_test <- function(site_data) {
   pseudocount <- 1e-6
   log2fc <- log2((mean_prop_case + pseudocount) / (mean_prop_control + pseudocount))
 
-  # Perform Wilcoxon rank-sum test on variant proportion (non-parametric)
+  # Perform Student's t-test on variant proportion
   tryCatch({
-    test_result <- wilcox.test(case_prop_values, control_prop_values, exact = FALSE, correct = TRUE)
+    test_result <- t.test(case_prop_values, control_prop_values, var.equal = FALSE)
 
     return(list(
       p_value = test_result$p.value,
       statistic = test_result$statistic,
-      method = "wilcoxon_rank_sum",
+      method = "t_test_welch",
       n_case = n_case,
       n_control = n_control,
       mean_prop_case = mean_prop_case,
@@ -315,6 +315,10 @@ summary_text <- c(
   paste("Case condition:", case_condition),
   paste("Control condition:", control_condition),
   paste("Discovery sample type:", discovery_sample_type),
+  "",
+  "--- Statistical Test ---",
+  "Test: Welch's t-test (unequal variance)",
+  "Metric: variant_proportion (case vs control)",
   "",
   "--- Sample Counts ---",
   paste("Total discovery samples:", length(discovery_samples)),
