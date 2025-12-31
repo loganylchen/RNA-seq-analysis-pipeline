@@ -21,8 +21,7 @@ suppressPackageStartupMessages({
 
 # Get parameters from Snakemake
 discovery_deg_tsv <- snakemake@input[["discovery_deg_tsv"]]
-validation_deg_tsv <- snakemake@input[["validation_deg_tsv"]]
-discovery_tpm_file <- snakemake@input[["expression_tpm"]]
+expression_tpm_file <- snakemake@input[["expression_tpm"]]
 
 samples_file <- snakemake@params[["samples"]]
 project <- snakemake@params[["project"]]
@@ -52,18 +51,17 @@ cat("Padj threshold:", padj_threshold, "\n")
 cat("\n--- Loading data ---\n")
 # Read DEG TSV files (gene_id is in the first column, will become row names)
 discovery_deg <- read.csv(discovery_deg_tsv,sep='\t',check.names=FALSE, row.names=1)
-validation_deg <- read_tsv(validation_deg_tsv, show_col_types = FALSE)
+
 
 # Load TPM matrices
-discovery_tpm <- read_tsv(discovery_tpm_file, show_col_types = FALSE)
+expression_tpm <- read_tsv(expression_tpm_file, show_col_types = FALSE)
 
 
 # Get gene names column (first column)
-gene_col_discovery <- colnames(discovery_tpm)[1]
-
+gene_col_discovery <- colnames(expression_tpm)[1]
 
 # Set row names as gene IDs
-discovery_tpm <- discovery_tpm %>%
+expression_tpm <- expression_tpm %>%
   column_to_rownames(var = gene_col_discovery)
 
 
@@ -72,8 +70,8 @@ sample_info <- read_tsv(samples_file, show_col_types = FALSE) %>%
   column_to_rownames(var = "sample_name")
 
 cat("Discovery DEGs:", nrow(discovery_deg), "\n")
-cat("Validation DEGs:", nrow(validation_deg), "\n")
-cat("TPM:", nrow(discovery_tpm), "genes x", ncol(discovery_tpm), "samples\n")
+
+cat("TPM:", nrow(expression_tpm), "genes x", ncol(expression_tpm), "samples\n")
 
 
 # Get significant DEGs from discovery
@@ -84,12 +82,11 @@ discovery_sig_deg <- discovery_deg %>%
   filter(padj < padj_threshold, abs(log2FoldChange) >= log2fc_threshold)
 
 cat("Significant DEGs in discovery:", nrow(discovery_sig_deg), "\n")
-print(head(discovery_sig_deg, 5))
 # Filter genes by expression level and variance for robustness
 cat("\n--- Filtering genes by expression and variance ---\n")
 
 # Calculate mean TPM and variance for each gene in discovery samples
-discovery_samples_filtered <- colnames(discovery_tpm)[colnames(discovery_tpm) %in% rownames(sample_info)]
+discovery_samples_filtered <- colnames(expression_tpm)[colnames(expression_tpm) %in% rownames(sample_info%>%filter(sample_type == !!discovery_sample_type))]
 discovery_sample_info <- sample_info[discovery_samples_filtered, , drop = FALSE]
 
 # Filter to discovery sample type only
@@ -98,7 +95,7 @@ discovery_samples_filtered <- discovery_sample_info %>%
   rownames()
 
 # Get expression matrix for discovery
-expr_matrix <- log2(discovery_tpm[, discovery_samples_filtered, drop = FALSE] + 1)
+expr_matrix <- log2(expression_tpm[, discovery_samples_filtered, drop = FALSE] + 1)
 
 # Calculate mean expression and variance for each gene
 gene_stats <- data.frame(
@@ -130,8 +127,8 @@ top_genes <- discovery_sig_deg_filtered$gene_id[1:max_features]
 cat("Using top", length(top_genes), "ranked DEGs for LASSO\n")
 
 # Get intersection with available TPM genes
-discovery_available <- intersect(top_genes, rownames(discovery_tpm))
-validation_available <- intersect(discovery_available, rownames(validation_tpm))
+discovery_available <- intersect(top_genes, rownames(expression_tpm))
+validation_available <- intersect(discovery_available, rownames(expression_tpm))
 
 cat("DEGs available in discovery TPM:", length(discovery_available), "\n")
 cat("DEGs available in validation TPM:", length(validation_available), "\n")
@@ -150,7 +147,7 @@ cat("Discovery samples (filtered):", length(discovery_samples_filtered), "\n")
 
 # Create design matrix and response
 # Use log2(TPM + 1) for better numerical stability
-x_discovery <- t(log2(discovery_tpm[feature_genes, discovery_samples_filtered, drop = FALSE] + 1))
+x_discovery <- t(log2(expression_tpm[feature_genes, discovery_samples_filtered, drop = FALSE] + 1))
 y_discovery <- ifelse(discovery_sample_info[discovery_samples_filtered, "condition"] == case_condition, 1, 0)
 
 cat("Case samples:", sum(y_discovery), "\n")
