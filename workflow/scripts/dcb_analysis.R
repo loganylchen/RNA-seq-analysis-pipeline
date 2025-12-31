@@ -160,7 +160,7 @@ print(gene_col)
 # Identify tissue-upregulated genes (candidate DCBs)
 discovery_genes <- tpm_data %>%
   mutate(
-    gene = !!gene_col,
+    gene = Geneid,
     tissue_tumor_mean_tpm = tissue_tumor_mean_tpm,
     tissue_normal_mean_tpm = tissue_normal_mean_tpm,
     deg = (gene %in% discovery_deg),
