@@ -62,7 +62,8 @@ sample_info <- read_tsv(samples_file, show_col_types = FALSE) %>%
 # get sample names for discovery and validation
 discovery_samples <- rownames(sample_info %>% filter(sample_type == !!discovery_sample_type))
 validation_samples <- rownames(sample_info %>% filter(sample_type != !!discovery_sample_type))
-
+cat("Discovery samples:", discovery_samples, "...\n")
+cat("Validation samples:", validation_samples, "...\n")
 # get discovery TPM matrix (same as expression_tpm but for clarity)
 discovery_tpm <- expression_tpm %>% 
   select(!!discovery_samples)
