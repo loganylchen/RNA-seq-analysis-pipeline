@@ -197,6 +197,8 @@ def get_final_output():
         final_output += [
             f"{sample_project}/DEG/deseq2/{tool}/discovery_deg.tsv",
             f"{sample_project}/DEG/deseq2/{tool}/validation_deg.tsv",
+            f"{sample_project}/DEG/edger/{tool}/discovery_deg.tsv",
+            f"{sample_project}/DEG/edger/{tool}/validation_deg.tsv",
         ]
     final_output += [
         # f"{sample_project}/visualization/Volcano_validation.pdf",
