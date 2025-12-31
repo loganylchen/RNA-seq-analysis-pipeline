@@ -27,7 +27,7 @@ rule limma_trend:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("limma", 8192),
     script:
-        "../../scripts/analysis/deg/limma_trend.R"
+        "../../../scripts/analysis/deg/limma_trend.R"
 
 
 rule limma_voom:
@@ -58,4 +58,4 @@ rule limma_voom:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("limma", 8192),
     script:
-        "../../scripts/analysis/deg/limma_voom.R"
+        "../../../scripts/analysis/deg/limma_voom.R"

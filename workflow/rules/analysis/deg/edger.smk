@@ -27,4 +27,4 @@ rule edger:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("edger", 8192),
     script:
-        "../../scripts/analysis/deg/edger.R"
+        "../../../scripts/analysis/deg/edger.R"
