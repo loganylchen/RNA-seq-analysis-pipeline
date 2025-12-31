@@ -6,7 +6,7 @@ from snakemake.utils import validate
 
 READ_STRAND_INFER = re.compile(r"SSP estimation \(fwd/rev\) = (\d+\.\d+) / (\d+\.\d+)")
 
-
+QUANTIFICATION_TOOLS = ["STAR_FC", "salmon", "kallisto"]
 validate(config, schema="../schemas/config.schema.yaml")
 project = config["project"]
 case_condition = config["case_condition"]
@@ -193,7 +193,7 @@ def get_final_output():
         final_output += [
             # f"{sample_project}/modification/modtect/{sample}/{sample}.modtect.combined.txt",
         ]
-    for tool in ["STAR_FC", "salmon", "kallisto"]:
+    for tool in QUANTIFICATION_TOOLS:
         final_output += [
             f"{sample_project}/DEG/deseq2/{tool}/discovery_deg.tsv",
             f"{sample_project}/DEG/deseq2/{tool}/validation_deg.tsv",
