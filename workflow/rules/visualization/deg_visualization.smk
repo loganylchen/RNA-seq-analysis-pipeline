@@ -23,7 +23,7 @@ rule deg_upset_plot:
         padj_threshold=config.get("deg", {}).get("padj", 0.05),
     container:
         (
-            "docker://btrspg/rlan:20251230"
+            "docker://btrspg/rlan:20251229"
             if config["container"].get("r", None) is None
             else config["container"].get("r", None)
         )
