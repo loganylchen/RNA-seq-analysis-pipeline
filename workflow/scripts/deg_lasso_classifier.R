@@ -84,7 +84,7 @@ discovery_sig_deg <- discovery_deg %>%
   filter(padj < padj_threshold, abs(log2FoldChange) >= log2fc_threshold)
 
 cat("Significant DEGs in discovery:", nrow(discovery_sig_deg), "\n")
-
+print(head(discovery_sig_deg, 5))
 # Filter genes by expression level and variance for robustness
 cat("\n--- Filtering genes by expression and variance ---\n")
 
