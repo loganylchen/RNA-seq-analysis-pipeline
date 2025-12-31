@@ -41,9 +41,10 @@ coldata_validation <- coldata %>%
 cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
 
 limma_voom_pipeline <- function(count,coldata,
+                            condition,
                             case_condition, 
                             control_condition, parallel=TRUE) {
-    group <- coldata %>% mutate(condition = factor(condition,levels=c(case_condition,control_condition)))[['condition']]
+    group <- coldata %>% mutate(condition = factor(!!rlang::sym(condition),levels=c(case_condition,control_condition)))[['condition']]
     cts <- count[,rownames(coldata)]
     y <- DGEList(counts = cts, 
                 group = group)
@@ -65,6 +66,7 @@ limma_voom_pipeline <- function(count,coldata,
 
 cat("Processing discovery set...\n")
 res_discovery <- limma_voom_pipeline(cts, coldata_discovery,
+                                condition= "condition",
                                 case_condition,
                                 control_condition)
 saveRDS(res_discovery, discovery_deg_rds)
@@ -72,6 +74,7 @@ write.table(res_discovery, discovery_deg_tsv, sep='\t', quote=FALSE, row.names=F
 
 cat("Processing validation set...\n")
 res_validation <- limma_voom_pipeline(cts, coldata_validation,
+                                condition= "condition",
                                 case_condition,
                                 control_condition)
 saveRDS(res_validation, validation_deg_rds)
