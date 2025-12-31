@@ -222,4 +222,4 @@ def get_final_output():
         f"{sample_project}/DEG/classifier/lasso_roc_curve.png",
     ]
 
-    return final_output
+    return final_output + get_qc_files()
