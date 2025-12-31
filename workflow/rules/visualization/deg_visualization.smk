@@ -4,6 +4,7 @@
 # DEG Upset Plot
 # Visualize overlap of DEGs from different tools (DESeq2, edgeR, limma-trend, limma-voom)
 # for each quantification method (STAR_FC, salmon, kallisto)
+# Creates a single upset plot with 8 sets (4 tools x 2 directions: up/down)
 
 
 rule deg_upset_plot:
@@ -13,7 +14,7 @@ rule deg_upset_plot:
         limma_trend="{project}/DEG/limma_trend/{tool}/discovery_deg.tsv",
         limma_voom="{project}/DEG/limma_voom/{tool}/discovery_deg.tsv",
     output:
-        upset_plot="{project}/visualization/DEG_{tool}_upset.pdf",
+        upset_plot="{project}/visualization/DEG_{tool}_upset_8sets.pdf",
         upset_data="{project}/DEG/{tool}_upset_data.tsv",
         summary="{project}/DEG/{tool}_upset_summary.txt",
     params:

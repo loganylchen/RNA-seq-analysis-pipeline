@@ -203,6 +203,7 @@ def get_final_output():
             f"{sample_project}/DEG/limma_trend/{tool}/validation_deg.tsv",
             f"{sample_project}/DEG/limma_voom/{tool}/discovery_deg.tsv",
             f"{sample_project}/DEG/limma_voom/{tool}/validation_deg.tsv",
+            f"{sample_project}/visualization/DEG_{tool}_upset.pdf",
         ]
     final_output += [
         # f"{sample_project}/visualization/Volcano_validation.pdf",
