@@ -139,8 +139,7 @@ rule deg_lasso_classifier:
     input:
         discovery_deg_tsv="{project}/DEG/deseq2/discovery_deg.tsv",
         validation_deg_tsv="{project}/DEG/deseq2/validation_deg.tsv",
-        discovery_tpm="{project}/quantification/STAR_FC/TPM_matrix.txt",
-        validation_tpm="{project}/quantification/STAR_FC/TPM_matrix.txt",
+        expression_tpm="{project}/quantification/STAR_FC/TPM_matrix.txt",
     output:
         signature="{project}/DEG/classifier/lasso_signature_genes.tsv",
         coefficients="{project}/DEG/classifier/lasso_coefficients.tsv",

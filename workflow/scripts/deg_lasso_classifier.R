@@ -22,8 +22,8 @@ suppressPackageStartupMessages({
 # Get parameters from Snakemake
 discovery_deg_tsv <- snakemake@input[["discovery_deg_tsv"]]
 validation_deg_tsv <- snakemake@input[["validation_deg_tsv"]]
-discovery_tpm_file <- snakemake@input[["discovery_tpm"]]
-validation_tpm_file <- snakemake@input[["validation_tpm"]]
+discovery_tpm_file <- snakemake@input[["expression_tpm"]]
+
 samples_file <- snakemake@params[["samples"]]
 project <- snakemake@params[["project"]]
 case_condition <- snakemake@params[["case_condition"]]
@@ -56,17 +56,16 @@ validation_deg <- read_tsv(validation_deg_tsv, show_col_types = FALSE)
 
 # Load TPM matrices
 discovery_tpm <- read_tsv(discovery_tpm_file, show_col_types = FALSE)
-validation_tpm <- read_tsv(validation_tpm_file, show_col_types = FALSE)
+
 
 # Get gene names column (first column)
 gene_col_discovery <- colnames(discovery_tpm)[1]
-gene_col_validation <- colnames(validation_tpm)[1]
+
 
 # Set row names as gene IDs
 discovery_tpm <- discovery_tpm %>%
   column_to_rownames(var = gene_col_discovery)
-validation_tpm <- validation_tpm %>%
-  column_to_rownames(var = gene_col_validation)
+
 
 sample_info <- read_tsv(samples_file, show_col_types = FALSE) %>%
   filter(project == !!project) %>%
@@ -74,8 +73,8 @@ sample_info <- read_tsv(samples_file, show_col_types = FALSE) %>%
 
 cat("Discovery DEGs:", nrow(discovery_deg), "\n")
 cat("Validation DEGs:", nrow(validation_deg), "\n")
-cat("Discovery TPM:", nrow(discovery_tpm), "genes x", ncol(discovery_tpm), "samples\n")
-cat("Validation TPM:", nrow(validation_tpm), "genes x", ncol(validation_tpm), "samples\n")
+cat("TPM:", nrow(discovery_tpm), "genes x", ncol(discovery_tpm), "samples\n")
+
 
 # Get significant DEGs from discovery
 # The TSV file has gene_id as row names from DESeq2 results
@@ -112,7 +111,8 @@ gene_stats <- data.frame(
 # Filter genes: mean expression > 1 (log2 TPM) and variance > 0.01
 expressed_genes <- gene_stats$gene_id[gene_stats$mean_expr > 1 & gene_stats$var_expr > 0.01]
 cat("Genes passing expression/variance filter:", length(expressed_genes), "\n")
-
+cat(expressed_genes[1:min(5, length(expressed_genes))], "...\n")
+cat(discovery_sig_deg$gene_id[1:min(5, length(discovery_sig_deg$gene_id))], "...\n")
 # Get intersection with significant DEGs
 discovery_sig_genes <- intersect(discovery_sig_deg$gene_id, expressed_genes)
 cat("Significant DEGs passing expression filter:", length(discovery_sig_genes), "\n")
