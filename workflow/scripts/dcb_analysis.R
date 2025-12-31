@@ -35,7 +35,7 @@ discovery_sample_type <- snakemake@params[["discovery_sample_type"]]
 # DCB detection thresholds
 tissue_tpm_threshold <- as.numeric(snakemake@params[["case_tpm_threshold"]])      # Min TPM in tumor tissue
 fc_threshold <- as.numeric(snakemake@params[["log2fc"]])                  # Min log2FC in tissue
-padj_threshold <- as.numeric(snakemake@params[["tissue_padj"]])              # Max adjusted p-value in tissue
+padj_threshold <- as.numeric(snakemake@params[["padj"]])              # Max adjusted p-value in tissue
 normal_cfrna_detection_rate <- as.numeric(snakemake@params[["control_detection_rate"]])  # Max detection rate in normal cfRNA
 cancer_cfrna_detection_rate <- as.numeric(snakemake@params[["case_detection_rate"]])    # Min detection rate in cancer cfRNA
 cfrna_tpm_threshold <- as.numeric(snakemake@params[["control_tpm_threshold"]])  # TPM threshold for cfRNA detection
