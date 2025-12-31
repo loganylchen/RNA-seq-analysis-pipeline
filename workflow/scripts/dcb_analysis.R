@@ -249,7 +249,7 @@ discovery_summary_text <- c(
   "Discovery Cohort (Tissue):",
   sprintf("  Tumor samples: %d", length(tissue_tumor_cols)),
   sprintf("  Normal samples: %d", length(tissue_normal_cols)),
-  sprintf("  Tissue-upregulated genes: %d", tissue_upregulated_count),
+
   "",
   "Validation Cohort (cfRNA):",
   sprintf("  Cancer samples: %d", length(cfrna_cancer_cols)),
@@ -323,7 +323,7 @@ plot_discovery_dcb <- function(dcb_df, title, output_file) {
     mutate(
       category = case_when(
         is_dcb ~ "DCB",
-        is_tissue_upregulated ~ "Tissue-upregulated (non-DCB)",
+        deg ~ "Tissue-upregulated (non-DCB)",
         TRUE ~ "Other"
       )
     )
