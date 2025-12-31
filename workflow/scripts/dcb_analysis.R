@@ -205,7 +205,7 @@ full_dcb_analysis <- discovery_genes %>%
     is_dcb = (cfrna_normal_detection_rate < normal_cfrna_detection_rate) &
              (cfrna_cancer_detection_rate >= cancer_cfrna_detection_rate) 
   ) %>%
-  arrange(desc(is_dcb), desc(tissue_log2fc), desc(cfrna_cancer_detection_rate))
+  arrange(desc(is_dcb), desc(cfrna_cancer_detection_rate))
 
 # Count DCB genes
 dcb_count <- sum(full_dcb_analysis$is_dcb, na.rm = TRUE)
@@ -218,9 +218,9 @@ cat(sprintf("Final DCB genes: %d\n", dcb_count))
 
 # Create separate discovery and validation output tables
 discovery_output <- full_dcb_analysis %>%
-  select(gene, tissue_tumor_mean_tpm, tissue_normal_mean_tpm, tissue_log2fc,
-         is_tissue_upregulated, is_dcb) %>%
-  arrange(desc(is_tissue_upregulated), desc(tissue_log2fc))
+  select(gene, tissue_tumor_mean_tpm, tissue_normal_mean_tpm, deg,
+          is_dcb) %>%
+  arrange( desc(deg))
 
 validation_output <- full_dcb_analysis %>%
   select(gene, cfrna_cancer_detection_rate, cfrna_normal_detection_rate,
@@ -298,7 +298,7 @@ if (dcb_count > 0) {
       rank = row_number(),
       info = sprintf("%d. %s (cfRNA DR: %.1f%%, TPM: %.2f, tissue log2FC: %.2f)",
                      rank, gene, cfrna_cancer_detection_rate * 100,
-                     cfrna_cancer_mean_tpm, tissue_log2fc)
+                     cfrna_cancer_mean_tpm, deg)
     ) %>%
     pull(info)
 
@@ -329,7 +329,7 @@ plot_discovery_dcb <- function(dcb_df, title, output_file) {
     )
 
   p <- ggplot(dcb_df, aes(x = tissue_normal_mean_tpm, y = tissue_tumor_mean_tpm)) +
-    geom_point(aes(color = category, size = abs(tissue_log2fc)), alpha = 0.6) +
+    geom_point(aes(color = category, size = abs(deg)), alpha = 0.6) +
     geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "gray50") +
     geom_hline(yintercept = tissue_tpm_threshold, linetype = "dashed", color = "red") +
     scale_color_manual(values = c(
@@ -358,11 +358,11 @@ plot_discovery_dcb <- function(dcb_df, title, output_file) {
   if (sum(dcb_df$is_dcb, na.rm = TRUE) > 0) {
     top_dcb <- dcb_df %>%
       filter(is_dcb) %>%
-      arrange(desc(tissue_log2fc)) %>%
+      arrange(desc(deg)) %>%
       head(20)
 
     if (nrow(top_dcb) > 0) {
-      p2 <- ggplot(top_dcb, aes(x = reorder(gene, tissue_log2fc), y = tissue_log2fc)) +
+      p2 <- ggplot(top_dcb, aes(x = reorder(gene, deg), y = deg)) +
         geom_col(aes(fill = tissue_tumor_mean_tpm), show.legend = FALSE) +
         coord_flip() +
         scale_fill_gradient(low = "#FFF3E0", high = "#FF6F00") +
