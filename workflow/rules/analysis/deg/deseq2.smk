@@ -31,4 +31,4 @@ rule deseq2:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
-        "../../scripts/analysis/deg/deseq2.R"
+        "../../../scripts/analysis/deg/deseq2.R"
