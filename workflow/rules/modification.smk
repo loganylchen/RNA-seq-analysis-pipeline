@@ -39,6 +39,8 @@ rule modtect_mod_merge:
         ),
     output:
         output="{project}/modification/modtect/merged.modtect.txt",
+    params:
+        score_threshold=config.get("modtect", {}).get("modtect_score_threshold", 20),
     log:
         log="logs/{project}/modtect_merged.log",
     benchmark:

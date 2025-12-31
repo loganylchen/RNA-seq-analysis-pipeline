@@ -41,7 +41,7 @@ merge_modtect_files <- function(mod_tect_files, merged_file,score_threshold) {
     message('merging')
     tmp_merge <- data.table::rbindlist(df_list) 
 
-    selected_locs = tmp_merge %>% group_by(chrom,position,reference_nt) %>% 
+    selected_locs <- tmp_merge %>% group_by(chrom,position,reference_nt) %>% 
                         summarise(sig = ifelse(max(ModTect_score)>score_threshold, TRUE, FALSE)) %>%
                         filter(sig==TRUE) %>% 
                         select(chrom,position,reference_nt) %>%

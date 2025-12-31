@@ -55,6 +55,9 @@ resources:
     deg_vis: 16384
 
 
+modtect:
+  modtect_score_threshold: 20   # ModTect score threshold for significant modification site
+
 clusterprofiler:
   species: "human"
 
