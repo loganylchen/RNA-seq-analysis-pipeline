@@ -51,7 +51,7 @@ cat("Padj threshold:", padj_threshold, "\n")
 # Load data
 cat("\n--- Loading data ---\n")
 # Read DEG TSV files (gene_id is in the first column, will become row names)
-discovery_deg <- read_tsv(discovery_deg_tsv, show_col_types = FALSE)
+discovery_deg <- read.csv(discovery_deg_tsv,sep='\t',check.names=FALSE, row.names=1)
 validation_deg <- read_tsv(validation_deg_tsv, show_col_types = FALSE)
 
 # Load TPM matrices
