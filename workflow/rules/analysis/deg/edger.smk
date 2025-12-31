@@ -1,12 +1,8 @@
 # tool could be STAR_FC or salmon or kallisto
-rule deseq2:
+rule edger:
     input:
         counts="{project}/quantification/{tool}/count_matrix.txt",
     output:
-        discovery_count_rds="{project}/DEG/edger/{tool}/discovery_count_matrix.rds",
-        validation_count_rds="{project}/DEG/edger/{tool}/validation_count_matrix.rds",
-        discovery_vst_rds="{project}/DEG/edger/{tool}/discovery_vst_matrix.rds",
-        validation_vst_rds="{project}/DEG/edger/{tool}/validation_vst_matrix.rds",
         discovery_deg_rds="{project}/DEG/edger/{tool}/discovery_deg.rds",
         validation_deg_rds="{project}/DEG/edger/{tool}/validation_deg.rds",
         discovery_deg_tsv="{project}/DEG/edger/{tool}/discovery_deg.tsv",
