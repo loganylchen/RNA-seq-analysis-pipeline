@@ -137,8 +137,8 @@ rule deg_lasso_classifier:
     and test performance on validation dataset.
     """
     input:
-        discovery_deg_rds="{project}/DEG/deseq2/discovery_deg.rds",
-        validation_deg_rds="{project}/DEG/deseq2/validation_deg.rds",
+        discovery_deg_tsv="{project}/DEG/deseq2/discovery_deg.tsv",
+        validation_deg_tsv="{project}/DEG/deseq2/validation_deg.tsv",
         discovery_tpm="{project}/quantification/STAR_FC/TPM_matrix.txt",
         validation_tpm="{project}/quantification/STAR_FC/TPM_matrix.txt",
     output:
@@ -178,8 +178,8 @@ rule deg_lasso_classifier_salmon:
     LASSO classifier using Salmon quantification results.
     """
     input:
-        discovery_deg_rds="{project}/DEG/deseq2/salmon_discovery_deg.rds",
-        validation_deg_rds="{project}/DEG/deseq2/salmon_validation_deg.rds",
+        discovery_deg_tsv="{project}/DEG/deseq2/salmon_discovery_deg.tsv",
+        validation_deg_tsv="{project}/DEG/deseq2/salmon_validation_deg.tsv",
         discovery_tpm="{project}/quantification/salmon/TPM_matrix.txt",
         validation_tpm="{project}/quantification/salmon/TPM_matrix.txt",
     output:
@@ -219,8 +219,8 @@ rule deg_lasso_classifier_kallisto:
     LASSO classifier using Kallisto quantification results.
     """
     input:
-        discovery_deg_rds="{project}/DEG/deseq2/kallisto_discovery_deg.rds",
-        validation_deg_rds="{project}/DEG/deseq2/kallisto_validation_deg.rds",
+        discovery_deg_tsv="{project}/DEG/deseq2/kallisto_discovery_deg.tsv",
+        validation_deg_tsv="{project}/DEG/deseq2/kallisto_validation_deg.tsv",
         discovery_tpm="{project}/quantification/kallisto/TPM_matrix.txt",
         validation_tpm="{project}/quantification/kallisto/TPM_matrix.txt",
     output:

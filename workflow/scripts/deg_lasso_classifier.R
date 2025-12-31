@@ -20,8 +20,8 @@ suppressPackageStartupMessages({
 })
 
 # Get parameters from Snakemake
-discovery_deg_rds <- snakemake@input[["discovery_deg_rds"]]
-validation_deg_rds <- snakemake@input[["validation_deg_rds"]]
+discovery_deg_tsv <- snakemake@input[["discovery_deg_tsv"]]
+validation_deg_tsv <- snakemake@input[["validation_deg_tsv"]]
 discovery_tpm_file <- snakemake@input[["discovery_tpm"]]
 validation_tpm_file <- snakemake@input[["validation_tpm"]]
 samples_file <- snakemake@params[["samples"]]
@@ -50,8 +50,9 @@ cat("Padj threshold:", padj_threshold, "\n")
 
 # Load data
 cat("\n--- Loading data ---\n")
-discovery_deg <- readRDS(discovery_deg_rds)
-validation_deg <- readRDS(validation_deg_rds)
+# Read DEG TSV files (gene_id is in the first column, will become row names)
+discovery_deg <- read_tsv(discovery_deg_tsv, show_col_types = FALSE)
+validation_deg <- read_tsv(validation_deg_tsv, show_col_types = FALSE)
 
 # Load TPM matrices
 discovery_tpm <- read_tsv(discovery_tpm_file, show_col_types = FALSE)
@@ -77,9 +78,9 @@ cat("Discovery TPM:", nrow(discovery_tpm), "genes x", ncol(discovery_tpm), "samp
 cat("Validation TPM:", nrow(validation_tpm), "genes x", ncol(validation_tpm), "samples\n")
 
 # Get significant DEGs from discovery
+# The TSV file has gene_id as row names from DESeq2 results
 cat("\n--- Selecting significant DEGs from discovery ---\n")
 discovery_sig_deg <- discovery_deg %>%
-  as.data.frame() %>%
   tibble::rownames_to_column("gene_id") %>%
   filter(padj < padj_threshold, abs(log2FoldChange) >= log2fc_threshold)
 
