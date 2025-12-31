@@ -65,11 +65,11 @@ validation_samples <- rownames(sample_info %>% filter(sample_type != !!discovery
 
 # get discovery TPM matrix (same as expression_tpm but for clarity)
 discovery_tpm <- expression_tpm %>% 
-  select(all_of(discovery_samples))
+  select(!!discovery_samples)
   
 # get validation TPM matrix (same as expression_tpm but for clarity)
 validation_tpm <- expression_tpm %>% 
-  select(all_of(validation_samples))
+  select(!!validation_samples)
 
 
 cat("Summary of loaded data:\n")
