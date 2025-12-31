@@ -193,7 +193,11 @@ def get_final_output():
         final_output += [
             # f"{sample_project}/modification/modtect/{sample}/{sample}.modtect.combined.txt",
         ]
-
+    for tool in ["STAR_FC", "salmon", "kallisto"]:
+        final_output += [
+            f"{sample_project}/DEG/deseq2/{tool}/discovery_deg.tsv",
+            f"{sample_project}/DEG/deseq2/{tool}/validation_deg.tsv",
+        ]
     final_output += [
         # f"{sample_project}/visualization/Volcano_validation.pdf",
         # f"{sample_project}/visualization/pca.png",
