@@ -40,7 +40,7 @@ include: "rules/preprocessing/bam_process.smk"
 include: "rules/preprocessing/ref.smk"
 include: "rules/preprocessing/modification.smk"
 # analysis
-include: "rules/analysis/diffexp_deseq2.smk"
+include: "rules/analysis/deg/deseq2.smk"
 include: "rules/analysis/enrichment.smk"
 include: "rules/analysis/dark_channel_biomarker.smk"
 # visualization
