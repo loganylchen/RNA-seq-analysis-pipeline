@@ -206,7 +206,7 @@ perform_site_test <- function(site_data) {
 
   # Perform Student's t-test on variant proportion
   tryCatch({
-    test_result <- t.test(case_prop_values, control_prop_values, var.equal = FALSE)
+    test_result <- t.test(case_prop_values, control_prop_values, var.equal = TRUE)
 
     return(list(
       p_value = test_result$p.value,
