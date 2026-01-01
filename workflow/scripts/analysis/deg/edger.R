@@ -50,6 +50,7 @@ edger_pipeline <- function(count,coldata,
     keep <- filterByExpr(y)
     y <- y[keep, , keep.lib.sizes = FALSE]
     y <- calcNormFactors(y)
+    cat(head(y),"\n")
     design <- model.matrix(~ group)
     y <- estimateDisp(y, design)
     fit <- glmQLFit(y, design)
