@@ -34,7 +34,7 @@ rule deg_upset_plot:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
     script:
-        "../../../scripts/visualization/upset_plot.R"
+        "../../scripts/visualization/upset_plot.R"
 
 
 rule deg_visualization:
