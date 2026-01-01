@@ -45,13 +45,13 @@ edger_pipeline <- function(count,coldata,
                             control_condition, parallel=TRUE) {
     group <- coldata %>% mutate(condition = factor({{ condition_col }},levels=c(case_condition,control_condition))) %>% pull(condition)
     cts <- count[,rownames(coldata)]
-    y <- DGEList(counts = cts, 
+    y <- DGEList(counts = cts,
                 group = group)
-    keep <- filterByExpr(y)
+    design <- model.matrix(~ group)
+    keep <- filterByExpr(y, design)
     y <- y[keep, , keep.lib.sizes = FALSE]
     y <- calcNormFactors(y)
     head(y)
-    design <- model.matrix(~ group)
     y <- estimateDisp(y, design)
     fit <- glmQLFit(y, design)
     qlf <- glmQLFTest(fit, coef = 2)

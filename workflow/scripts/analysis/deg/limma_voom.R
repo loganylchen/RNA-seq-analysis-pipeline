@@ -46,12 +46,12 @@ limma_voom_pipeline <- function(count,coldata,
                             control_condition, parallel=TRUE) {
     group <- coldata %>% mutate(condition = factor({{ condition_col }},levels=c(case_condition,control_condition))) %>% pull(condition)
     cts <- count[,rownames(coldata)]
-    y <- DGEList(counts = cts, 
+    y <- DGEList(counts = cts,
                 group = group)
-    keep <- filterByExpr(y)
+    design <- model.matrix(~ group)
+    keep <- filterByExpr(y, design)
     y <- y[keep, , keep.lib.sizes = FALSE]
     y <- calcNormFactors(y)
-    design <- model.matrix(~ group)
     head(y)
     v<-voom(y,design,plot=FALSE)
     fit <- lmFit(v, design)
