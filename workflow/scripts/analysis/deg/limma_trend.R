@@ -50,7 +50,7 @@ limma_trend_pipeline <- function(count,coldata,
     cat("  Columns available:", paste(names(coldata), collapse=", "), "\n")
     cat("Conditions:", case_condition, "vs", control_condition, "\n")
 
-    group <- coldata %>% mutate(condition = factor({{ condition_col }},levels=c(case_condition,control_condition))) %>% pull(condition)
+    group <- factor(coldata[[condition_col]], levels=c(case_condition, control_condition))
     cat("Group levels:", levels(group), "\n")
     cat("Group counts:\n")
     print(table(group))
