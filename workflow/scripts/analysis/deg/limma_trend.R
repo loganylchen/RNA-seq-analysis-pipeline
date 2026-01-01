@@ -53,7 +53,7 @@ limma_trend_pipeline <- function(count,coldata,
     y <- calcNormFactors(y)
     design <- model.matrix(~ group)
     logCPM <- cpm(y,log=TRUE,prior.count=2)
-    cat(head(logCPM),"\n")
+    head(logCPM)
     fit <- lmFit(logCPM, design)
     fit <- eBayes(fit, trend = TRUE)
     res <- topTable(fit, coef = 2, number = Inf, adjust.method = "BH")

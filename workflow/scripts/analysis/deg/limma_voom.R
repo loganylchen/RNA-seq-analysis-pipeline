@@ -52,7 +52,7 @@ limma_voom_pipeline <- function(count,coldata,
     y <- y[keep, , keep.lib.sizes = FALSE]
     y <- calcNormFactors(y)
     design <- model.matrix(~ group)
-    cat(head(y),"\n")
+    head(y)
     v<-voom(y,design,plot=FALSE)
     fit <- lmFit(v, design)
     fit <- eBayes(fit)
