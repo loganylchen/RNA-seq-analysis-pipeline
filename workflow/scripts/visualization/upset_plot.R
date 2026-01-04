@@ -195,11 +195,9 @@ upset(
   keep.order = TRUE,
   point.size = 3,
   line.size = 1.2,
-  mainbar.color = "#E41A1C",
   sets.bar.color = set_colors,
   matrix.color = "black",
   sets.x.label = "Number of DEGs",
-  main.bar.y.label = "Number of Genes",
   text.scale = c(1.8, 1.3, 1.2, 1.2, 1.3, 1.2),
   query.legend = "top",
   queries = list(
