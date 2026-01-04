@@ -192,7 +192,7 @@ cat("\nSummary written to:", summary_file, "\n")
 n_sets <- length(gene_sets_8)
 cat("\n--- Generating upset plot with", n_sets, "sets ---\n")
 
-png(upset_plot, width = 14, height = 10, units = "in", res = 300)
+pdf(upset_plot, width = 14, height = 10, units = "in", res = 300)
 
 m <- make_comb_mat(gene_sets_8)
 UpSet(m,
