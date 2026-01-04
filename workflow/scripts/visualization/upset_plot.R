@@ -205,8 +205,6 @@ UpSet(m,
                                                 numbers_gp = gpar(fontsize = 10)),
       row_names_gp = gpar(fontsize = 10),
       column_names_gp = gpar(fontsize = 10),
-      width = unit(14, "in"),
-      height = unit(10, "in")
 )
 
 dev.off()
