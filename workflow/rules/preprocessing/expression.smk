@@ -22,7 +22,7 @@ rule count_matrix:
             else config["container"].get("python3", None)
         )
     script:
-        "../scripts/count-matrix.py"
+        ".../../scripts/preprocessing/count-matrix.py"
 
 
 rule count_matrix_star_FC:
@@ -46,7 +46,7 @@ rule count_matrix_star_FC:
             else config["container"].get("r", None)
         )
     script:
-        "../scripts/count-matrix.R"
+        "../../scripts/preprocessing/count-matrix.R"
 
 
 rule TPM_matrix_star_FC_RAW:
@@ -135,7 +135,7 @@ rule count_matrix_salmon:
             else config["container"].get("r", None)
         )
     script:
-        "../scripts/count-matrix_salmon.R"
+        "../../scripts/preprocessing/count-matrix_salmon.R"
 
 
 rule count_matrix_kallisto:
@@ -158,4 +158,4 @@ rule count_matrix_kallisto:
             else config["container"].get("r", None)
         )
     script:
-        "../scripts/count-matrix_kallisto.R"
+        "../../scripts/preprocessing/count-matrix_kallisto.R"
