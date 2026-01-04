@@ -182,8 +182,8 @@ cat("\n--- Generating 8-set upset plot ---\n")
 png(upset_plot, width = 14, height = 10, units = "in", res = 300)
 
 # Color palette: reds for up, blues for down
-up_colors <- brewer.pal(4, "Reds")[2:4]
-down_colors <- brewer.pal(4, "Blues")[2:4]
+up_colors <- brewer.pal(4, "Reds")
+down_colors <- brewer.pal(4, "Blues")
 set_colors <- c(up_colors, down_colors)
 names(set_colors) <- names(gene_sets_8)
 
