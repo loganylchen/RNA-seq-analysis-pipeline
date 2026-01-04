@@ -194,7 +194,20 @@ cat("\n--- Generating upset plot with", n_sets, "sets ---\n")
 
 png(upset_plot, width = 14, height = 10, units = "in", res = 300)
 
-
+m <- make_comb_mat(gene_sets_8)
+UpSet(m,
+      comb_order = order(comb_size(m), decreasing = TRUE),
+      top_annotation = upset_top_annotation(m,
+                                            add_numbers = TRUE,
+                                            numbers_gp = gpar(fontsize = 10)),
+      right_annotation = upset_right_annotation(m,
+                                                add_numbers = TRUE,
+                                                numbers_gp = gpar(fontsize = 10)),
+      row_names_gp = gpar(fontsize = 10),
+      column_names_gp = gpar(fontsize = 10),
+      width = unit(14, "in"),
+      height = unit(10, "in")
+)
 
 dev.off()
 cat("\n8-set upset plot saved to:", upset_plot, "\n")
