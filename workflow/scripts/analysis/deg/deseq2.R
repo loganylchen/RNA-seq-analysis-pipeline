@@ -16,20 +16,20 @@ if (snakemake@threads > 1) {
 
 
 
-discovery_dds<- readRDS(snakemake@input[['discovery_count_rds']])
-validation_dds<- readRDS(snakemake@input[['validation_count_rds']])
+discovery_dds<- readRDS(snakemake@input['discovery_count_rds'])
+validation_dds<- readRDS(snakemake@input['validation_count_rds'])
 
-case_condition<-snakemake@params[["case_condition"]]
-control_condition<-snakemake@params[["control_condition"]]
+case_condition<-snakemake@params["case_condition"]
+control_condition<-snakemake@params["control_condition"]
 
 
 
 
 # output
-discovery_deg_rds<-snakemake@output[["discovery_deg_rds"]]
-validation_deg_rds<-snakemake@output[["validation_deg_rds"]]
-discovery_deg_tsv<-snakemake@output[["discovery_deg_tsv"]]
-validation_deg_tsv<-snakemake@output[["validation_deg_tsv"]]
+discovery_deg_rds<-snakemake@output["discovery_deg_rds"]
+validation_deg_rds<-snakemake@output["validation_deg_rds"]
+discovery_deg_tsv<-snakemake@output["discovery_deg_tsv"]
+validation_deg_tsv<-snakemake@output["validation_deg_tsv"]
 
 
 dds_discovery <- DESeq(discovery_dds)
