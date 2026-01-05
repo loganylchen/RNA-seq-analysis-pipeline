@@ -25,6 +25,7 @@ project <- snakemake@params[["project"]]
 log2fc_threshold <- snakemake@params[["log2fc_threshold"]]
 padj_threshold <- snakemake@params[["padj_threshold"]]
 top_n <- snakemake@params[["top_n"]]
+discovery_sample_type <- snakemake@params[["discovery_sample_type"]]
 
 # Input files
 deseq2_file <- snakemake@input[["deseq2"]]
@@ -42,6 +43,7 @@ annotation_data <- snakemake@output[["annotation_data"]]
 
 cat("=== Common DEGs ComplexHeatmap Visualization ===\n")
 cat("Project:", project, "\n")
+cat("Discovery sample type:", discovery_sample_type, "\n")
 cat("Log2FC threshold:", log2fc_threshold, "\n")
 cat("Padj threshold:", padj_threshold, "\n")
 cat("Top N genes:", top_n, "\n")
@@ -249,34 +251,48 @@ cat("  Columns:", paste(colnames(samples_df), collapse=", "), "\n")
 samples_df <- samples_df[samples_df$project == project, ]
 cat("  Samples in project:", nrow(samples_df), "\n")
 
-# Check condition distribution
+# Filter to discovery samples only
+cat("\n  Filtering to discovery samples only...\n")
+cat("  Discovery sample type:", discovery_sample_type, "\n")
+all_samples <- samples_df$sample_name
+discovery_samples_df <- samples_df[samples_df$sample_type == discovery_sample_type, ]
+cat("  Discovery samples:", nrow(discovery_samples_df), "\n")
+cat("  Excluded samples:", nrow(samples_df) - nrow(discovery_samples_df), "\n")
+
+# Update samples_df to only discovery samples
+samples_df <- discovery_samples_df
+
+# Check condition distribution for discovery samples
 condition_counts <- table(samples_df$condition)
-cat("  Condition distribution:\n")
+cat("  Discovery condition distribution:\n")
 for (cond in names(condition_counts)) {
   cat("    ", cond, ":", as.character(condition_counts[cond]), "samples\n")
 }
 
-# Reorder columns to match sample order in expression matrix
+# Filter expression matrix to only discovery samples
+discovery_sample_names <- samples_df$sample_name
+cat("\n  Filtering expression matrix to discovery samples...\n")
+cat("  Original expression matrix:", nrow(expr_matrix), "x", ncol(expr_matrix), "\n")
+
+# Check which discovery samples are in the expression matrix
+valid_discovery_samples <- intersect(discovery_sample_names, colnames(expr_matrix))
+cat("  Discovery samples in expression matrix:", length(valid_discovery_samples), "\n")
+
+if (length(valid_discovery_samples) == 0) {
+  stop("No discovery samples found in expression matrix!")
+}
+
+# Subset expression matrix to discovery samples
+expr_matrix <- expr_matrix[, valid_discovery_samples, drop=FALSE]
+cat("  Filtered expression matrix:", nrow(expr_matrix), "x", ncol(expr_matrix), "\n")
+
+# Update samples_df to only include samples that are in the expression matrix
+samples_df <- samples_df[samples_df$sample_name %in% valid_discovery_samples, ]
+cat("  Final samples for heatmap:", nrow(samples_df), "\n")
+
+# Reorder samples_df to match expression matrix column order
 sample_order <- colnames(expr_matrix)
-cat("\n  Matching samples to expression matrix...\n")
-cat("  Expression matrix samples:", length(sample_order), "\n")
-
-# Check if all samples match
-missing_in_samples <- setdiff(sample_order, samples_df$sample_name)
-missing_in_expr <- setdiff(samples_df$sample_name, sample_order)
-
-if (length(missing_in_samples) > 0) {
-  cat("  WARNING: Samples in expression matrix but not in samples file:\n")
-  cat("    ", paste(missing_in_samples, collapse=", "), "\n")
-}
-
-if (length(missing_in_expr) > 0) {
-  cat("  WARNING: Samples in samples file but not in expression matrix:\n")
-  cat("    ", paste(missing_in_expr, collapse=", "), "\n")
-}
-
 samples_df <- samples_df[match(sample_order, samples_df$sample_name), ]
-cat("  Successfully matched", sum(!is.na(samples_df$sample_name)), "samples\n")
 
 # Prepare sample annotations
 cat("\n--- Preparing sample annotations ---\n")

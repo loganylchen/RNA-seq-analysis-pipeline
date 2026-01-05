@@ -294,7 +294,7 @@ rule common_deg_heatmap:
     ComplexHeatmap visualization of common DEGs across all 4 tools (DESeq2, edgeR,
     limma-trend, limma-voom). Shows expression heatmap using log10(TPM+1) with
     sample annotations from clinical data and gene annotations from binned
-    log2FC and padj values.
+    log2FC and padj values. Only discovery samples are visualized.
     """
     input:
         deseq2="{project}/DEG/deseq2/{tool}/discovery_deg.tsv",
@@ -310,6 +310,7 @@ rule common_deg_heatmap:
         annotation_data="{project}/visualization/common_DEGs_{tool}_annotations.tsv",
     params:
         project=project,
+        discovery_sample_type=discovery_sample_type,
         log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
         padj_threshold=config.get("deg", {}).get("padj", 0.05),
         top_n=config.get("deg_vis", {}).get("common_deg_top_n", 100),
