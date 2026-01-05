@@ -138,6 +138,29 @@ rule count_matrix_salmon:
         "../../../scripts/quantification/count_matrix_salmon.R"
 
 
+rule TPM_matrix_salmon:
+    input:
+        expand(
+            "{project}/quantification/salmon/{sample}/quant.sf",
+            project=project,
+            sample=samples.index.tolist(),
+        ),
+    output:
+        tpm_matrix="{project}/quantification/salmon/TPM_matrix.txt",
+    log:
+        "logs/{project}/tpm-matrix_salmon.log",
+    params:
+        samples=samples.index.tolist(),
+    container:
+        (
+            "docker://btrspg/rlan:20251110"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    script:
+        "../../../scripts/quantification/tpm_matrix_salmon.R"
+
+
 rule count_matrix_kallisto:
     input:
         expand(
@@ -159,3 +182,26 @@ rule count_matrix_kallisto:
         )
     script:
         "../../../scripts/quantification/count_matrix_kallisto.R"
+
+
+rule TPM_matrix_kallisto:
+    input:
+        expand(
+            "{project}/quantification/kallisto/{sample}/abundance.tsv",
+            project=project,
+            sample=samples.index.tolist(),
+        ),
+    output:
+        tpm_matrix="{project}/quantification/kallisto/TPM_matrix.txt",
+    log:
+        "logs/{project}/tpm-matrix_kallisto.log",
+    params:
+        samples=samples.index.tolist(),
+    container:
+        (
+            "docker://btrspg/rlan:20251110"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    script:
+        "../../../scripts/quantification/tpm_matrix_kallisto.R"
