@@ -2,8 +2,8 @@
   "name": "Snakemake",
   "image": "btrspg/env-snakemake:20251229",
   "features": {},
-  "workspaceMount": "source=/home/logan/Projects/RNA-seq-analysis-pipeline,target=/home/vscode/workspace/,type=bind,consistency=cached",
-  "workspaceFolder": "/home/vscode/workspace/",
+  "workspaceMount": "source=/home/logan/Projects/RNA-seq-analysis-pipeline,target=/home/vscode/rna-seq/,type=bind,consistency=cached",
+  "workspaceFolder": "/home/vscode/rna-seq/",
   "customizations": {
     "vscode": {
       "extensions": [

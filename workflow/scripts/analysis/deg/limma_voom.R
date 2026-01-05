@@ -41,30 +41,90 @@ coldata_validation <- coldata %>%
 cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
 
 limma_voom_pipeline <- function(count,coldata,
-                            case_condition, 
+                            condition_col,
+                            case_condition,
                             control_condition, parallel=TRUE) {
-    group <- coldata %>% mutate(condition = factor(condition,levels=c(case_condition,control_condition)))[['condition']]
+    cat("\n=== Limma Voom Pipeline Start ===\n")
+    cat("Sample information:\n")
+    cat("  Total samples:", nrow(coldata), "\n")
+    cat("  Columns available:", paste(names(coldata), collapse=", "), "\n")
+    cat("Conditions:", case_condition, "vs", control_condition, "\n")
+
+    group <- factor(coldata[[condition_col]], levels=c(control_condition, case_condition))
+    cat("Group levels:", levels(group), "\n")
+    cat("Group counts:\n")
+    print(table(group))
+
     cts <- count[,rownames(coldata)]
-    y <- DGEList(counts = cts, 
+    cat("Count matrix dimensions:", nrow(cts), "genes x", ncol(cts), "samples\n")
+    cat("Count matrix summary:\n")
+    print(summary(as.vector(cts)))
+
+    y <- DGEList(counts = cts,
                 group = group)
-    keep <- filterByExpr(y)
-    y <- y[keep, , keep.lib.sizes = FALSE]
-    y <- calcNormFactors(y)
+    cat("Original DGEList:", nrow(y), "genes\n")
+
     design <- model.matrix(~ group)
+    cat("Design matrix:\n")
+    print(design)
+
+    keep <- filterByExpr(y, design)
+    cat("Genes passing filterByExpr:", sum(keep), "/", length(keep), "\n")
+    cat("Filtering percentage:", round(sum(keep)/length(keep)*100, 2), "%\n")
+
+    y <- y[keep, , keep.lib.sizes = FALSE]
+    cat("DGEList after filtering:", nrow(y), "genes\n")
+
+    y <- calcNormFactors(y)
+    cat("Normalization factors calculated\n")
+    cat("Library sizes:\n")
+    print(y$samples$lib.size)
+    cat("Normalized library sizes (effective):\n")
+    print(y$samples$lib.size * y$samples$norm.factors)
+
+    cat("DGEList object (first few rows):\n")
+    print(head(y))
+
     v<-voom(y,design,plot=FALSE)
+    cat("VOOM transformation completed\n")
+    cat("VOOM output dimensions:", nrow(v$E), "genes x", ncol(v$E), "samples\n")
+    cat("VOOM weights summary:\n")
+    print(summary(as.vector(v$weights)))
+    cat("VOOM E (expression) summary:\n")
+    print(summary(as.vector(v$E)))
+
     fit <- lmFit(v, design)
+    cat("Linear model fit completed\n")
+
     fit <- eBayes(fit)
+    cat("Empirical Bayes moderation completed\n")
+
     res <- topTable(fit, coef = 2, number = Inf, adjust.method = "BH")
     res$gene_id <- rownames(res)
 
     # Reorder columns
     res_df <- res[, c("gene_id", "logFC", "AveExpr", "t", "P.Value", "adj.P.Val", "B")]
     colnames(res_df) <- c("gene_id", "log2FoldChange", "average_expression", "t_statistic", "pvalue", "padj", "B_statistic")
+
+    cat("Results summary:\n")
+    cat("  Total genes tested:", nrow(res_df), "\n")
+    cat("  Significant genes (p_adj < 0.05):", sum(res_df$padj < 0.05), "\n")
+    cat("  Significant genes (p_adj < 0.01):", sum(res_df$padj < 0.01), "\n")
+    cat("  Significant genes (p_adj < 0.001):", sum(res_df$padj < 0.001), "\n")
+    cat("  |log2FC| > 1:", sum(abs(res_df$log2FoldChange) > 1), "\n")
+    cat("  |log2FC| > 2:", sum(abs(res_df$log2FoldChange) > 2), "\n")
+    cat("Top 10 upregulated genes:\n")
+    print(head(res_df[order(res_df$log2FoldChange, decreasing=TRUE), c("gene_id", "log2FoldChange", "padj")], 10))
+    cat("Top 10 downregulated genes:\n")
+    print(head(res_df[order(res_df$log2FoldChange), c("gene_id", "log2FoldChange", "padj")], 10))
+    cat("=== Limma Voom Pipeline End ===\n\n")
+
     return(res_df)
 }
 
 cat("Processing discovery set...\n")
 res_discovery <- limma_voom_pipeline(cts, coldata_discovery,
+                                condition_col= "condition",
                                 case_condition,
                                 control_condition)
 saveRDS(res_discovery, discovery_deg_rds)
@@ -72,6 +132,7 @@ write.table(res_discovery, discovery_deg_tsv, sep='\t', quote=FALSE, row.names=F
 
 cat("Processing validation set...\n")
 res_validation <- limma_voom_pipeline(cts, coldata_validation,
+                                condition_col= "condition",
                                 case_condition,
                                 control_condition)
 saveRDS(res_validation, validation_deg_rds)

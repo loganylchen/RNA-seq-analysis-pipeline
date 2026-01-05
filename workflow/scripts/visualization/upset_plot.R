@@ -16,6 +16,7 @@ suppressPackageStartupMessages({
   library(ggplot2)
   library(gridExtra)
   library(RColorBrewer)
+  library(ggsci)
 })
 
 # Get parameters
@@ -65,7 +66,8 @@ read_deg_genes_by_direction <- function(file, tool_name) {
 
   cat("Up-regulated in", tool_name, ":", length(up_genes), "\n")
   cat("Down-regulated in", tool_name, ":", length(down_genes), "\n")
-
+  head(up_genes, 5) %>% print()
+  head(down_genes, 5) %>% print()
   return(list(up = up_genes, down = down_genes))
 }
 
@@ -88,6 +90,16 @@ gene_sets_8 <- list(
   `limma_trend_down` = limma_trend_genes$down,
   `limma_voom_down` = limma_voom_genes$down
 )
+
+# Check for empty sets and report
+cat("\n--- Checking gene sets ---\n")
+for (name in names(gene_sets_8)) {
+  cat(sprintf("%s: %d genes\n", name, length(gene_sets_8[[name]])))
+}
+
+
+
+# Check if we have any sets left
 
 # Write upset data with all 8 sets
 all_genes <- unique(c(deseq2_genes$up, edger_genes$up, limma_trend_genes$up, limma_voom_genes$up,
@@ -176,50 +188,24 @@ summary_text <- Filter(Negate(is.null), summary_text)
 writeLines(summary_text, summary_file)
 cat("\nSummary written to:", summary_file, "\n")
 
-# Generate combined upset plot with 8 sets
-cat("\n--- Generating 8-set upset plot ---\n")
+# Generate combined upset plot with available sets
+n_sets <- length(gene_sets_8)
+cat("\n--- Generating upset plot with", n_sets, "sets ---\n")
 
-png(upset_plot, width = 14, height = 10, units = "in", res = 300)
+pdf(upset_plot, width = 14, height = 10)
 
-# Color palette: reds for up, blues for down
-up_colors <- brewer.pal(4, "Reds")[2:4]
-down_colors <- brewer.pal(4, "Blues")[2:4]
-set_colors <- c(up_colors, down_colors)
-names(set_colors) <- names(gene_sets_8)
-
-upset(
-  gene_sets_8,
-  nsets = 8,
-  nintersects = NA,
-  order.by = "freq",
-  keep.order = TRUE,
-  point.size = 3,
-  line.size = 1.2,
-  mainbar.color = "#E41A1C",
-  sets.bar.color = set_colors,
-  matrix.color = "black",
-  sets.x.label = "Number of DEGs",
-  main.bar.y.label = "Number of Genes",
-  text.scale = c(1.8, 1.3, 1.2, 1.2, 1.3, 1.2),
-  query.legend = "top",
-  queries = list(
-    list(query = intersects, params = list("DESeq2_up", "edgeR_up", "limma_trend_up", "limma_voom_up"),
-         color = "darkred", active = T, query.name = "All 4 up-regulated"),
-    list(query = intersects, params = list("DESeq2_down", "edgeR_down", "limma_trend_down", "limma_voom_down"),
-         color = "darkblue", active = T, query.name = "All 4 down-regulated"),
-    list(query = intersects, params = list("DESeq2_up", "DESeq2_down"),
-         color = "gray", active = F, query.name = "DESeq2_up ∩ DESeq2_down (empty)"),
-    list(query = intersects, params = list("DESeq2_up", "edgeR_up"),
-         color = "steelblue", active = T, query.name = "DESeq2_up ∩ edgeR_up"),
-    list(query = intersects, params = list("DESeq2_down", "edgeR_down"),
-         color = "seagreen", active = T, query.name = "DESeq2_down ∩ edgeR_down")
-  )
+m <- make_comb_mat(gene_sets_8)
+UpSet(m,
+      comb_order = order(comb_size(m), decreasing = TRUE),
+      top_annotation = upset_top_annotation(m,
+                                            add_numbers = TRUE,
+                                            numbers_gp = gpar(fontsize = 10)),
+      right_annotation = upset_right_annotation(m,
+                                                add_numbers = TRUE,
+                                                numbers_gp = gpar(fontsize = 10)),
+      row_names_gp = gpar(fontsize = 10),
+      column_names_gp = gpar(fontsize = 10),
 )
-
-# Add title
-title(main = paste0("DEG Overlap: 8 Sets (", project, ")"),
-      sub = paste("Up (red) & Down (blue): log2FC |>", log2fc_threshold, ", FDR <", padj_threshold),
-      cex.main = 2.2, cex.sub = 1.5)
 
 dev.off()
 cat("\n8-set upset plot saved to:", upset_plot, "\n")
