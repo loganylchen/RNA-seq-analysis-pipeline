@@ -287,3 +287,42 @@ rule deg_lasso_classifier_kallisto:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
     script:
         "../../../scripts/visualization/classifier/lasso.R"
+
+
+rule common_deg_heatmap:
+    """
+    ComplexHeatmap visualization of common DEGs across all 4 tools (DESeq2, edgeR,
+    limma-trend, limma-voom). Shows expression heatmap using log10(TPM+1) with
+    sample annotations from clinical data and gene annotations from binned
+    log2FC and padj values.
+    """
+    input:
+        deseq2="{project}/DEG/deseq2/{tool}/discovery_deg.tsv",
+        edger="{project}/DEG/edger/{tool}/discovery_deg.tsv",
+        limma_trend="{project}/DEG/limma_trend/{tool}/discovery_deg.tsv",
+        limma_voom="{project}/DEG/limma_voom/{tool}/discovery_deg.tsv",
+        tpm="{project}/quantification/{tool}/TPM_matrix.txt",
+        samples=config["samples"],
+        gene_name_map="resources/gene_id_to_gene_name.tsv",
+    output:
+        heatmap="{project}/visualization/common_DEGs_{tool}_heatmap.pdf",
+        gene_list="{project}/visualization/common_DEGs_{tool}_gene_list.tsv",
+        annotation_data="{project}/visualization/common_DEGs_{tool}_annotations.tsv",
+    params:
+        project=project,
+        log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
+        padj_threshold=config.get("deg", {}).get("padj", 0.05),
+        top_n=config.get("deg_vis", {}).get("common_deg_top_n", 100),
+    container:
+        (
+            "docker://btrspg/rlan:20251229"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    log:
+        "logs/{project}/common_deg_heatmap_{tool}.log",
+    threads: config["threads"].get("deg_vis", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deg_vis", 32768),
+    script:
+        "../../../scripts/visualization/common_deg_heatmap.R"
