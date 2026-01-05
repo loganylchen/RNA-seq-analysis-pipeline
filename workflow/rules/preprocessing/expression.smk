@@ -22,7 +22,7 @@ rule count_matrix:
             else config["container"].get("python3", None)
         )
     script:
-        "../../../scripts/quantification/count_matrix.py"
+        "../../scripts/quantification/count_matrix.py"
 
 
 rule count_matrix_star_FC:
@@ -46,7 +46,7 @@ rule count_matrix_star_FC:
             else config["container"].get("r", None)
         )
     script:
-        "../../../scripts/quantification/count_matrix.R"
+        "../../scripts/quantification/count_matrix.R"
 
 
 rule TPM_matrix_star_FC_RAW:
@@ -69,7 +69,7 @@ rule TPM_matrix_star_FC_RAW:
             else config["container"].get("r", None)
         )
     script:
-        "../../../scripts/quantification/tpm_matrix.R"
+        "../../scripts/quantification/tpm_matrix.R"
 
 
 rule TPM_matrix_star_FC:
@@ -92,7 +92,7 @@ rule TPM_matrix_star_FC:
             else config["container"].get("r", None)
         )
     script:
-        "../../../scripts/quantification/tpm_matrix.R"
+        "../../scripts/quantification/tpm_matrix.R"
 
 
 rule TPM_separate_matrix:
@@ -112,7 +112,7 @@ rule TPM_separate_matrix:
             else config["container"].get("r", None)
         )
     script:
-        "../../../scripts/quantification/tpm_matrix_sep.R"
+        "../../scripts/quantification/tpm_matrix_sep.R"
 
 
 rule count_matrix_salmon:
@@ -135,7 +135,7 @@ rule count_matrix_salmon:
             else config["container"].get("r", None)
         )
     script:
-        "../../../scripts/quantification/count_matrix_salmon.R"
+        "../../scripts/quantification/count_matrix_salmon.R"
 
 
 rule TPM_matrix_salmon:
@@ -158,7 +158,7 @@ rule TPM_matrix_salmon:
             else config["container"].get("r", None)
         )
     script:
-        "../../../scripts/quantification/tpm_matrix_salmon.R"
+        "../../scripts/quantification/tpm_matrix_salmon.R"
 
 
 rule count_matrix_kallisto:
@@ -181,7 +181,7 @@ rule count_matrix_kallisto:
             else config["container"].get("r", None)
         )
     script:
-        "../../../scripts/quantification/count_matrix_kallisto.R"
+        "../../scripts/quantification/count_matrix_kallisto.R"
 
 
 rule TPM_matrix_kallisto:
@@ -204,4 +204,4 @@ rule TPM_matrix_kallisto:
             else config["container"].get("r", None)
         )
     script:
-        "../../../scripts/quantification/tpm_matrix_kallisto.R"
+        "../../scripts/quantification/tpm_matrix_kallisto.R"
