@@ -200,7 +200,7 @@ gene_vars <- apply(log10_tpm, 1, var)
 cat("  Calculated variance for", length(gene_vars), "genes\n")
 cat("  Variance range:", round(min(gene_vars), 4), "-", round(max(gene_vars), 4), "\n")
 
-top_genes <- names(sort(gene_vars, decreasing=TRUE)[1:length(gene_vars)])
+top_genes <- names(sort(gene_vars, decreasing=TRUE)[1:min(top_n, length(gene_vars))])
 expr_matrix <- log10_tpm[top_genes, ]
 
 cat("  Selected top", length(top_genes), "genes by variance\n")
