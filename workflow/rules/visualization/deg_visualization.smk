@@ -62,9 +62,9 @@ rule deg_visualization:
         case_condition=case_condition,
         control_condition=control_condition,
         discovery_sample_type=discovery_sample_type,
-        log2fc_threshold=config.get("deg", {}).get("log2fc", 2),
+        log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
         padj_threshold=config.get("deg", {}).get("padj", 0.05),
-        heatmap_top_n=config.get("deg_vis", {}).get("heatmap_top_n", 100),
+        heatmap_top_n=config.get("deg_vis", {}).get("heatmap_top_n", 5000),
     container:
         (
             "docker://btrspg/rlan:20251229"
