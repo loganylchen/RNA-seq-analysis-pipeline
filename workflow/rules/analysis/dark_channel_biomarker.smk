@@ -51,7 +51,7 @@ rule dcb_analysis:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("dcb", 8192),
     script:
-        "../scripts/dcb_analysis.R"
+        "../../scripts/analysis/dcb_analysis.R"
 
 
 rule dcb_analysis_salmon:
@@ -95,7 +95,7 @@ rule dcb_analysis_salmon:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("dcb", 8192),
     script:
-        "../scripts/dcb_analysis.R"
+        "../../scripts/analysis/dcb_analysis.R"
 
 
 rule dcb_analysis_kallisto:
@@ -139,4 +139,4 @@ rule dcb_analysis_kallisto:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("dcb", 8192),
     script:
-        "../scripts/dcb_analysis.R"
+        "../../scripts/analysis/dcb_analysis.R"

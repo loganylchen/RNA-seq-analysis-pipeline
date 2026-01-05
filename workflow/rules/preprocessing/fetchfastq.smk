@@ -20,4 +20,4 @@ rule get_fastq:
         mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     threads: config["threads"].get("sra", 4)
     script:
-        "../scripts/fetchsra.sh"
+        "../../../scripts/preprocessing/fetchsra.sh"

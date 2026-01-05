@@ -42,7 +42,7 @@ rule gtf_to_bed12:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     script:
-        "../scripts/gtf2bed12.py"
+        "../../../scripts/preprocessing/gtf2bed12.py"
 
 
 rule sort_bed12:

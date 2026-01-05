@@ -16,7 +16,7 @@ rule get_genome:
         "benchmarks/get_genome.benchmark.txt"
     threads: config["threads"].get("lftp", 4)
     script:
-        "../../scripts/get_ensembl_sequence.sh"
+        "../../../scripts/preprocessing/get_ensembl_sequence.sh"
 
 
 rule get_annotation:
@@ -38,7 +38,7 @@ rule get_annotation:
     benchmark:
         "benchmarks/get_annotation.benchmark.txt"
     script:
-        "../../scripts/get_ensembl_annotation.sh"
+        "../../../scripts/preprocessing/get_ensembl_annotation.sh"
 
 
 rule filtering_genome_and_annotation:
@@ -255,7 +255,7 @@ rule gtf_to_bed:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     script:
-        "../../scripts/gtf2bed.sh"
+        "../../../scripts/preprocessing/gtf2bed.sh"
 
 
 rule gtf_to_refflat:

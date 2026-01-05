@@ -22,7 +22,7 @@ rule volcano_vis:
     benchmark:
         "benchmarks/{project}/Volcano.benchmark.txt"
     script:
-        "../scripts/volcano.R"
+        "../../../scripts/visualization/volcano.R"
 
 
 rule pcatools_vis:
@@ -53,7 +53,7 @@ rule pcatools_vis:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
-        "../scripts/PCA.R"
+        "../../../scripts/visualization/pca.R"
 
 
 rule pcatools_vis_salmon:
@@ -84,7 +84,7 @@ rule pcatools_vis_salmon:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
-        "../scripts/PCA.R"
+        "../../../scripts/visualization/pca.R"
 
 
 rule pcatools_vis_kallisto:
@@ -115,4 +115,4 @@ rule pcatools_vis_kallisto:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
-        "../scripts/PCA.R"
+        "../../../scripts/visualization/pca.R"

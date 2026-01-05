@@ -20,4 +20,4 @@ rule wgcna:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("wgcna", 16384),
     script:
-        "../scripts/wgcna.R"
+        "../../../scripts/analysis/wgcna.R"

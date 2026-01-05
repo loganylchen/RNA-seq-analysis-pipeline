@@ -55,7 +55,7 @@ rule modtect_mod_merge:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     script:
-        "../scripts/modtect_merge.R"
+        "../../../scripts/analysis/modtect/merge.R"
 
 
 rule modtect_statistical_analysis:
@@ -83,7 +83,7 @@ rule modtect_statistical_analysis:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("default", 8192),
     script:
-        "../scripts/modtect_statistical_analysis.R"
+        "../../../scripts/analysis/modtect/statistical_analysis.R"
 
 
 rule modtect_annotate:
@@ -105,4 +105,4 @@ rule modtect_annotate:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("default", 8192),
     script:
-        "../scripts/modtect_annotate.R"
+        "../../../scripts/analysis/modtect/annotate.R"

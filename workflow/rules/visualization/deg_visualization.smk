@@ -79,7 +79,7 @@ rule deg_visualization:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
     script:
-        "../scripts/deg_visualization.R"
+        "../../../scripts/visualization/deg_visualization.R"
 
 
 rule deg_visualization_salmon:
@@ -121,7 +121,7 @@ rule deg_visualization_salmon:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
     script:
-        "../scripts/deg_visualization.R"
+        "../../../scripts/visualization/deg_visualization.R"
 
 
 rule deg_visualization_kallisto:
@@ -163,7 +163,7 @@ rule deg_visualization_kallisto:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
     script:
-        "../scripts/deg_visualization.R"
+        "../../../scripts/visualization/deg_visualization.R"
 
 
 rule deg_lasso_classifier:
@@ -204,7 +204,7 @@ rule deg_lasso_classifier:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
     script:
-        "../scripts/deg_lasso_classifier.R"
+        "../../../scripts/visualization/classifier/lasso.R"
 
 
 rule deg_lasso_classifier_salmon:
@@ -245,7 +245,7 @@ rule deg_lasso_classifier_salmon:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
     script:
-        "../scripts/deg_lasso_classifier.R"
+        "../../../scripts/visualization/classifier/lasso.R"
 
 
 rule deg_lasso_classifier_kallisto:
@@ -286,4 +286,4 @@ rule deg_lasso_classifier_kallisto:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
     script:
-        "../scripts/deg_lasso_classifier.R"
+        "../../../scripts/visualization/classifier/lasso.R"

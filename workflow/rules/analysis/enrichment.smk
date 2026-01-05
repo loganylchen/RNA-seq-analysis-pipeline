@@ -21,7 +21,7 @@ rule clusterprofiler_enrichment:
         mem_mb=config["resources"]["mem_mb"].get("clusterprofiler", 8192),
     priority: 10
     script:
-        "../scripts/clusterprofiler.R"
+        "../../../scripts/analysis/enrichment/clusterprofiler.R"
 
 
 rule parse_clusterprofiler_enrichment:
@@ -49,4 +49,4 @@ rule parse_clusterprofiler_enrichment:
         mem_mb=config["resources"]["mem_mb"].get("clusterprofiler", 8192),
     priority: 10
     script:
-        "../scripts/parse_clusterprofiler.R"
+        "../../../scripts/analysis/enrichment/parse_clusterprofiler.R"

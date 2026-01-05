@@ -86,7 +86,7 @@ rule splicetools:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("splicetools", 8192),
     script:
-        "../scripts/splicetools.sh"
+        "../../../scripts/utils/splicetools.sh"
 
 
 rule analyze_rmats:
@@ -110,7 +110,7 @@ rule analyze_rmats:
     log:
         "logs/{project}/analyze_rmats.log",
     script:
-        "../scripts/rmats_analysis.R"
+        "../../../scripts/analysis/splicing/rmats_analysis.R"
 
 
 rule analyze_splicetools:
@@ -133,4 +133,4 @@ rule analyze_splicetools:
     log:
         "logs/{project}/analyze_splicetools.log",
     script:
-        "../scripts/splicetools_analysis.py"
+        "../../../scripts/utils/splicetools_analysis.py"
