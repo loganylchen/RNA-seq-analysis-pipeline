@@ -8,6 +8,9 @@ log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 
+start_time <- Sys.time()
+cat("Analysis started at:", start_time, "\n")
+
 suppressPackageStartupMessages({
   library(ComplexHeatmap)
   library(circlize)
@@ -41,15 +44,76 @@ cat("=== Common DEGs ComplexHeatmap Visualization ===\n")
 cat("Project:", project, "\n")
 cat("Log2FC threshold:", log2fc_threshold, "\n")
 cat("Padj threshold:", padj_threshold, "\n")
-cat("Top N genes:", top_n, "\n\n")
+cat("Top N genes:", top_n, "\n")
+
+# Check input files exist
+cat("\n--- Checking input files ---\n")
+input_files <- list(
+  DESeq2 = deseq2_file,
+  edgeR = edger_file,
+  limma_trend = limma_trend_file,
+  limma_voom = limma_voom_file,
+  TPM = tpm_file,
+  samples = samples_file,
+  gene_name_map = gene_name_mapping
+)
+
+all_files_exist <- TRUE
+for (name in names(input_files)) {
+  file_path <- input_files[[name]]
+  exists <- file.exists(file_path)
+  status <- ifelse(exists, "OK", "MISSING")
+  cat(sprintf("  %s: %s (%s)\n", name, file_path, status))
+  if (!exists) {
+    all_files_exist <- FALSE
+  }
+}
+
+if (!all_files_exist) {
+  stop("One or more input files are missing!")
+}
+
+# Check output directories exist or can be created
+cat("\n--- Checking output directories ---\n")
+output_files <- list(
+  heatmap = heatmap_pdf,
+  gene_list = gene_list_tsv,
+  annotation_data = annotation_data
+)
+
+for (name in names(output_files)) {
+  file_path <- output_files[[name]]
+  dir_path <- dirname(file_path)
+  if (!dir.exists(dir_path)) {
+    cat(sprintf("  Creating directory: %s\n", dir_path))
+    dir.create(dir_path, recursive=TRUE, showWarnings=FALSE)
+  }
+}
+cat("  All output directories OK\n")
 
 # Function to read DEG TSV
 read_deg <- function(file, tool_name) {
-  cat("Reading", tool_name, "DEGs...\n")
+  cat("\nReading", tool_name, "DEGs...\n")
+  cat("  File:", file, "\n")
   deg_data <- read.csv(file, sep='\t', check.names=FALSE, row.names=1, comment.char='#')
+
   # Remove rows with NA padj or log2FC
+  na_count <- sum(is.na(deg_data$padj) | is.na(deg_data$log2FoldChange))
+  if (na_count > 0) {
+    cat("  Removing", na_count, "rows with NA values\n")
+  }
   deg_data <- deg_data[!is.na(deg_data$padj) & !is.na(deg_data$log2FoldChange), ]
+
   cat("  Total genes:", nrow(deg_data), "\n")
+  cat("  Columns:", paste(colnames(deg_data), collapse=", "), "\n")
+
+  # Check required columns
+  required_cols <- c("padj", "log2FoldChange")
+  missing_cols <- setdiff(required_cols, colnames(deg_data))
+  if (length(missing_cols) > 0) {
+    stop("Missing required columns: ", paste(missing_cols, collapse=", "))
+  }
+
   return(deg_data)
 }
 
@@ -100,8 +164,16 @@ if (length(common_genes) == 0) {
 
 # Read TPM matrix
 cat("\n--- Reading TPM matrix ---\n")
+cat("  File:", tpm_file, "\n")
 tpm_data <- read.csv(tpm_file, sep='\t', row.names=1, check.names=FALSE, comment.char="#")
-cat("TPM matrix dimensions:", nrow(tpm_data), "x", ncol(tpm_data), "\n")
+cat("  TPM matrix dimensions:", nrow(tpm_data), "genes x", ncol(tpm_data), "samples\n")
+cat("  Samples:", paste(colnames(tpm_data), collapse=", "), "\n")
+
+# Check for negative or zero values
+neg_values <- sum(tpm_data < 0, na.rm=TRUE)
+zero_values <- sum(tpm_data == 0, na.rm=TRUE)
+cat("  Negative values:", neg_values, "\n")
+cat("  Zero values:", zero_values, "\n")
 
 # Subset to common genes
 common_genes_in_tpm <- intersect(common_genes, rownames(tpm_data))
@@ -112,19 +184,36 @@ if (length(common_genes_in_tpm) == 0) {
 }
 
 # Select top N genes by variance (using log10(TPM+1) for variance calculation)
+cat("\n--- Selecting top genes by variance ---\n")
+cat("  Available common genes:", length(common_genes_in_tpm), "\n")
+cat("  Requested top N:", top_n, "\n")
+
 expr_matrix <- as.matrix(tpm_data[common_genes_in_tpm, , drop=FALSE])
+cat("  Extracted expression matrix:", nrow(expr_matrix), "x", ncol(expr_matrix), "\n")
+
 log10_tpm <- log10(expr_matrix + 1)
+cat("  Applied log10(TPM+1) transformation\n")
+
 gene_vars <- apply(log10_tpm, 1, var)
+cat("  Calculated variance for", length(gene_vars), "genes\n")
+cat("  Variance range:", round(min(gene_vars), 4), "-", round(max(gene_vars), 4), "\n")
+
 top_genes <- names(sort(gene_vars, decreasing=TRUE)[1:min(top_n, length(gene_vars))])
 expr_matrix <- log10_tpm[top_genes, ]
 
-cat("Using top", length(top_genes), "genes by variance\n")
-cat("Expression transformed using log10(TPM+1)\n")
+cat("  Selected top", length(top_genes), "genes by variance\n")
+cat("  Top gene variance:", round(gene_vars[top_genes[1]], 4), "\n")
+cat("  Bottom gene variance:", round(gene_vars[top_genes[length(top_genes)]], 4), "\n")
 
 # Normalize rows (genes) to Z-score
+cat("\n--- Normalizing expression matrix ---\n")
 expr_matrix <- t(scale(t(expr_matrix)))
 
-cat("Expression matrix dimensions:", nrow(expr_matrix), "x", ncol(expr_matrix), "\n")
+cat("  Applied Z-score normalization per gene\n")
+cat("  Expression matrix dimensions:", nrow(expr_matrix), "x", ncol(expr_matrix), "\n")
+cat("  Z-score range:", round(min(expr_matrix), 2), "-", round(max(expr_matrix), 2), "\n")
+cat("  Mean Z-score:", round(mean(expr_matrix), 4), "(should be ~0)\n")
+cat("  SD Z-score:", round(sd(expr_matrix), 4), "(should be ~1)\n")
 
 # Map Ensembl IDs to gene names using gene_id_to_gene_name.tsv
 cat("\n--- Mapping Ensembl IDs to gene names ---\n")
@@ -151,16 +240,43 @@ cat("Unmapped genes:", sum(!(gene_ids %in% names(gene_name_map))), "\n")
 
 # Read sample information
 cat("\n--- Reading sample information ---\n")
+cat("  File:", samples_file, "\n")
 samples_df <- read.csv(samples_file, sep='\t', comment.char="#")
-cat("Total samples:", nrow(samples_df), "\n")
+cat("  Total samples in file:", nrow(samples_df), "\n")
+cat("  Columns:", paste(colnames(samples_df), collapse=", "), "\n")
 
 # Filter to project samples
 samples_df <- samples_df[samples_df$project == project, ]
-cat("Samples in project:", nrow(samples_df), "\n")
+cat("  Samples in project:", nrow(samples_df), "\n")
 
-# Reorder columns to match sample order in count matrix
+# Check condition distribution
+condition_counts <- table(samples_df$condition)
+cat("  Condition distribution:\n")
+for (cond in names(condition_counts)) {
+  cat("    ", cond, ":", as.character(condition_counts[cond]), "samples\n")
+}
+
+# Reorder columns to match sample order in expression matrix
 sample_order <- colnames(expr_matrix)
+cat("\n  Matching samples to expression matrix...\n")
+cat("  Expression matrix samples:", length(sample_order), "\n")
+
+# Check if all samples match
+missing_in_samples <- setdiff(sample_order, samples_df$sample_name)
+missing_in_expr <- setdiff(samples_df$sample_name, sample_order)
+
+if (length(missing_in_samples) > 0) {
+  cat("  WARNING: Samples in expression matrix but not in samples file:\n")
+  cat("    ", paste(missing_in_samples, collapse=", "), "\n")
+}
+
+if (length(missing_in_expr) > 0) {
+  cat("  WARNING: Samples in samples file but not in expression matrix:\n")
+  cat("    ", paste(missing_in_expr, collapse=", "), "\n")
+}
+
 samples_df <- samples_df[match(sample_order, samples_df$sample_name), ]
+cat("  Successfully matched", sum(!is.na(samples_df$sample_name)), "samples\n")
 
 # Prepare sample annotations
 cat("\n--- Preparing sample annotations ---\n")
@@ -173,15 +289,17 @@ rownames(sample_annotations) <- samples_df$sample_name
 # Add batch if available
 if ("batch" %in% colnames(samples_df)) {
   sample_annotations$Batch <- samples_df$batch
+  cat("  Added Batch annotation\n")
 }
 
 # Add sample_type if available
 if ("sample_type" %in% colnames(samples_df)) {
   sample_annotations$SampleType <- samples_df$sample_type
+  cat("  Added SampleType annotation\n")
 }
 
-cat("Sample annotations:\n")
-print(str(sample_annotations))
+cat("  Final sample annotations:", ncol(sample_annotations), "columns\n")
+cat("  Annotation columns:", paste(colnames(sample_annotations), collapse=", "), "\n")
 
 # Prepare gene annotations from all 4 tools
 cat("\n--- Preparing gene annotations ---\n")
@@ -227,6 +345,12 @@ deseq2_ann <- get_tool_annotations(deseq2_deg, gene_ids_for_matching)
 edger_ann <- get_tool_annotations(edger_deg, gene_ids_for_matching)
 limma_trend_ann <- get_tool_annotations(limma_trend_deg, gene_ids_for_matching)
 limma_voom_ann <- get_tool_annotations(limma_voom_deg, gene_ids_for_matching)
+
+cat("  Extracted annotations for all tools\n")
+cat("  Genes with DESeq2 annotations:", sum(!is.na(deseq2_ann$log2fc)), "\n")
+cat("  Genes with edgeR annotations:", sum(!is.na(edger_ann$log2fc)), "\n")
+cat("  Genes with limma-trend annotations:", sum(!is.na(limma_trend_ann$log2fc)), "\n")
+cat("  Genes with limma-voom annotations:", sum(!is.na(limma_voom_ann$log2fc)), "\n")
 
 # Create gene annotation data frame
 gene_annotations <- data.frame(
@@ -280,6 +404,12 @@ padj_colors <- c(
 )
 
 cat("\n--- Generating ComplexHeatmap ---\n")
+cat("  Heatmap dimensions:", nrow(expr_matrix), "x", ncol(expr_matrix), "\n")
+cat("  Number of row annotations:", 8, "(log2FC + padj for 4 tools)\n")
+cat("  Number of column annotations:", ncol(sample_annotations), "\n")
+cat("  Row clustering: k-means with", min(3, nrow(expr_matrix)), "clusters\n")
+cat("  Column splitting: by condition\n")
+cat("  PDF output:", heatmap_pdf, "\n\n")
 
 # Create column annotation for samples
 col_ha <- HeatmapAnnotation(
@@ -374,9 +504,20 @@ grid::grid.text(
 
 dev.off()
 
-cat("\nHeatmap saved to:", heatmap_pdf, "\n")
-cat("Dimensions:", nrow(expr_matrix), "genes x", ncol(expr_matrix), "samples\n")
+cat("\n--- Heatmap generation complete ---\n")
+cat("  Heatmap saved to:", heatmap_pdf, "\n")
+cat("  Dimensions:", nrow(expr_matrix), "genes x", ncol(expr_matrix), "samples\n")
+cat("  File size:", round(file.info(heatmap_pdf)$size / 1024, 2), "KB\n")
+
+cat("\n--- Output files ---\n")
+cat("  Heatmap PDF:", heatmap_pdf, "\n")
+cat("  Gene list TSV:", gene_list_tsv, "\n")
+cat("  Annotation data TSV:", annotation_data, "\n")
 
 cat("\n=== Common DEGs ComplexHeatmap Visualization Complete ===\n")
+end_time <- Sys.time()
+elapsed_time <- difftime(end_time, start_time, units="secs")
+cat("Total runtime:", round(as.numeric(elapsed_time), 2), "seconds\n")
+cat("Analysis completed at:", end_time, "\n")
 
 sink()
