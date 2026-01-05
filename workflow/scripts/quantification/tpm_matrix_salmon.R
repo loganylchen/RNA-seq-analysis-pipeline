@@ -12,24 +12,28 @@ suppressPackageStartupMessages({
 })
 
 
-making_TPM_matrix <- function(salmon_files, tpm_matrix) {
+making_count_matrix <- function(fc_count_files, count_matrix) {
     df_list <- list()
-    for(f in salmon_files){
+    for(f in fc_count_files){
         sample_name <- basename(dirname(f))
         message(sample_name,':',f)
-        tmp_df <- read_tsv(f, comment = "#", progress = FALSE) %>%
-                        dplyr::select(target_id, TPM) %>%
+        tmp_df <- read_tsv(f, comment = "#", progress = FALSE) %>% 
+                        dplyr::select(Name,TPM) %>%
                         dplyr::mutate(Sample=sample_name)
         message('reading:',f)
         df_list[[sample_name]] <- tmp_df
     }
     message('merging')
-    df_merge <- data.table::rbindlist(df_list) %>%
-                tidyr::pivot_wider(id_cols=target_id, names_from=Sample, values_from=TPM)
+    df_merge <- data.table::rbindlist(df_list) %>% 
+                dplyr::mutate(TPM=as.numeric(TPM))%>%
+                rename(Geneid=Name) %>%
+                tidyr::pivot_wider(id_cols=Geneid,names_from=Sample,values_from=TPM)    
     message(head(df_merge))
-    write.table(df_merge, tpm_matrix, quote=F, sep='\t', row.names=F)
+    write.table(df_merge,count_matrix,quote=F,sep='\t',row.names=F)
 }
 
-making_TPM_matrix(unname(unlist(snakemake@input)),
+making_count_matrix(unname(unlist(snakemake@input)), 
                     snakemake@output[['tpm_matrix']]
                     )
+
+
