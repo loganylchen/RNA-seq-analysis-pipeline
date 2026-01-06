@@ -155,18 +155,18 @@ def get_qc_files():
         sample_project = samples.loc[sample, "project_id"]
         qc_files += [
             f"{sample_project}/qc/fastp/{sample}/{sample}.fastp.json",
-            # f"{sample_project}/qc/STAR/{sample}/{sample}.Log.final.out",
-            # f"{sample_project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
-            # f"{sample_project}/quantification/salmon/{sample}/",
-            # f"{sample_project}/qc/kallisto/{sample}/kallisto.log",
-            # f"{sample_project}/qc/hisat2/{sample}/{sample}.log",
-            # f"{sample_project}/qc/picard/{sample}/{sample}.alignment_summary_metrics.txt",
+            f"{sample_project}/qc/STAR/{sample}/{sample}.Log.final.out",
+            f"{sample_project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
+            f"{sample_project}/quantification/salmon/{sample}/",
+            f"{sample_project}/qc/kallisto/{sample}/kallisto.log",
+            f"{sample_project}/qc/hisat2/{sample}/{sample}.log",
+            f"{sample_project}/qc/picard/{sample}/{sample}.alignment_summary_metrics.txt",
             f"{sample_project}/qc/picard/{sample}/{sample}.rnaseq_metrics.txt",
-            # f"{sample_project}/qc/picard/{sample}/{sample}.insert_size_metrics.txt",
-            # f"{sample_project}/qc/picard/{sample}/{sample}.insert_size_histogram.pdf",
-            # f"{sample_project}/qc/picard/{sample}/{sample}.gc_bias_metrics.txt",
-            # f"{sample_project}/qc/picard/{sample}/{sample}.gc_bias_summary_metrics.txt",
-            # f"{sample_project}/qc/picard/{sample}/{sample}.gc_bias_metrics.pdf",
+            f"{sample_project}/qc/picard/{sample}/{sample}.insert_size_metrics.txt",
+            f"{sample_project}/qc/picard/{sample}/{sample}.insert_size_histogram.pdf",
+            f"{sample_project}/qc/picard/{sample}/{sample}.gc_bias_metrics.txt",
+            f"{sample_project}/qc/picard/{sample}/{sample}.gc_bias_summary_metrics.txt",
+            f"{sample_project}/qc/picard/{sample}/{sample}.gc_bias_metrics.pdf",
         ]
     return qc_files
 
