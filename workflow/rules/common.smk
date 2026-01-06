@@ -9,10 +9,6 @@ READ_STRAND_INFER = re.compile(r"SSP estimation \(fwd/rev\) = (\d+\.\d+) / (\d+\
 QUANTIFICATION_TOOLS = ["STAR_FC", "salmon", "kallisto"]
 validate(config, schema="../schemas/config.schema.yaml")
 project = config["project"]
-case_condition = config["case_condition"]
-control_condition = config["control_condition"]
-discovery_sample_type = config["discovery_sample_type"]
-
 
 samples = (
     pd.read_csv(config["samples"], sep="\t", dtype={"sample_name": str}, comment="#")
