@@ -35,7 +35,7 @@ rule assembly_merge:
         gtfs=expand(
             "{project}/assembly/stringtie/{sample}/{sample}.stringtie.gtf",
             project=project,
-            sample=discovery_samples.index.tolist(),
+            sample=samples.loc[samples["dataset_type"] == "discovery"].index.tolist(),
         ),
         ref_gtf="resources/genome.gtf",
     output:
