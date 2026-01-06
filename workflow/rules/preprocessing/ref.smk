@@ -62,6 +62,29 @@ rule filtering_genome_and_annotation:
         "../../scripts/preprocessing/reference_filtering.py"
 
 
+rule collapse_gtf:
+    input:
+        gtf="resources/genome.gtf",
+    output:
+        stranded_collapsed_gtf="resources/genome.collapsed.stranded.gtf",
+        unstranded_collapsed_gtf="resources/genome.collapsed.unstranded.gtf",
+    log:
+        "logs/ref/collapse_gtf.log",
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("collapse_gtf", 16384),
+    threads: 1
+    container:
+        (
+            "docker://btrspg/python3:20251024"
+            if config["container"].get("python3", None) is None
+            else config["container"].get("python3", None)
+        )
+    benchmark:
+        "benchmarks/collapse_gtf.benchmark.txt"
+    script:
+        "../../scripts/preprocessing/collapse_gtf.py"
+
+
 rule genome_faidx:
     input:
         "resources/genome.fasta",
