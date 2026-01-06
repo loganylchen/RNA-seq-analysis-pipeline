@@ -18,6 +18,7 @@ samples = (
 
 samples = samples.loc[samples["project_id"] == project]
 
+print(samples)
 
 validate(samples, schema="../schemas/samples.schema.yaml")
 
