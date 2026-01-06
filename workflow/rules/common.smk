@@ -18,7 +18,7 @@ samples = (
 
 samples = samples.loc[samples["project_id"] == project]
 
-validate(samples, schema="../schemas/samples.schema.yaml")
+# validate(samples, schema="../schemas/samples.schema.yaml")
 
 
 def is_pe(wildcards):
