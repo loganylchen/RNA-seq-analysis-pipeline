@@ -53,7 +53,7 @@ else
 
     # Download SRA file using fasterq-dump with gzip compression by default
 
-    fasterq-dump --threads ${threads} --split-3 --progress ${sra_id} -O ${tmp_dir}
+    fasterq-dump --threads ${threads} --split-3 --progress ${sra_id} -O ${tmp_dir} -t ${tmp_dir}/tmp
 
     # Check if files were downloaded
     if [[ ! -f "${tmp_dir}/${sra_id}_1.fastq" ]]; then
