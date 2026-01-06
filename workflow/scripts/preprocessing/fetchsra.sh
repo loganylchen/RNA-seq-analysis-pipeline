@@ -52,15 +52,15 @@ else
     mkdir -p "${tmp_dir}"
 
     # Download SRA file using fasterq-dump with gzip compression by default
-    cd "${tmp_dir}"
-    fasterq-dump --threads ${threads} --split-files --gzip --progress ${sra_id}
+
+    fasterq-dump --threads ${threads} --split-3 --progress ${sra_id} -O ${tmp_dir}
 
     # Check if files were downloaded
-    if [[ ! -f "${sra_id}_1.fastq.gz" ]]; then
+    if [[ ! -f "${tmp_dir}/${sra_id}_1.fastq" ]]; then
         echo "Warning: No paired-end files found, checking for single-end..."
-        if [[ -f "${sra_id}.fastq.gz" ]]; then
+        if [[ -f "${tmp_dir}/${sra_id}.fastq" ]]; then
             # Single-end data
-            mv "${sra_id}.fastq.gz" "${read_1}"
+            gzip -c "${tmp_dir}/${sra_id}.fastq" > "${read_1}"
             echo "Single-end data downloaded and moved to ${read_1}"
         else
             echo "Error: Failed to download SRA data!"
@@ -68,15 +68,15 @@ else
         fi
     else
         # Paired-end data
-        mv "${sra_id}_1.fastq.gz" "${read_1}"
-        if [[ -f "${sra_id}_2.fastq.gz" ]]; then
-            mv "${sra_id}_2.fastq.gz" "${read_2}"
+        gzip -c "${tmp_dir}/${sra_id}_1.fastq" > "${read_1}"
+        if [[ -f "${tmp_dir}/${sra_id}_2.fastq" ]]; then
+            gzip -c "${tmp_dir}/${sra_id}_2.fastq" > "${read_2}"
         fi
         echo "Paired-end data downloaded and moved"
     fi
 
     # Clean up SRA temp directory
-    cd -
+
     rm -rf "${tmp_dir}"
 
     echo "SRA data download completed"
