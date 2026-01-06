@@ -134,3 +134,38 @@ rule picard_gc_bias_metrics:
         "-R {input.ref} "
         "&>{log}"
 
+
+rule rnaseqc2_metrics:
+    input:
+        bam="{project}/alignment/STAR/{sample}/{sample}.bam",
+        rnaseq_qc="{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
+        stranded_gtf="resources/genome.collapsed.stranded.gtf",
+        unstranded_gtf="resources/genome.collapsed.unstranded.gtf",
+    output:
+        outdir=directory("{project}/qc/rnaseqc2/{sample}/"),
+    params:
+        sample="{sample}",
+        input_gtf=lambda wildcards, input: (
+            input.unstranded_gtf
+            if get_sequence_type(input.rnaseq_qc) == ""
+            else input.stranded_gtf
+        ),
+    container:
+        (
+            "docker://btrspg/rnaseqc:2.4.2"
+            if config["container"].get("rnaseqc", None) is None
+            else config["container"].get("rnaseqc", None)
+        )
+    threads: config["threads"].get("rnaseqc", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("rnaseqc", 8192),
+    log:
+        "logs/{project}/{sample}_rnaseqc2_metrics.log",
+    shell:
+        "rnaseqc "
+        "--sample {params.sample} "
+        "--coverage "
+        "{params.input_gtf} "
+        "{input.bam} "
+        "{output.outdir} "
+        "&>{log}"
