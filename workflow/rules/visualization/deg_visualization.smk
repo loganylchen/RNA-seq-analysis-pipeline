@@ -331,12 +331,12 @@ rule common_deg_heatmap:
 
 rule pca_visualization:
     """
-    PCA visualization using log10(TPM+1) transformed data.
+    PCA visualization using DESeq2 VST transformed count matrix.
     Performs PCA analysis on discovery samples and generates comprehensive plots
     including scree plot, pairs plot, biplot, loadings plot, and eigencorplot.
     """
     input:
-        tpm="{project}/quantification/{tool}/TPM_matrix.txt",
+        counts="{project}/quantification/{tool}/count_matrix.txt",
         samples=config["samples"],
     output:
         png="{project}/visualization/PCA_{tool}_pca.png",
@@ -346,6 +346,8 @@ rule pca_visualization:
     params:
         project=project,
         discovery_sample_type=discovery_sample_type,
+        model="~ condition",
+        count_threshold=10,
         color_by=config.get("deg_vis", {}).get("pca_color_by", "condition"),
         shape_by=config.get("deg_vis", {}).get("pca_shape_by", "sample_type"),
         removeVar=config.get("deg_vis", {}).get("pca_removeVar", 0.1),
