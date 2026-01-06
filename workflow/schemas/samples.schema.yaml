@@ -8,6 +8,10 @@ properties:
   dataset_id:
     type: string
     description: Dataset source identifier (e.g., GEO accession, SRA project ID, or custom dataset name)
+  dataset_type:
+    type: string
+    enum: ["discovery", "validation"]
+    description: Dataset usage type - whether this dataset is used for discovery or validation analysis
   project_id:
     type: string
     description: Project identifier, should be string with [A-Za-z0-9]+
@@ -33,16 +37,13 @@ properties:
     type: string
     enum: ["pe", "se"]
     description: Sequencing type: "pe" for paired-end, "se" for single-end
-  sample_type:
-    type: string
-    enum: ["discovery", "validation"]
-    description: Sample cohort type for discovery/validation analysis
   # Pattern-based columns for additional clinical information
   # Any column starting with "info_b_" will be treated as binary/categorical
   # Any column starting with "info_c_" will be treated as continuous/numerical
 required:
   - sample_name
   - project_id
+  - dataset_id
   - condition
   - seq_type
-  - sample_type
+  - dataset_type
