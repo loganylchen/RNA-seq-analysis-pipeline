@@ -1,6 +1,7 @@
 $schema: "http://json-schema.org/draft-06/schema#"
 
 description: An entry in the sample sheet defining RNA-seq samples
+type: object
 properties:
   sample_name:
     type: string
