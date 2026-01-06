@@ -11,6 +11,8 @@ rule get_fastq:
     log:
         "logs/{project}/get_{sample}.fastq.log",
     params:
+        sample="{sample}",
+        project="{project}",
         sra=get_sra,
         fq1=get_fq1,
         fq2=get_fq2,
@@ -20,4 +22,4 @@ rule get_fastq:
         mem_mb=config["resources"]["mem_mb"].get("default", 4096),
     threads: config["threads"].get("sra", 4)
     script:
-        "../../../scripts/preprocessing/fetchsra.sh"
+        "../../scripts/preprocessing/fetchsra.sh"
