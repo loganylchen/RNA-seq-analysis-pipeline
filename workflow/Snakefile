@@ -30,7 +30,7 @@ include: "rules/common.smk"
 # preprocessing
 include: "rules/preprocessing/fetchfastq.smk"
 include: "rules/preprocessing/align.smk"
-# include: "rules/preprocessing/quantification.smk"
+include: "rules/preprocessing/quantification.smk"
 # include: "rules/preprocessing/expression.smk"
 # include: "rules/preprocessing/assembly.smk"
 # include: "rules/preprocessing/transcript_splicing.smk"
