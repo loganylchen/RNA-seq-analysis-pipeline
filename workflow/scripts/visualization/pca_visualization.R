@@ -118,7 +118,7 @@ cat("  Total samples in file:", nrow(coldata), "\n")
 cat("  Columns:", paste(colnames(coldata), collapse=", "), "\n")
 
 # Filter to project samples
-coldata <- coldata[coldata$project == project, ]
+coldata <- coldata[coldata$project_id == project, ]
 cat("  Samples in project:", nrow(coldata), "\n")
 
 # Filter to discovery samples only
@@ -329,8 +329,8 @@ ploadings <- plotloadings(p, rangeRetain = 0.01, labSize = 4,
 cat("  Creating eigencorplot...\n")
 # Get metadata columns that are numeric or factor for correlation
 metavars <- colnames(coldata)
-# Remove sample_name, project, sample_type from metavars
-metavars <- setdiff(metavars, c("sample_name", "project", "sample_type"))
+# Remove sample_name, project_id, sample_type from metavars
+metavars <- setdiff(metavars, c("sample_name", "project_id", "sample_type"))
 if (length(metavars) == 0) {
   metavars <- colnames(coldata)
 }

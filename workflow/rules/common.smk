@@ -20,19 +20,7 @@ samples = (
     .sort_index()
 )
 
-samples = samples.loc[samples["project"] == project]
-case_samples = samples.loc[samples["condition"] == case_condition]
-control_samples = samples.loc[samples["condition"] == control_condition]
-discovery_samples = samples.loc[samples["sample_type"] == discovery_sample_type]
-discovery_case_samples = discovery_samples.loc[
-    discovery_samples["condition"] == case_condition
-]
-discovery_control_samples = discovery_samples.loc[
-    discovery_samples["condition"] == control_condition
-]
-# project = samples["project"].unique().tolist()
-# assert len(project) == 1, "Only one project is allowed!"
-# project = project[0]
+samples = samples.loc[samples["project_id"] == project]
 
 
 validate(samples, schema="../schemas/samples.schema.yaml")
@@ -164,7 +152,7 @@ def get_clean_data(wildcards):
 def get_qc_files():
     qc_files = []
     for sample in samples.index:
-        sample_project = samples.loc[sample, "project"]
+        sample_project = samples.loc[sample, "project_id"]
         qc_files += [
             f"{sample_project}/qc/fastp/{sample}/{sample}.fastp.json",
             # f"{sample_project}/qc/STAR/{sample}/{sample}.Log.final.out",
@@ -188,29 +176,29 @@ def get_final_output():
         "resources/star_genome",
     ]
     for sample in samples.index:
-        sample_project = samples.loc[sample, "project"]
+        sample_project = samples.loc[sample, "project_id"]
 
         final_output += [
             # f"{sample_project}/modification/modtect/{sample}/{sample}.modtect.combined.txt",
         ]
     for tool in QUANTIFICATION_TOOLS:
         final_output += [
-            f"{sample_project}/DEG/deseq2/{tool}/discovery_deg.tsv",
-            f"{sample_project}/DEG/deseq2/{tool}/validation_deg.tsv",
-            f"{sample_project}/DEG/edger/{tool}/discovery_deg.tsv",
-            f"{sample_project}/DEG/edger/{tool}/validation_deg.tsv",
-            f"{sample_project}/DEG/limma_trend/{tool}/discovery_deg.tsv",
-            f"{sample_project}/DEG/limma_trend/{tool}/validation_deg.tsv",
-            f"{sample_project}/DEG/limma_voom/{tool}/discovery_deg.tsv",
-            f"{sample_project}/DEG/limma_voom/{tool}/validation_deg.tsv",
-            f"{sample_project}/visualization/DEG_{tool}_upset.pdf",
-            f"{sample_project}/visualization/common_DEGs_{tool}_heatmap.pdf",
-            f"{sample_project}/visualization/common_DEGs_{tool}_gene_list.tsv",
-            f"{sample_project}/visualization/common_DEGs_{tool}_annotations.tsv",
-            f"{sample_project}/visualization/PCA_{tool}_pca.png",
-            f"{sample_project}/visualization/PCA_{tool}_pca.pdf",
-            f"{sample_project}/visualization/PCA_{tool}_pca_data.tsv",
-            f"{sample_project}/visualization/PCA_{tool}_variance.tsv",
+            # f"{sample_project}/DEG/deseq2/{tool}/discovery_deg.tsv",
+            # f"{sample_project}/DEG/deseq2/{tool}/validation_deg.tsv",
+            # f"{sample_project}/DEG/edger/{tool}/discovery_deg.tsv",
+            # f"{sample_project}/DEG/edger/{tool}/validation_deg.tsv",
+            # f"{sample_project}/DEG/limma_trend/{tool}/discovery_deg.tsv",
+            # f"{sample_project}/DEG/limma_trend/{tool}/validation_deg.tsv",
+            # f"{sample_project}/DEG/limma_voom/{tool}/discovery_deg.tsv",
+            # f"{sample_project}/DEG/limma_voom/{tool}/validation_deg.tsv",
+            # f"{sample_project}/visualization/DEG_{tool}_upset.pdf",
+            # f"{sample_project}/visualization/common_DEGs_{tool}_heatmap.pdf",
+            # f"{sample_project}/visualization/common_DEGs_{tool}_gene_list.tsv",
+            # f"{sample_project}/visualization/common_DEGs_{tool}_annotations.tsv",
+            # f"{sample_project}/visualization/PCA_{tool}_pca.png",
+            # f"{sample_project}/visualization/PCA_{tool}_pca.pdf",
+            # f"{sample_project}/visualization/PCA_{tool}_pca_data.tsv",
+            # f"{sample_project}/visualization/PCA_{tool}_variance.tsv",
         ]
     final_output += [
         # f"{sample_project}/visualization/Volcano_validation.pdf",

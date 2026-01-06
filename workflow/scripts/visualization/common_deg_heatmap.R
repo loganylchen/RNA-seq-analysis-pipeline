@@ -248,7 +248,7 @@ cat("  Total samples in file:", nrow(samples_df), "\n")
 cat("  Columns:", paste(colnames(samples_df), collapse=", "), "\n")
 
 # Filter to project samples
-samples_df <- samples_df[samples_df$project == project, ]
+samples_df <- samples_df[samples_df$project_id == project, ]
 cat("  Samples in project:", nrow(samples_df), "\n")
 
 # Filter to discovery samples only

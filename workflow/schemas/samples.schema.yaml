@@ -1,34 +1,48 @@
 $schema: "http://json-schema.org/draft-06/schema#"
 
-description: an entry in the sample sheet
+description: An entry in the sample sheet defining RNA-seq samples
 properties:
   sample_name:
     type: string
-    description: sample name/identifier
+    description: Unique sample name or identifier
+  dataset_id:
+    type: string
+    description: Dataset source identifier (e.g., GEO accession, SRA project ID, or custom dataset name)
+  project_id:
+    type: string
+    description: Project identifier, should be string with [A-Za-z0-9]+
   condition:
     type: string
-    description: sample condition that will be compared during differential expression analysis (e.g. a treatment, a tissue time, a disease)
-  batch:
+    description: Sample condition for differential expression analysis. For each project, only two conditions should exist (e.g., case/control, treatment/control, tumor/normal)
+  patient:
     type: string
-    description: batch identifier
+    description: Patient identifier. Multiple samples can come from the same patient
   raw_data:
     type: string
-    description: SRA ID
+    description: SRA accession ID (e.g., SRRxxxxxx). If provided, data will be downloaded from SRA
   fq1:
     type: string
-    description: read1 fastq file
+    description: Path to read1 fastq file
   fq2:
     type: string
-    description: read2 fastq file
-  project:
+    description: Path to read2 fastq file
+  batch:
     type: string
-    description: project name, should be string with [A-Za-z0-9]+
+    description: Batch identifier for batch effect correction
   seq_type:
     type: string
-    description: pe or se
+    enum: ["pe", "se"]
+    description: Sequencing type: "pe" for paired-end, "se" for single-end
+  sample_type:
+    type: string
+    enum: ["discovery", "validation"]
+    description: Sample cohort type for discovery/validation analysis
+  # Pattern-based columns for additional clinical information
+  # Any column starting with "info_b_" will be treated as binary/categorical
+  # Any column starting with "info_c_" will be treated as continuous/numerical
 required:
   - sample_name
+  - project_id
   - condition
-  # - batch
   - seq_type
-  - project
+  - sample_type
