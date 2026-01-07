@@ -30,4 +30,4 @@ rule fastp:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("fastp", 8192),
     script:
-        "../../../scripts/preprocessing/fastp.sh"
+        "../../scripts/preprocessing/fastp.sh"
