@@ -90,27 +90,7 @@ else
     
  
     download_sra_pair "${threads}" "${sra_id}" "${read_1}" "${read_2}"
-    # Check if files were downloaded
-    if [[ ! -f "${tmp_dir}/${sra_id}_1.fastq" ]]; then
-        echo "Warning: No paired-end files found, checking for single-end..."
-        if [[ -f "${tmp_dir}/${sra_id}.fastq" ]]; then
-            # Single-end data
-            gzip -c "${tmp_dir}/${sra_id}.fastq" > "${read_1}"
-            echo "Single-end data downloaded and moved to ${read_1}"
-        else
-            echo "Error: Failed to download SRA data!"
-            exit 1
-        fi
-    else
-        # Paired-end data
-        gzip -c "${tmp_dir}/${sra_id}_1.fastq" > "${read_1}"
-        if [[ -f "${tmp_dir}/${sra_id}_2.fastq" ]]; then
-            gzip -c "${tmp_dir}/${sra_id}_2.fastq" > "${read_2}"
-        fi
-        echo "Paired-end data downloaded and moved"
-    fi
-
-    # Clean up SRA temp directory
+   
 
     
 
