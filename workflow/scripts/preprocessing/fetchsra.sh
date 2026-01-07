@@ -45,13 +45,13 @@ download_sra_pair() {
     if [ ${#url_array[@]} -eq 1 ]; then
         # Single-end
         echo "Single-end data detected"
-        lftp -c "pget -n ${threads} ftp://${url_array[0]} -o ${read1}"
+        lftp -c "pget -n ${threads} https://${url_array[0]} -o ${read1}"
     elif [ ${#url_array[@]} -eq 2 ]; then
         # Paired-end
         echo "Paired-end data detected"
         # Download both in parallel using background processes
-        lftp -c "pget -n ${threads} ftp://${url_array[0]} -o ${read1}";
-        lftp -c "pget -n ${threads} ftp://${url_array[1]} -o ${read2}";
+        lftp -c "pget -n ${threads} https://${url_array[0]} -o ${read1}";
+        lftp -c "pget -n ${threads} https://${url_array[1]} -o ${read2}";
     else
         echo "Error: Unexpected number of files: ${#url_array[@]}"
         return 1
