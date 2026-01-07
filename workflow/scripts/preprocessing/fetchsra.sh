@@ -28,6 +28,42 @@ echo "Output directory: ${outdir}"
 echo "Read 1 output: ${read_1}"
 echo "Read 2 output: ${read_2}"
 
+
+download_sra_pair() {
+    threads=$1
+    srr=$2
+    read1=$3  # e.g., "sample1" -> becomes sample1.read1.fq.gz
+    read2=$4
+    
+    # Get URLs from ENA
+    response=$(curl -s "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=$srr&result=read_run&fields=fastq_ftp")
+    urls=$(echo "$response" | tail -n +2 | cut -f2)
+    
+    # Convert to array (semicolon separated)
+    IFS=';' read -r -a url_array <<< "$urls"
+    
+    if [ ${#url_array[@]} -eq 1 ]; then
+        # Single-end
+        echo "Single-end data detected"
+        lftp -c "pget -n ${threads} ftp://${url_array[0]} -o ${read1}"
+    elif [ ${#url_array[@]} -eq 2 ]; then
+        # Paired-end
+        echo "Paired-end data detected"
+        # Download both in parallel using background processes
+        lftp -c "pget -n ${threads} ftp://${url_array[0]} -o ${read1}";
+        lftp -c "pget -n ${threads} ftp://${url_array[1]} -o ${read2}";
+    else
+        echo "Error: Unexpected number of files: ${#url_array[@]}"
+        return 1
+    fi
+    
+    echo "Download complete!"
+}
+
+
+
+
+
 # Check if fastq files are provided
 if [[ -n "$fq1" && -f "$fq1" ]]; then
     echo "Fastq files provided, creating symlinks..."
@@ -47,14 +83,13 @@ else
 
     echo "Fetching SRA: ${sra_id}"
 
-    # Create temp directory for SRA download
-    tmp_dir="${outdir}/sra_tmp"
-    mkdir -p "${tmp_dir}"
+  
 
     # Download SRA file using fasterq-dump with gzip compression by default
-
-    fasterq-dump --threads ${threads} --split-3 --progress ${sra_id} -O ${tmp_dir} -t ${tmp_dir}/tmp
-
+    
+    
+ 
+    download_sra_pair "${threads}" "${sra_id}" "${read_1}" "${read_2}"
     # Check if files were downloaded
     if [[ ! -f "${tmp_dir}/${sra_id}_1.fastq" ]]; then
         echo "Warning: No paired-end files found, checking for single-end..."
@@ -77,7 +112,7 @@ else
 
     # Clean up SRA temp directory
 
-    rm -rf "${tmp_dir}"
+    
 
     echo "SRA data download completed"
 fi
