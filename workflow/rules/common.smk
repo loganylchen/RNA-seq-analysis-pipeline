@@ -211,17 +211,12 @@ def get_final_output():
         for dataset in datasets:
             final_output += [
                 f"{sample_project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
+                f"{sample_project}/DEG/edger/{tool}/{dataset}_deg.tsv",
+                f"{sample_project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
+                f"{sample_project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",
             ]
 
         final_output += [
-            # f"{sample_project}/DEG/deseq2/{tool}/discovery_deg.tsv",
-            # f"{sample_project}/DEG/deseq2/{tool}/validation_deg.tsv",
-            # f"{sample_project}/DEG/edger/{tool}/discovery_deg.tsv",
-            # f"{sample_project}/DEG/edger/{tool}/validation_deg.tsv",
-            # f"{sample_project}/DEG/limma_trend/{tool}/discovery_deg.tsv",
-            # f"{sample_project}/DEG/limma_trend/{tool}/validation_deg.tsv",
-            # f"{sample_project}/DEG/limma_voom/{tool}/discovery_deg.tsv",
-            # f"{sample_project}/DEG/limma_voom/{tool}/validation_deg.tsv",
             # f"{sample_project}/visualization/DEG_{tool}_upset.pdf",
             # f"{sample_project}/visualization/common_DEGs_{tool}_heatmap.pdf",
             # f"{sample_project}/visualization/common_DEGs_{tool}_gene_list.tsv",
