@@ -145,6 +145,35 @@ rule TPM_separate_matrix:
         "../../scripts/quantification/tpm_matrix_sep.R"
 
 
+rule count_matrix_salmon_dataset:
+    input:
+        expand(
+            "{project}/quantification/featurecounts/{sample}.txt",
+            project=project,
+            sample=samples.loc[
+                (samples["dataset_id"] == "{dataset}")
+                & (samples["project_id"] == "{project}")
+            ].index.tolist(),
+        ),
+    output:
+        count_matrix="{project}/quantification/salmon/{dataset}_count_matrix.txt",
+    log:
+        "logs/{project}/count-matrix_salmon_{dataset}.log",
+    params:
+        sample=samples.loc[
+            (samples["dataset_id"] == "{dataset}")
+            & (samples["project_id"] == "{project}")
+        ].index.tolist(),
+    container:
+        (
+            "docker://btrspg/rlan:20251110"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    script:
+        "../../scripts/quantification/count_matrix_salmon.R"
+
+
 rule count_matrix_salmon:
     input:
         expand(
@@ -189,6 +218,35 @@ rule TPM_matrix_salmon:
         )
     script:
         "../../scripts/quantification/tpm_matrix_salmon.R"
+
+
+rule count_matrix_kallisto_dataset:
+    input:
+        expand(
+            "{project}/quantification/kallisto/{sample}/abundance.tsv",
+            project=project,
+            sample=samples.loc[
+                (samples["dataset_id"] == "{dataset}")
+                & (samples["project_id"] == "{project}")
+            ].index.tolist(),
+        ),
+    output:
+        count_matrix="{project}/quantification/kallisto/{dataset}_count_matrix.txt",
+    log:
+        "logs/{project}/count-matrix_kallisto_{dataset}.log",
+    params:
+        sample=samples.loc[
+            (samples["dataset_id"] == "{dataset}")
+            & (samples["project_id"] == "{project}")
+        ].index.tolist(),
+    container:
+        (
+            "docker://btrspg/rlan:20251110"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    script:
+        "../../scripts/quantification/count_matrix_kallisto.R"
 
 
 rule count_matrix_kallisto:
