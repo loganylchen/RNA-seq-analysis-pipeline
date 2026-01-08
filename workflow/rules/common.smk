@@ -68,6 +68,15 @@ def get_control_condition(wildcards):
     return get_condition(wildcards, "control")
 
 
+def get_dataset_samples(wildcards):
+    project = wildcards.project
+    dataset = wildcards.dataset
+    dataset_samples = samples[
+        (samples["dataset_id"] == dataset) & (samples["project_id"] == project)
+    ].index.tolist()
+    return dataset_samples
+
+
 def stringtie_strand_infer(qc_file):
     strand = get_sequence_type(qc_file)
     if strand == "FWD":
