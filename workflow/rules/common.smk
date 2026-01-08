@@ -18,7 +18,7 @@ samples = (
 
 samples = samples.loc[samples["project_id"] == project]
 datasets = samples["dataset_id"].unique().tolist()
-print(datasets)
+
 # validate(samples, schema="../schemas/samples.schema.yaml")
 
 
