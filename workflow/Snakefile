@@ -40,7 +40,7 @@ include: "rules/preprocessing/transcriptome_compare.smk"
 include: "rules/preprocessing/ref.smk"
 # include: "rules/preprocessing/modification.smk"
 # analysis
-# include: "rules/analysis/deg/deseq2.smk"
+include: "rules/analysis/deg/deseq2.smk"
 # include: "rules/analysis/deg/edger.smk"
 # include: "rules/analysis/deg/limma.smk"
 # include: "rules/analysis/enrichment.smk"
