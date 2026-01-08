@@ -55,8 +55,8 @@ rule count_matrix_star_dataset:
             "{project}/quantification/featurecounts/{sample}.txt",
             project=project,
             sample=samples.loc[
-                (samples["dataset_id"] == wildcards.dataset)
-                & (samples["project_id"] == wildcards.project)
+                (samples["dataset_id"] == "{dataset}")
+                & (samples["project_id"] == "{project}")
             ].index.tolist(),
         ),
     output:
@@ -66,8 +66,8 @@ rule count_matrix_star_dataset:
         "logs/{project}/count-matrix_star2fc_{dataset}.log",
     params:
         samples=samples.loc[
-            (samples["dataset_id"] == wildcards.dataset)
-            & (samples["project_id"] == wildcards.project)
+            (samples["dataset_id"] == "{dataset}")
+            & (samples["project_id"] == "{project}")
         ].index.tolist(),
     container:
         (

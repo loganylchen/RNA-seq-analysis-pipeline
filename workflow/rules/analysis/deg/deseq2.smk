@@ -9,10 +9,10 @@ rule deseq2:
         deg_tsv="{project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
     params:
         samples=config["samples"],
-        dataset=wildcards.dataset,
-        project=wildcards.project,
-        case_condition=config["datasets"][wildcards.dataset]["case_condition"],
-        control_condition=config["datasets"][wildcards.dataset]["control_condition"],
+        dataset="{dataset}",
+        project="{project}",
+        case_condition=config["datasets"]["{dataset}"]["case_condition"],
+        control_condition=config["datasets"]["{dataset}"]["control_condition"],
     container:
         (
             "docker://btrspg/deseq2:1.46.0"
