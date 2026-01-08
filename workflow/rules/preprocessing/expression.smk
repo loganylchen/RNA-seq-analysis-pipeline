@@ -49,6 +49,36 @@ rule count_matrix_star_FC:
         "../../scripts/quantification/count_matrix.R"
 
 
+rule count_matrix_star_dataset:
+    input:
+        expand(
+            "{project}/quantification/featurecounts/{sample}.txt",
+            project=project,
+            sample=samples.loc[
+                (samples["dataset_id"] == wildcards.dataset)
+                & (samples["project_id"] == wildcards.project)
+            ].index.tolist(),
+        ),
+    output:
+        count_matrix="{project}/quantification/STAR_FC/{dataset}_count_matrix.txt",
+        puree_count_matrix="{project}/quantification/STAR_FC/{dataset}_count_matrix_PUREE.txt",
+    log:
+        "logs/{project}/count-matrix_star2fc_{dataset}.log",
+    params:
+        samples=samples.loc[
+            (samples["dataset_id"] == wildcards.dataset)
+            & (samples["project_id"] == wildcards.project)
+        ].index.tolist(),
+    container:
+        (
+            "docker://btrspg/rlan:20251110"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    script:
+        "../../scripts/quantification/count_matrix.R"
+
+
 rule TPM_matrix_star_FC_RAW:
     input:
         expand(

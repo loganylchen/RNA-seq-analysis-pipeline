@@ -1,22 +1,18 @@
 # tool could be STAR_FC or salmon or kallisto
 rule deseq2:
     input:
-        counts="{project}/quantification/{tool}/count_matrix.txt",
+        counts="{project}/quantification/{tool}/{dataset}_count_matrix.txt",
     output:
-        discovery_count_rds="{project}/DEG/deseq2/{tool}/discovery_count_matrix.rds",
-        validation_count_rds="{project}/DEG/deseq2/{tool}/validation_count_matrix.rds",
-        discovery_vst_rds="{project}/DEG/deseq2/{tool}/discovery_vst_matrix.rds",
-        validation_vst_rds="{project}/DEG/deseq2/{tool}/validation_vst_matrix.rds",
-        discovery_deg_rds="{project}/DEG/deseq2/{tool}/discovery_deg.rds",
-        validation_deg_rds="{project}/DEG/deseq2/{tool}/validation_deg.rds",
-        discovery_deg_tsv="{project}/DEG/deseq2/{tool}/discovery_deg.tsv",
-        validation_deg_tsv="{project}/DEG/deseq2/{tool}/validation_deg.tsv",
+        count_rds="{project}/DEG/deseq2/{tool}/{dataset}_count_matrix.rds",
+        vst_rds="{project}/DEG/deseq2/{tool}/{dataset}_vst_matrix.rds",
+        deg_rds="{project}/DEG/deseq2/{tool}/{dataset}_deg.rds",
+        deg_tsv="{project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
     params:
         samples=config["samples"],
-        project=project,
-        case_condition=case_condition,
-        control_condition=control_condition,
-        discovery_sample_type=discovery_sample_type,
+        dataset=wildcards.dataset,
+        project=wildcards.project,
+        case_condition=config["datasets"][wildcards.dataset]["case_condition"],
+        control_condition=config["datasets"][wildcards.dataset]["control_condition"],
     container:
         (
             "docker://btrspg/deseq2:1.46.0"
@@ -24,10 +20,10 @@ rule deseq2:
             else config["container"].get("deseq2", None)
         )
     log:
-        "logs/{project}/deseq2_{tool}.log",
+        "logs/{project}/deseq2_{tool}_{dataset}.log",
     threads: config["threads"].get("deseq2", 4)
     benchmark:
-        "benchmarks/{project}/deseq2_{tool}.benchmark.txt"
+        "benchmarks/{project}/deseq2_{tool}_{dataset}.benchmark.txt"
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:

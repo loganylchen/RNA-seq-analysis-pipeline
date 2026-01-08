@@ -17,7 +17,7 @@ samples = (
 )
 
 samples = samples.loc[samples["project_id"] == project]
-
+datasets = samples["dataset_id"].unique().tolist()
 # validate(samples, schema="../schemas/samples.schema.yaml")
 
 
@@ -178,6 +178,11 @@ def get_final_output():
             # f"{sample_project}/modification/modtect/{sample}/{sample}.modtect.combined.txt",
         ]
     for tool in QUANTIFICATION_TOOLS:
+        for dataset in datasets:
+            final_output += [
+                f"{sample_project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
+            ]
+
         final_output += [
             # f"{sample_project}/DEG/deseq2/{tool}/discovery_deg.tsv",
             # f"{sample_project}/DEG/deseq2/{tool}/validation_deg.tsv",
