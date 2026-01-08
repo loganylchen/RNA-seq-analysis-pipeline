@@ -9,8 +9,8 @@ rule limma_trend:
         samples=config["samples"],
         dataset="{dataset}",
         project="{project}",
-        case_condition=config["datasets"]["{dataset}"]["case_condition"],
-        control_condition=config["datasets"]["{dataset}"]["control_condition"],
+        case_condition=get_case_condition,
+        control_condition=get_control_condition,
     container:
         (
             "docker://btrspg/limma:3.62.1"
@@ -38,8 +38,8 @@ rule limma_voom:
         samples=config["samples"],
         dataset="{dataset}",
         project="{project}",
-        case_condition=config["datasets"]["{dataset}"]["case_condition"],
-        control_condition=config["datasets"]["{dataset}"]["control_condition"],
+        case_condition=get_case_condition,
+        control_condition=get_control_condition,
     container:
         (
             "docker://btrspg/limma:3.62.1"
