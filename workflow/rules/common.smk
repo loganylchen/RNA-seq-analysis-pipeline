@@ -222,6 +222,7 @@ def get_final_output():
         # f"{sample_project}/DEG/classifier/lasso_signature_genes.tsv",
         # f"{sample_project}/DEG/classifier/lasso_coefficients.tsv",
         # f"{sample_project}/DEG/classifier/lasso_roc_curve.png",
+        f"{sample_project}/qc/qc_summary.tsv",
     ]
 
     return final_output + get_qc_files()
