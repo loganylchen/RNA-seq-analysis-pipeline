@@ -11,8 +11,8 @@ rule deseq2:
         samples=config["samples"],
         dataset="{dataset}",
         project="{project}",
-        case_condition=config["datasets"]["{dataset}"]["case_condition"],
-        control_condition=config["datasets"]["{dataset}"]["control_condition"],
+        case_condition=get_case_condition,
+        control_condition=get_control_condition,
     container:
         (
             "docker://btrspg/deseq2:1.46.0"

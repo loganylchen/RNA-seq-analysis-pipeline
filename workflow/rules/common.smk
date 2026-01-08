@@ -48,6 +48,26 @@ def get_sequence_type(qc_file):
     return "UNSTRAND"
 
 
+def get_condition(wildcards, condition_type):
+    dataset = wildcards.dataset
+    if condition_type == "case":
+        return config["datasets"][dataset]["case_condition"]
+    elif condition_type == "control":
+        return config["datasets"][dataset]["control_condition"]
+    else:
+        raise ValueError(
+            f"condition_type should be 'case' or 'control', got {condition_type}"
+        )
+
+
+def get_case_condition(wildcards):
+    return get_condition(wildcards, "case")
+
+
+def get_control_condition(wildcards):
+    return get_condition(wildcards, "control")
+
+
 def stringtie_strand_infer(qc_file):
     strand = get_sequence_type(qc_file)
     if strand == "FWD":
