@@ -54,13 +54,15 @@ rule count_matrix_star_dataset:
         expand(
             "{project}/quantification/featurecounts/{sample}.txt",
             project=project,
-            sample=get_dataset_samples,
+            sample=samples.index.tolist(),
         ),
     output:
         count_matrix="{project}/quantification/STAR_FC/{dataset}_count_matrix.txt",
         puree_count_matrix="{project}/quantification/STAR_FC/{dataset}_count_matrix_PUREE.txt",
     log:
         "logs/{project}/count-matrix_star2fc_{dataset}.log",
+    params:
+        samples=get_dataset_samples,
     container:
         (
             "docker://btrspg/rlan:20251110"
@@ -122,12 +124,14 @@ rule count_matrix_salmon_dataset:
         expand(
             "{project}/quantification/featurecounts/{sample}.txt",
             project=project,
-            sample=get_dataset_samples,
+            sample=samples.index.tolist(),
         ),
     output:
         count_matrix="{project}/quantification/salmon/{dataset}_count_matrix.txt",
     log:
         "logs/{project}/count-matrix_salmon_{dataset}.log",
+    params:
+        samples=get_dataset_samples,
     container:
         (
             "docker://btrspg/rlan:20251110"
@@ -189,12 +193,14 @@ rule count_matrix_kallisto_dataset:
         expand(
             "{project}/quantification/kallisto/{sample}/abundance.tsv",
             project=project,
-            sample=get_dataset_samples,
+            sample=samples.index.tolist(),
         ),
     output:
         count_matrix="{project}/quantification/kallisto/{dataset}_count_matrix.txt",
     log:
         "logs/{project}/count-matrix_kallisto_{dataset}.log",
+    params:
+        samples=get_dataset_samples,
     container:
         (
             "docker://btrspg/rlan:20251110"
