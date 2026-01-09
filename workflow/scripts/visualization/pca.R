@@ -188,7 +188,7 @@ draw_pca <- function(dds,coldata,output_pdf,output_png,output_clinical_info){
         # loadings parameters
             lab=rownames(coldata),
             showLoadings = FALSE,
-            colby = 'plot_condition', 
+            colby = 'condition', shape='strandness', 
             hline = 0, vline = 0,
             gridlines.major = FALSE, gridlines.minor = FALSE,
             pointSize = 5,

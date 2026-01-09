@@ -6,40 +6,10 @@ sink(log, type="message")
 
 suppressPackageStartupMessages({
     library(dplyr)
-    library(tidyr)
-    library(data.table)
+    library(sva)
     library(readr)
 })
 
 
-making_count_matrix <- function(fc_count_files,samples, count_matrix,puree_count_matrix) {
-    df_list <- list()
-    for(f in fc_count_files){
-        sample_name <- gsub('.txt','',basename(f))
-        message(sample_name,':',f)
-        if(! sample_name %in% samples){
-            next
-        }
-        tmp_df <- read_tsv(f, comment = "#", progress = FALSE) %>% 
-                        dplyr::mutate(Sample=sample_name)
-        colnames(tmp_df) <- c('Geneid','Chr','Start','End','Strand','Length','Count','Sample')
-        message('reading:',f)
-        df_list[[sample_name]] <- tmp_df
-    }
-    message('merging')
-    df_merge <- data.table::rbindlist(df_list) %>% 
-                dplyr::mutate(Count=as.integer(Count))%>%
-                tidyr::pivot_wider(id_cols=Geneid,names_from=Sample,values_from=Count)
-    message(head(df_merge))
-    write.table(df_merge,count_matrix,quote=F,sep='\t',row.names=F)
-    write.table(t(df_merge),puree_count_matrix,quote=F,sep='\t',row.names=T,col.names=F)
-
-}
-
-making_count_matrix(unname(unlist(snakemake@input)), 
-                    unname(unlist(snakemake@params$samples)),
-                    snakemake@output[['count_matrix']],
-                    snakemake@output[['puree_count_matrix']]
-                    )
-
+batch_vars <- unname(unlist(snakemake@params[["batch_vars"]]))
 
