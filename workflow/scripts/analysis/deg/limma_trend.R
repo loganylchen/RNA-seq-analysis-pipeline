@@ -52,7 +52,7 @@ limma_trend_pipeline <- function(design_string,count,coldata,
     cat("Condition levels:", levels(condition), "\n")
     cat("Condition counts:\n")
     print(table(condition))
-
+    patient <- factor(coldata[['patient']])
     cts <- count[,rownames(coldata)]
     cat("Count matrix dimensions:", nrow(cts), "genes x", ncol(cts), "samples\n")
     cat("Count matrix summary:\n")
