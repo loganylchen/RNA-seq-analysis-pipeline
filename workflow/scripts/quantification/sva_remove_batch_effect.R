@@ -17,8 +17,8 @@ coldata_file <- snakemake@input[["coldata"]]
 output_counts <- snakemake@output[["counts"]]
 
 
-count_matrix <-read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
-coldata <- read.table(coldata_file, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t')
+count_matrix <-read.table(counts, header=TRUE, row.names=TRUE, check.names=FALSE,sep='\t')
+coldata <- read.table(coldata_file, header=TRUE, row.names=TRUE, check.names=FALSE,sep='\t')
 batch_info <- as.matrix(coldata[, batch_vars, drop=FALSE])
 
 if(length(batch_vars) == 0) {
