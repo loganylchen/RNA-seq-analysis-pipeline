@@ -253,6 +253,7 @@ def get_final_output():
                 f"{sample_project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/visualization/{tool}_{dataset}_pca.png",
+                f"{sample_project}/visualization/{tool}_{dataset}_pca_batchcorrected.png",
             ]
 
         final_output += [
