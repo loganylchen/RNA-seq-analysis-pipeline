@@ -44,14 +44,33 @@ if(length(batch_vars) == 0) {
 
 
 batch <- as.numeric(as.factor(batch_info[,1]))
+cat("Using batch variable:", batch_vars[1], "\n")
+cat("Batch levels:", unique(batch), "\n")
+cat("Condition levels:", unique(condition), "\n")
+
 adjusted_counts <- ComBat_seq(count_matrix, batch=batch, group=condition)
 cat("Batch effect removal completed.\n")
-cat("First few rows of adjusted count matrix:\n")
-print(class(adjusted_counts))
+cat("Adjusted counts class:", class(adjusted_counts), "\n")
+cat("Adjusted counts dimensions:", dim(adjusted_counts), "\n")
+
+# Handle different return types from ComBat_seq
 if (is.list(adjusted_counts)) {
-  cat("Names of the list elements:\n")
-  print(names(adjusted_counts))
-  print(length(adjusted_counts))
+  cat("ComBat_seq returned a list. Extracting counts matrix...\n")
+  cat("List elements:", names(adjusted_counts), "\n")
+  # Extract the counts matrix from the list
+  if ("counts" %in% names(adjusted_counts)) {
+    adjusted_counts <- adjusted_counts$counts
+  } else {
+    # If it's a simple list structure, convert to data frame
+    adjusted_counts <- as.data.frame(adjusted_counts)
+  }
 }
 
-write.table(as.integer(as.data.frame(adjusted_counts)), file=output_counts, sep="\t", quote=FALSE, col.names=NA)
+cat("Final adjusted counts dimensions:", dim(adjusted_counts), "\n")
+cat("First few rows of adjusted count matrix:\n")
+print(head(adjusted_counts))
+
+# Round to integers and write
+adjusted_counts <- round(adjusted_counts)
+adjusted_counts[adjusted_counts < 0] <- 0  # Ensure no negative counts
+write.table(adjusted_counts, file=output_counts, sep="\t", quote=FALSE, col.names=NA)
