@@ -318,5 +318,4 @@ rule puree_purity:
     shell:
         "PUREE --data_path {input.counts} "
  		"--output {output.purity} "
- 		"--gene_identifier_type {params.gene_id_type} "
-        "&>{log}"
+ 		"--gene_identifier_type {params.gene_id_type} >{log} "
