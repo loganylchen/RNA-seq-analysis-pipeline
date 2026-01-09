@@ -55,23 +55,13 @@ strandness_df <- data.frame(
     strandness = unlist(strandness)
 )
 
-coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t')%>%
+coldata <- read.table(samples, header=TRUE, row.names=1, check.names=FALSE,sep='\t')%>%
             dplyr::mutate(strandness= strandness_df$strandness[match(rownames(.),strandness_df$sample_name)]) %>%
             dplyr::mutate(plot_condition=paste0(strandness,':',condition))
 
-tryCatch(
-    {
-      cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
-    },
-    error = function(e) {
-        message("Error reading counts file: ", e$message)
-        cts <- read.table(counts, header=TRUE, check.names=FALSE,sep='\t')
-    },
-    finally = {
-        print(head(cts))
-        message("Finished attempting to read counts file.")
-    }
-)
+message('Reading counts matrix...')
+cts <- read.table(counts, header=TRUE, row.names=1, check.names=FALSE,sep='\t')
+   
 
 
 target_samples <- intersect(rownames(coldata), colnames(cts))
