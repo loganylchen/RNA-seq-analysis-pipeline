@@ -52,12 +52,16 @@ limma_trend_pipeline <- function(design_string,count,coldata,
     cat("Condition levels:", levels(condition), "\n")
     cat("Condition counts:\n")
     print(table(condition))
-    iif(design_string == ""){
-        design <- as.formula("~ condition")
+
+    # Build design formula with optional covariates
+    if(design_string == ""){
+        formula_str <- "~ condition"
     }else{
-        confactor<-factor(coldata[[design_string]])
-        design <- as.formula(paste0("~0+",confactor,"+confactor+confactor:", condition))
+        # design_string contains the covariate column name
+        formula_str <- paste0("~", design_string, " + condition")
     }
+    cat("Design formula:", formula_str, "\n")
+
     cts <- count[,rownames(coldata)]
     cat("Count matrix dimensions:", nrow(cts), "genes x", ncol(cts), "samples\n")
     cat("Count matrix summary:\n")
@@ -66,7 +70,10 @@ limma_trend_pipeline <- function(design_string,count,coldata,
     y <- DGEList(counts = cts)
     cat("Original DGEList:", nrow(y), "genes\n")
 
-    design <- model.matrix(design)
+    # Add condition to coldata for model.matrix to use
+    coldata$condition <- condition
+
+    design <- model.matrix(as.formula(formula_str), data=coldata)
     cat("Design matrix:\n")
     print(design)
 
