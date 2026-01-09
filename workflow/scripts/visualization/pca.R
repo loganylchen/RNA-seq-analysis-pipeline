@@ -76,6 +76,94 @@ identify_columns <- function(df) {
 }
 
 
+get_pcatools_correlation <- function(pcaobj, 
+                                     components = NULL,
+                                     metavars = NULL,
+                                     corFUN = "pearson",
+                                     corUSE = "pairwise.complete.obs",
+                                     corMultipleTestCorrection = "BH") {
+  
+  # Use the code from PCAtools directly
+  data <- pcaobj$rotated
+  metadata <- pcaobj$metadata
+  
+  # If components not specified, use all
+  if (is.null(components)) {
+    components <- paste0("PC", 1:min(10, ncol(data)))  # PCAtools default
+  }
+  
+  # If metavars not specified, use all
+  if (is.null(metavars)) {
+    metavars <- colnames(metadata)
+  }
+  
+  # Convert data to matrix
+  xvals <- data.matrix(data[, which(colnames(data) %in% components), drop = FALSE])
+  yvals <- metadata[, which(colnames(metadata) %in% metavars), drop = FALSE]
+  
+  # Convert character columns to numeric (same as PCAtools)
+  character_columns <- !unlist(lapply(yvals, is.numeric))
+  character_columns <- names(which(character_columns))
+  
+  for (c in character_columns) {
+    yvals[, c] <- as.numeric(as.factor(yvals[, c]))
+  }
+  
+  yvals <- data.matrix(yvals)
+  
+  # Create correlation table
+  corvals <- cor(xvals, yvals, use = corUSE, method = corFUN)
+  
+  # Calculate p-values
+  N <- ncol(xvals) * ncol(yvals)
+  pvals <- data.frame(
+    pval = numeric(N),
+    i = numeric(N),
+    j = numeric(N)
+  )
+  
+  k <- 0
+  for (i in seq_len(ncol(xvals))) {
+    for (j in seq_len(ncol(yvals))) { 
+      k <- k + 1
+      pvals[k, 'pval'] <- cor.test(
+        xvals[, i],
+        yvals[, j],
+        use = corUSE,
+        method = corFUN
+      )$p.value
+      pvals[k, "i"] <- colnames(xvals)[i]
+      pvals[k, "j"] <- colnames(yvals)[j]
+    }
+  }
+  
+  # Adjust for multiple testing
+  if (corMultipleTestCorrection != "none") {
+    pvals$pval <- p.adjust(pvals$pval, method = corMultipleTestCorrection)
+  }
+  
+  # Reshape p-values to match correlation matrix
+  pvals_wide <- reshape2::dcast(pvals, i ~ j, value.var = "pval")
+  rownames(pvals_wide) <- pvals_wide$i
+  pvals_wide$i <- NULL
+  pvals_wide <- pvals_wide[match(rownames(corvals), rownames(pvals_wide)), ]
+  pvals_wide <- pvals_wide[colnames(corvals)]
+  
+  # Convert to matrix
+  pvals_matrix <- as.matrix(pvals_wide)
+  
+  return(list(
+    correlation_matrix = corvals,
+    p_value_matrix = pvals_matrix,
+    xvals = xvals,
+    yvals = yvals
+  ))
+}
+
+
+
+
+
 draw_pca <- function(dds,coldata,output_pdf,output_png,output_clinical_info){
     message('DESeq')
     dds<- DESeq(dds)
@@ -127,6 +215,8 @@ draw_pca <- function(dds,coldata,output_pdf,output_png,output_clinical_info){
     message(metavars)
     message('DESeq:epigencorplot')
     write.table(as.data.frame(colData(dds))[ ,metavars],file=output_clinical_info,sep='\t',quote=FALSE,row.names=TRUE,col.names=TRUE)
+    cor_data <- get_pcatools_correlation(p,metavars=metavars,components = getComponents(p, 1:10),corFUN = 'pearson',corUSE = 'pairwise.complete.obs')
+    print(cor_data)
     peigencor <- eigencorplot(p,
     components = getComponents(p, 1:10),
     metavars = metavars,
@@ -144,7 +234,8 @@ draw_pca <- function(dds,coldata,output_pdf,output_png,output_clinical_info){
     signifSymbols = c('****', '***', '**', '*', ''),
     signifCutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, 1),
     returnPlot = FALSE)
-
+    cor_matrix <- attributes(peigencor)$cor_matrix
+    print(cor_matrix)
 
 
     top_row <- plot_grid(pscree, ppairs, pbiplot,
