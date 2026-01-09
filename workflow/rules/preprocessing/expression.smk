@@ -281,7 +281,7 @@ rule puree_preprocessing:
     input:
         counts="{project}/quantification/STAR_FC/{dataset}_count_matrix_corrected.txt",
     output:
-        counts="{project}/quantification/STAR_FC/{dataset}_count_matrix_corrected_PUREE.txt",
+        counts="{project}/quantification/STAR_FC/{dataset}_count_matrix_corrected_PUREE.tsv",
     log:
         "logs/{project}/puree_preprocessing_{dataset}.log",
     container:
@@ -299,7 +299,7 @@ rule puree_preprocessing:
 
 rule puree_purity:
     input:
-        counts="{project}/quantification/STAR_FC/{dataset}_count_matrix_corrected_PUREE.txt",
+        counts="{project}/quantification/STAR_FC/{dataset}_count_matrix_corrected_PUREE.tsv",
     output:
         purity="{project}/purity/PUREE_{dataset}_tumor_purities.tsv",
     log:
