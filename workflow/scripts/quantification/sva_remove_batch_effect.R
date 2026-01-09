@@ -44,14 +44,14 @@ if(length(batch_vars) == 0) {
 
 
 batch <- as.numeric(as.factor(batch_info[,1]))
-adjusted <- ComBat_seq(count_matrix, batch=batch, group=condition)
+adjusted_counts <- ComBat_seq(count_matrix, batch=batch, group=condition)
 cat("Batch effect removal completed.\n")
 cat("First few rows of adjusted count matrix:\n")
-print(class(adjusted))
-if (is.list(adjusted)) {
+print(class(adjusted_counts))
+if (is.list(adjusted_counts)) {
   cat("Names of the list elements:\n")
-  print(names(adjusted))
-  print(length(adjusted))
+  print(names(adjusted_counts))
+  print(length(adjusted_counts))
 }
 
-write.table(as.integer(as.data.frame(adjusted)), file=output_counts, sep="\t", quote=FALSE, col.names=NA)
+write.table(as.integer(as.data.frame(adjusted_counts)), file=output_counts, sep="\t", quote=FALSE, col.names=NA)
