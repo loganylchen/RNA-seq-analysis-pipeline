@@ -317,5 +317,5 @@ rule puree_purity:
         mem_mb=config["resources"]["mem_mb"].get("puree", 8192),
     shell:
         "PUREE --data_path {input.counts} "
- 		"--output {output.purity} "
- 		"--gene_identifier_type {params.gene_id_type} >{log} "
+        "--output {output.purity} "
+        "--gene_identifier_type {params.gene_id_type} >{log} "
