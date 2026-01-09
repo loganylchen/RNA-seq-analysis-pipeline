@@ -34,6 +34,7 @@ batch_info <- as.matrix(coldata[, batch_vars, drop=FALSE])
 cat("Batch information dimensions: ", dim(batch_info)[1], " samples and ", dim(batch_info)[2], " batch variables.\n")
 cat("First few rows of batch information:\n")
 print(head(batch_info))
+condition<-coldata$condition
 
 if(length(batch_vars) == 0) {
     write.table(count_matrix, file=output_counts, sep="\t", quote=FALSE, col.names=NA)
@@ -46,5 +47,5 @@ if(ncol(batch_info) == 1) {
 } else {
     batch <- apply(batch_info, 1, function(x) paste(x, collapse="_"))
 }
-adjusted <- ComBat_seq(count_matrix, batch=batch, group=NULL)
+adjusted <- ComBat_seq(count_matrix, batch=batch, group=condition)
 write.table(as.integer(adjusted), file=output_counts, sep="\t", quote=FALSE, col.names=NA)
