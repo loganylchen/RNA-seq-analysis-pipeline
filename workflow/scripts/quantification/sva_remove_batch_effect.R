@@ -50,4 +50,4 @@ cat("First few rows of adjusted count matrix:\n")
 print(adjusted[1:5,1:5])
 
 
-write.table(as.integer(adjusted), file=output_counts, sep="\t", quote=FALSE, col.names=NA)
+write.table(as.integer(as.data.frame(adjusted)), file=output_counts, sep="\t", quote=FALSE, col.names=NA)
