@@ -245,8 +245,9 @@ def get_final_output():
         final_output += [
             # f"{sample_project}/modification/modtect/{sample}/{sample}.modtect.combined.txt",
         ]
-    for tool in QUANTIFICATION_TOOLS:
-        for dataset in datasets:
+    for dataset in datasets:
+        for tool in QUANTIFICATION_TOOLS:
+
             final_output += [
                 f"{sample_project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/DEG/edger/{tool}/{dataset}_deg.tsv",
@@ -256,16 +257,7 @@ def get_final_output():
                 f"{sample_project}/visualization/{tool}_{dataset}_pca_batchcorrected.png",
             ]
 
-        final_output += [
-            # f"{sample_project}/visualization/DEG_{tool}_upset.pdf",
-            # f"{sample_project}/visualization/common_DEGs_{tool}_heatmap.pdf",
-            # f"{sample_project}/visualization/common_DEGs_{tool}_gene_list.tsv",
-            # f"{sample_project}/visualization/common_DEGs_{tool}_annotations.tsv",
-            # f"{sample_project}/visualization/PCA_{tool}_pca.png",
-            # f"{sample_project}/visualization/PCA_{tool}_pca.pdf",
-            # f"{sample_project}/visualization/PCA_{tool}_pca_data.tsv",
-            # f"{sample_project}/visualization/PCA_{tool}_variance.tsv",
-        ]
+        final_output += [f"{sample_project}/purity/PUREE_{dataset}_tumor_purities.tsv"]
     final_output += [
         # f"{sample_project}/visualization/Volcano_validation.pdf",
         # f"{sample_project}/visualization/pca.png",

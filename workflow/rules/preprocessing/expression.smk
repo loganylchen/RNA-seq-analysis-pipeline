@@ -277,18 +277,16 @@ rule sva_remove_batch_effect:
         "../../scripts/quantification/sva_remove_batch_effect.R"
 
 
-rule puree_tumor_purity:
+rule puree_preprocessing:
     input:
-        expression="{project}/quantification/{tool}/{dataset}_count_matrix_PUREE.txt",
+        counts="{project}/quantification/STAR_FC/{dataset}_count_matrix_corrected.txt",
     output:
-        purities="{project}/quantification/{tool}/{dataset}_tumor_purities.tsv",
+        counts="{project}/quantification/STAR_FC/{dataset}_count_matrix_corrected_PUREE.txt",
     log:
-        "logs/{project}/puree_{tool}_{dataset}.log",
-    params:
-        gene_id_type=config.get("puree", {}).get("gene_id_type", "ENSEMBL"),
+        "logs/{project}/puree_preprocessing_{dataset}.log",
     container:
         (
-            "docker://btrspg/puree:1.0.0"
+            "docker://btrspg/puree:5a0a702535e79e37b071971063e72fa697540818"
             if config["container"].get("puree", None) is None
             else config["container"].get("puree", None)
         )
@@ -296,4 +294,29 @@ rule puree_tumor_purity:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("puree", 8192),
     script:
-        "../../scripts/quantification/puree_purity.py"
+        "../../scripts/quantification/puree_preprocessing.py"
+
+
+rule puree_purity:
+    input:
+        counts="{project}/quantification/STAR_FC/{dataset}_count_matrix_corrected_PUREE.txt",
+    output:
+        purity="{project}/purity/PUREE_{dataset}_tumor_purities.tsv",
+    log:
+        "logs/{project}/puree_purity_{dataset}.log",
+    params:
+        gene_id_type=config.get("puree", {}).get("gene_id_type", "ENSEMBL"),
+    container:
+        (
+            "docker://btrspg/puree:5a0a702535e79e37b071971063e72fa697540818"
+            if config["container"].get("puree", None) is None
+            else config["container"].get("puree", None)
+        )
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("puree", 8192),
+    shell:
+        "PUREE --data_path {input.counts} "
+ 		"--output {output.purity} "
+ 		"--gene_identifier_type {params.gene_id_type} "
+        "&>{log}"
