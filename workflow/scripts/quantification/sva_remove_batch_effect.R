@@ -36,7 +36,10 @@ cat("First few rows of batch information:\n")
 print(head(batch_info))
 
 if(length(batch_vars) == 0) {
-    write.table(count_matrix, file=output_counts, sep="\t", quote=FALSE, col.names=NA)}
+    write.table(count_matrix, file=output_counts, sep="\t", quote=FALSE, col.names=NA)
+    cat("No batch variables provided. Count matrix written without changes.\n")
+    quit(status=0)
+}
 
 if(ncol(batch_info) == 1) {
     batch <- as.factor(batch_info[,1])
