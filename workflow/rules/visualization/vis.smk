@@ -154,7 +154,7 @@ rule pcatools_vis_database:
 
 rule pcatools_vis_database_batchcorrected:
     input:
-        counts="{project}/quantification/{tool}/{dataset}_count_matrix_batchcorrected.txt",
+        counts="{project}/quantification/{tool}/{dataset}_count_matrix_corrected.txt",
         qc_files=expand(
             "{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
             project=project,
