@@ -116,3 +116,36 @@ rule pcatools_vis_kallisto:
         mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
         "../../../scripts/visualization/pca.R"
+
+
+rule pcatools_vis_database:
+    input:
+        counts="{project}/quantification/{tool}/{database}_count_matrix.txt",
+        qc_files=expand(
+            "{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
+            project=project,
+            sample=config["samples"].index.tolist(),
+        ),
+    output:
+        pdf="{project}/visualization/{tool}_{database}_pca.pdf",
+        png="{project}/visualization/{tool}_{database}_pca.png",
+    params:
+        samples=config["samples"],
+        strandness=lambda w, input: get_samples_strandness(input.qc_files),
+        dataset=get_dataset,
+        project=get_project,
+        case_condition=get_case_condition,
+        control_condition=get_control_condition,
+    container:
+        (
+            "docker://btrspg/rlan:20251027"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    log:
+        "logs/{project}/{tool}_{database}_vis_pca.log",
+    threads: config["threads"].get("deseq2", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
+    script:
+        "../../../scripts/visualization/pca.R"

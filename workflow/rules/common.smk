@@ -48,6 +48,14 @@ def get_sequence_type(qc_file):
     return "UNSTRAND"
 
 
+def get_samples_strandness(qc_files):
+    strandness_dict = {}
+    for qc_file in qc_files:
+        sample_name = qc_file.split("/")[-2]
+        strandness_dict[sample_name] = get_sequence_type(qc_file)
+    return strandness_dict
+
+
 def get_condition(wildcards, condition_type):
     dataset = wildcards.dataset
     if condition_type == "case":
@@ -226,6 +234,7 @@ def get_final_output():
                 f"{sample_project}/DEG/edger/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",
+                f"{sample_project}/visualization/{tool}_{database}_pca.png",
             ]
 
         final_output += [

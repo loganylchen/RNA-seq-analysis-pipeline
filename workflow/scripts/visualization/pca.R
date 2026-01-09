@@ -24,37 +24,34 @@ if (snakemake@threads > 1) {
 project<- snakemake@params[["project"]]
 case_condition<-snakemake@params[["case_condition"]]
 control_condition<-snakemake@params[["control_condition"]]
-discovery_sample_type<-snakemake@params[["discovery_sample_type"]]
 samples<-snakemake@params[["samples"]]
 counts <- snakemake@input[["counts"]]
-
+strandness <- snakemake@params[["strandness"]]
+database <-snakemake@params[["database"]]
+        
 
 # output
 output_pdf=snakemake@output[['pdf']]
 output_png=snakemake@output[['png']]
-output_discovery_pdf=snakemake@output[['discovery_pdf']]
-output_discovery_png=snakemake@output[['discovery_png']]
-output_validation_pdf=snakemake@output[['validation_pdf']]
-output_validation_png=snakemake@output[['validation_png']]
+
+strandness_df <- data.frame(
+    sample_name = names(strandness),
+    strandness = unlist(strandness)
+)
 
 coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t')%>% 
-            dplyr::mutate(plot_condition=paste0(sample_type,':',condition)) 
+            dplyr::mutate(strandness= strandness_df$strandness[match(rownames(.),strandness_df$sample_name)]) %>%
+            dplyr::mutate(plot_condition=paste0(strandness,':',condition)) 
+
 cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
-cts <- cts[,rownames(coldata)]
+
+target_samples <- intersect(rownames(coldata), colnames(cts))
+coldata <- coldata[target_samples, ]
+cts <- cts[,target_samples]
+
+
 dds <- DESeqDataSetFromMatrix(countData=cts,
                               colData=coldata,
-                              design=~sample_type+condition)
-coldata_discovery <- coldata %>% 
-                    dplyr::filter(sample_type==discovery_sample_type)
-coldata_validation <- coldata %>% 
-                    dplyr::filter(sample_type != discovery_sample_type)
-cts_discovery <- cts[,rownames(coldata_discovery)]
-cts_validation <- cts[,rownames(coldata_validation)]
-dds_discovery <- DESeqDataSetFromMatrix(countData=cts_discovery,
-                              colData=coldata_discovery,
-                              design=~condition)
-dds_validation <- DESeqDataSetFromMatrix(countData=cts_validation,
-                              colData=coldata_validation,
                               design=~condition)
 
 draw_pca <- function(dds,coldata,output_pdf,output_png){
@@ -73,7 +70,7 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
             triangle = TRUE, trianglelabSize = 12,
             hline = 0, vline = 0,
             pointSize = 0.8, gridlines.major = FALSE, gridlines.minor = FALSE,
-            colby = 'plot_condition',
+            colby = 'condition',  shape='strandness',
             title = '', plotaxes = FALSE,
             returnPlot = FALSE)
     message('DESeq:biplot')
@@ -157,7 +154,3 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
 }
 message('ALL')
 draw_pca(dds,coldata,output_pdf,output_png)
-message('DISCOVERY')
-draw_pca(dds_discovery,coldata_discovery,output_discovery_pdf,output_discovery_png)
-message('VALIDATION')
-draw_pca(dds_validation,coldata_validation,output_validation_pdf,output_validation_png)
