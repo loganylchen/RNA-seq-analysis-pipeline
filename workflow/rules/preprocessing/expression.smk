@@ -286,9 +286,9 @@ rule puree_preprocessing:
         "logs/{project}/puree_preprocessing_{dataset}.log",
     container:
         (
-            "docker://btrspg/puree:5a0a702535e79e37b071971063e72fa697540818"
-            if config["container"].get("puree", None) is None
-            else config["container"].get("puree", None)
+            "docker://btrspg/python3:20260106"
+            if config["container"].get("python3", None) is None
+            else config["container"].get("python3", None)
         )
     threads: config["threads"].get("default", 1)
     resources:
