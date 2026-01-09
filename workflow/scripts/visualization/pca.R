@@ -60,13 +60,15 @@ coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names
             dplyr::mutate(plot_condition=paste0(strandness,':',condition))
 
 tryCatch(
-    {cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')},
+    {
+      cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
+    },
     error = function(e) {
         message("Error reading counts file: ", e$message)
         cts <- read.table(counts, header=TRUE, check.names=FALSE,sep='\t')
     },
     finally = {
-        
+        print(head(cts))
         message("Finished attempting to read counts file.")
     }
 )

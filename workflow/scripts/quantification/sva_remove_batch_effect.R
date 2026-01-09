@@ -47,7 +47,7 @@ batch <- as.numeric(as.factor(batch_info[,1]))
 adjusted <- ComBat_seq(count_matrix, batch=batch, group=condition)
 cat("Batch effect removal completed.\n")
 cat("First few rows of adjusted count matrix:\n")
-print(head(adjusted))
+print(adjusted[1:5,1:5])
 
 
 write.table(as.integer(adjusted), file=output_counts, sep="\t", quote=FALSE, col.names=NA)
