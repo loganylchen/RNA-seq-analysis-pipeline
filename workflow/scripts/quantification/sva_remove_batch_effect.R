@@ -26,8 +26,14 @@ cat("First few rows of count matrix:\n")
 print(head(count_matrix))
 cat("Preparing batch information...\n")
 coldata <- read.table(coldata_file, header=TRUE, check.names=FALSE,sep='\t')
+cat("Coldata dimensions: ", dim(coldata)[1], " samples and ", dim(coldata)[2], " variables.\n")
+cat("First few rows of coldata:\n")
+print(head(coldata))
 cat("Removing batch effects using ComBat-seq...\n")
 batch_info <- as.matrix(coldata[, batch_vars, drop=FALSE])
+cat("Batch information dimensions: ", dim(batch_info)[1], " samples and ", dim(batch_info)[2], " batch variables.\n")
+cat("First few rows of batch information:\n")
+print(head(batch_info))
 
 if(length(batch_vars) == 0) {
     write.table(count_matrix, file=output_counts, sep="\t", quote=FALSE, col.names=NA)}
