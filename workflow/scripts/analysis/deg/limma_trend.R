@@ -116,7 +116,7 @@ limma_trend_pipeline <- function(design_string,count,coldata,
 }
 
 cat("Processing  set...\n")
-res <- limma_trend_pipeline(cts, coldata,
+res <- limma_trend_pipeline(design_string, cts, coldata,
                                 condition_col= "condition",
                                 case_condition,
                                 control_condition)

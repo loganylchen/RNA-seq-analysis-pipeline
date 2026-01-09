@@ -120,7 +120,7 @@ limma_voom_pipeline <- function(design_string,count,coldata,
 }
 
 cat("Processing set...\n")
-res <- limma_voom_pipeline(cts, coldata,
+res <- limma_voom_pipeline(design_string,cts, coldata,
                                 condition_col= "condition",
                                 case_condition,
                                 control_condition)
