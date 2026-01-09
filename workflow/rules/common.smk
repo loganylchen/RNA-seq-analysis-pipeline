@@ -60,6 +60,18 @@ def get_condition(wildcards, condition_type):
         )
 
 
+def get_wildcards_element(wildcards, element):
+    return getattr(wildcards, element)
+
+
+def get_dataset(wildcards):
+    return get_wildcards_element(wildcards, "dataset")
+
+
+def get_project(wildcards):
+    return get_wildcards_element(wildcards, "project")
+
+
 def get_case_condition(wildcards):
     return get_condition(wildcards, "case")
 

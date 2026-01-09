@@ -7,8 +7,8 @@ rule edger:
         deg_tsv="{project}/DEG/edger/{tool}/{dataset}_deg.tsv",
     params:
         samples=config["samples"],
-        dataset="{dataset}",
-        project="{project}",
+        dataset=get_dataset,
+        project=get_project,
         case_condition=get_case_condition,
         control_condition=get_control_condition,
     container:

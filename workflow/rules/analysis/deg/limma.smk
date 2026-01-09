@@ -7,8 +7,8 @@ rule limma_trend:
         deg_tsv="{project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
     params:
         samples=config["samples"],
-        dataset="{dataset}",
-        project="{project}",
+        dataset=get_dataset,
+        project=get_project,
         case_condition=get_case_condition,
         control_condition=get_control_condition,
     container:
@@ -36,8 +36,8 @@ rule limma_voom:
         deg_tsv="{project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",
     params:
         samples=config["samples"],
-        dataset="{dataset}",
-        project="{project}",
+        dataset=get_dataset,
+        project=get_project,
         case_condition=get_case_condition,
         control_condition=get_control_condition,
     container:

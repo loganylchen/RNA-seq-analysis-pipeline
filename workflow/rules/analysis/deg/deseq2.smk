@@ -9,8 +9,8 @@ rule deseq2:
         deg_tsv="{project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
     params:
         samples=config["samples"],
-        dataset="{dataset}",
-        project="{project}",
+        dataset=get_dataset,
+        project=get_project,
         case_condition=get_case_condition,
         control_condition=get_control_condition,
     container:
