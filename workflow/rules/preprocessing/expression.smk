@@ -255,3 +255,22 @@ rule TPM_matrix_kallisto:
         )
     script:
         "../../scripts/quantification/tpm_matrix_kallisto.R"
+
+
+# rule sva_remove_batch_effect:
+#     input:
+#         count_matrix="{project}/quantification/{tool}/{dataset}_count_matrix.txt",
+#     output:
+#         corrected_matrix="{project}/quantification/{tool}/{dataset}_corrected_count_matrix.txt",
+#     log:
+#         "logs/{project}/sva_remove_batch_effect_{tool}_{dataset}.log",
+#     params:
+#         samples=get_dataset_samples,
+#     container:
+#         (
+#             "docker://btrspg/rlan:20251110"
+#             if config["container"].get("r", None) is None
+#             else config["container"].get("r", None)
+#         )
+#     script:
+#         "../../scripts/quantification/sva_remove_batch_effect.R"

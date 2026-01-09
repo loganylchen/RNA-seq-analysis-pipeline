@@ -12,11 +12,14 @@ suppressPackageStartupMessages({
 })
 
 
-making_count_matrix <- function(fc_count_files, count_matrix,puree_count_matrix) {
+making_count_matrix <- function(fc_count_files,samples, count_matrix,puree_count_matrix) {
     df_list <- list()
     for(f in fc_count_files){
         sample_name <- gsub('.txt','',basename(f))
         message(sample_name,':',f)
+        if(! sample_name %in% samples){
+            next
+        }
         tmp_df <- read_tsv(f, comment = "#", progress = FALSE) %>% 
                         dplyr::mutate(Sample=sample_name)
         colnames(tmp_df) <- c('Geneid','Chr','Start','End','Strand','Length','Count','Sample')
@@ -34,6 +37,7 @@ making_count_matrix <- function(fc_count_files, count_matrix,puree_count_matrix)
 }
 
 making_count_matrix(unname(unlist(snakemake@input)), 
+                    unname(unlist(snakemake@params$samples)),
                     snakemake@output[['count_matrix']],
                     snakemake@output[['puree_count_matrix']]
                     )
