@@ -269,9 +269,9 @@ rule sva_remove_batch_effect:
         batch_vars=get_batch_vars,
     container:
         (
-            "docker://btrspg/rlan:20251110"
-            if config["container"].get("r", None) is None
-            else config["container"].get("r", None)
+            "docker://btrspg/sva:3.54.0"
+            if config["container"].get("sva", None) is None
+            else config["container"].get("sva", None)
         )
     script:
         "../../scripts/quantification/sva_remove_batch_effect.R"

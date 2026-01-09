@@ -1,7 +1,7 @@
 # tool could be STAR_FC or salmon or kallisto
 rule limma_trend:
     input:
-        counts="{project}/quantification/{tool}/{dataset}_count_matrix.txt",
+        counts="{project}/quantification/{tool}/{dataset}_count_matrix_corrected.txt",
     output:
         deg_rds="{project}/DEG/limma_trend/{tool}/{dataset}_deg.rds",
         deg_tsv="{project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
@@ -31,7 +31,7 @@ rule limma_trend:
 
 rule limma_voom:
     input:
-        counts="{project}/quantification/{tool}/{dataset}_count_matrix.txt",
+        counts="{project}/quantification/{tool}/{dataset}_count_matrix_corrected.txt",
     output:
         deg_rds="{project}/DEG/limma_voom/{tool}/{dataset}_deg.rds",
         deg_tsv="{project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",

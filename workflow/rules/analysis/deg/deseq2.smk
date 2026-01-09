@@ -1,7 +1,7 @@
 # tool could be STAR_FC or salmon or kallisto
 rule deseq2:
     input:
-        counts="{project}/quantification/{tool}/{dataset}_count_matrix.txt",
+        counts="{project}/quantification/{tool}/{dataset}_count_matrix_corrected.txt",
     output:
         count_rds="{project}/DEG/deseq2/{tool}/{dataset}_count_matrix.rds",
         vst_rds="{project}/DEG/deseq2/{tool}/{dataset}_vst_matrix.rds",
