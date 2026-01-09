@@ -143,7 +143,7 @@ rule pcatools_vis_database:
             else config["container"].get("r", None)
         )
     log:
-        "logs/{project}/{tool}_{database}_vis_pca.log",
+        "logs/{project}/{tool}_{dataset}_vis_pca.log",
     threads: config["threads"].get("deseq2", 4)
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
