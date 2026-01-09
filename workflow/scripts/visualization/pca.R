@@ -59,7 +59,18 @@ coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names
             dplyr::mutate(strandness= strandness_df$strandness[match(rownames(.),strandness_df$sample_name)]) %>%
             dplyr::mutate(plot_condition=paste0(strandness,':',condition))
 
-cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
+tryCatch(
+    {cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')},
+    error = function(e) {
+        message("Error reading counts file: ", e$message)
+        cts <- read.table(counts, header=TRUE, check.names=FALSE,sep='\t')
+    },
+    finally = {
+        
+        message("Finished attempting to read counts file.")
+    }
+)
+
 
 target_samples <- intersect(rownames(coldata), colnames(cts))
 coldata <- coldata[target_samples, ]
