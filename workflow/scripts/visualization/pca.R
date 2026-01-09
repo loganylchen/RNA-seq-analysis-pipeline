@@ -54,6 +54,28 @@ dds <- DESeqDataSetFromMatrix(countData=cts,
                               colData=coldata,
                               design=~condition)
 
+
+
+
+identify_columns <- function(df) {
+  n_rows <- nrow(df)
+  selected_cols <- character()
+  
+  for (col_name in names(df)) {
+    # Skip non-numeric or non-factor columns if needed
+    unique_vals <- unique(df[[col_name]])
+    n_unique <- length(unique_vals)
+    
+    # Check conditions
+    if (n_unique > 1 && n_unique < n_rows) {
+      selected_cols <- c(selected_cols, col_name)
+    }
+  }
+  
+  return(selected_cols)
+}
+
+
 draw_pca <- function(dds,coldata,output_pdf,output_png){
     message('DESeq')
     dds<- DESeq(dds)
@@ -101,10 +123,7 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
     returnPlot = FALSE)
 
 
-    metavars<- c('condition','plot_condition')
-    if(length(unique(colData(dds)$sample_type))>1){
-        metavars <- c(metavars,'sample_type')
-    }
+    metavars<- identify_columns(as.data.frame(colData(dds)))
     message(metavars)
     message('DESeq:epigencorplot')
     peigencor <- eigencorplot(p,
