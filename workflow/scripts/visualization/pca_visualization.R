@@ -44,10 +44,27 @@ counts_file <- snakemake@input[["counts"]]
 samples_file <- snakemake@input[["samples"]]
 
 # Output files
+output_dir <- dirname(snakemake@output[["png"]])
+# Extract prefix from the PNG file path (remove extension)
+png_path <- snakemake@output[["png"]]
+output_prefix <- tools::file_path_sans_ext(basename(png_path))
+
 pca_png <- snakemake@output[["png"]]
 pca_pdf <- snakemake@output[["pdf"]]
 pca_data <- snakemake@output[["pca_data"]]
 pca_variance <- snakemake@output[["variance"]]
+
+# Define individual subplot paths
+scree_png <- file.path(output_dir, paste0(output_prefix, "_scree.png"))
+scree_pdf <- file.path(output_dir, paste0(output_prefix, "_scree.pdf"))
+pairs_png <- file.path(output_dir, paste0(output_prefix, "_pairs.png"))
+pairs_pdf <- file.path(output_dir, paste0(output_prefix, "_pairs.pdf"))
+biplot_png <- file.path(output_dir, paste0(output_prefix, "_biplot.png"))
+biplot_pdf <- file.path(output_dir, paste0(output_prefix, "_biplot.pdf"))
+loadings_png <- file.path(output_dir, paste0(output_prefix, "_loadings.png"))
+loadings_pdf <- file.path(output_dir, paste0(output_prefix, "_loadings.pdf"))
+eigencor_png <- file.path(output_dir, paste0(output_prefix, "_eigencor.png"))
+eigencor_pdf <- file.path(output_dir, paste0(output_prefix, "_eigencor.pdf"))
 
 cat("=== PCA Visualization using DESeq2 VST ===\n")
 cat("Project:", project, "\n")
@@ -384,20 +401,74 @@ final_plot <- plot_grid(top_row, bottom_row, ncol = 1,
 
 # Save plots
 cat("\n--- Saving plots ---\n")
-cat("  Saving PNG:", pca_png, "\n")
-ggsave(pca_png, final_plot, width=20, height=15)
-cat("  Saved PNG:", round(file.info(pca_png)$size / 1024, 2), "KB\n")
 
-cat("  Saving PDF:", pca_pdf, "\n")
+# Save individual subplots
+cat("  Saving individual subplots...\n")
+
+# Scree plot
+cat("    Saving scree plot...\n")
+ggsave(scree_png, pscree, width=10, height=8)
+ggsave(scree_pdf, pscree, width=10, height=8)
+cat("      Saved:", scree_png, "\n")
+
+# Pairs plot
+cat("    Saving pairs plot...\n")
+ggsave(pairs_png, ppairs, width=12, height=10)
+ggsave(pairs_pdf, ppairs, width=12, height=10)
+cat("      Saved:", pairs_png, "\n")
+
+# Biplot
+cat("    Saving biplot...\n")
+ggsave(biplot_png, pbiplot, width=10, height=8)
+ggsave(biplot_pdf, pbiplot, width=10, height=8)
+cat("      Saved:", biplot_png, "\n")
+
+# Loadings plot
+cat("    Saving loadings plot...\n")
+ggsave(loadings_png, ploadings, width=10, height=8)
+ggsave(loadings_pdf, ploadings, width=10, height=8)
+cat("      Saved:", loadings_png, "\n")
+
+# Eigencorplot
+cat("    Saving eigencorplot...\n")
+ggsave(eigencor_png, as.grob(peigencor), width=12, height=10)
+ggsave(eigencor_pdf, as.grob(peigencor), width=12, height=10)
+cat("      Saved:", eigencor_png, "\n")
+
+# Save combined plot
+cat("  Saving combined PCA plot...\n")
+cat("    Saving PNG:", pca_png, "\n")
+ggsave(pca_png, final_plot, width=20, height=15)
+cat("    Saved PNG:", round(file.info(pca_png)$size / 1024, 2), "KB\n")
+
+cat("    Saving PDF:", pca_pdf, "\n")
 ggsave(pca_pdf, final_plot, width=20, height=15)
-cat("  Saved PDF:", round(file.info(pca_pdf)$size / 1024, 2), "KB\n")
+cat("    Saved PDF:", round(file.info(pca_pdf)$size / 1024, 2), "KB\n")
 
 cat("\n=== PCA Visualization Complete ===\n")
 cat("Output files:\n")
-cat("  PNG:", pca_png, "\n")
-cat("  PDF:", pca_pdf, "\n")
-cat("  PCA data:", pca_data, "\n")
-cat("  Variance data:", pca_variance, "\n")
+cat("  Combined PCA plot:\n")
+cat("    PNG:", pca_png, "\n")
+cat("    PDF:", pca_pdf, "\n")
+cat("  Individual subplots:\n")
+cat("    Scree plot:\n")
+cat("      PNG:", scree_png, "\n")
+cat("      PDF:", scree_pdf, "\n")
+cat("    Pairs plot:\n")
+cat("      PNG:", pairs_png, "\n")
+cat("      PDF:", pairs_pdf, "\n")
+cat("    Biplot:\n")
+cat("      PNG:", biplot_png, "\n")
+cat("      PDF:", biplot_pdf, "\n")
+cat("    Loadings plot:\n")
+cat("      PNG:", loadings_png, "\n")
+cat("      PDF:", loadings_pdf, "\n")
+cat("    Eigencorplot:\n")
+cat("      PNG:", eigencor_png, "\n")
+cat("      PDF:", eigencor_pdf, "\n")
+cat("  Data files:\n")
+cat("    PCA data:", pca_data, "\n")
+cat("    Variance data:", pca_variance, "\n")
 
 end_time <- Sys.time()
 elapsed_time <- difftime(end_time, start_time, units="secs")
