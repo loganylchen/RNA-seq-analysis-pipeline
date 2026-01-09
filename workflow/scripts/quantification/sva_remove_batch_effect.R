@@ -51,6 +51,7 @@ print(class(adjusted))
 if (is.list(adjusted)) {
   cat("Names of the list elements:\n")
   print(names(adjusted))
+  print(length(adjusted))
 }
 
 write.table(as.integer(as.data.frame(adjusted)), file=output_counts, sep="\t", quote=FALSE, col.names=NA)
