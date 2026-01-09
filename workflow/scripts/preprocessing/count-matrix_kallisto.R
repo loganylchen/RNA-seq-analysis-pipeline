@@ -12,11 +12,14 @@ suppressPackageStartupMessages({
 })
 
 
-making_count_matrix <- function(fc_count_files, count_matrix) {
+making_count_matrix <- function(fc_count_files, samples,count_matrix) {
     df_list <- list()
     for(f in fc_count_files){
         sample_name <- basename(dirname(f))
         message(sample_name,':',f)
+        if(!(sample_name %in% samples)){
+            next
+        }
         tmp_df <- read_tsv(f, comment = "#", progress = FALSE) %>% 
                         dplyr::mutate(Sample=sample_name)
         message('reading:',f)
@@ -31,7 +34,8 @@ making_count_matrix <- function(fc_count_files, count_matrix) {
     write.table(df_merge,count_matrix,quote=F,sep='\t',row.names=F)
 }
 
-making_count_matrix(unname(unlist(snakemake@input)), 
+making_count_matrix(unname(unlist(snakemake@input)),
+                    unname(unlist(snakemake@params[['samples']])),
                     snakemake@output[['count_matrix']]
                     )
 
