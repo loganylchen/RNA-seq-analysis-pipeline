@@ -15,27 +15,24 @@ suppressPackageStartupMessages({
 # Read inputs
 cat("Reading parameters and inputs...\n")
 project<- snakemake@params[["project"]]
+dataset<- snakemake@params[["dataset"]]
 case_condition<-snakemake@params[["case_condition"]]
 control_condition<-snakemake@params[["control_condition"]]
-discovery_sample_type<-snakemake@params[["discovery_sample_type"]]
 samples<-snakemake@params[["samples"]]
 counts <- snakemake@input[["counts"]]
 
 # Read outputs
 
-discovery_deg_rds<-snakemake@output[["discovery_deg_rds"]]
-validation_deg_rds<-snakemake@output[["validation_deg_rds"]]
-discovery_deg_tsv<-snakemake@output[["discovery_deg_tsv"]]
-validation_deg_tsv<-snakemake@output[["validation_deg_tsv"]]
+deg_rds<-snakemake@output[["deg_rds"]]
+deg_tsv<-snakemake@output[["deg_tsv"]]
 
 
 cat("=== edgeR Analysis ===\n")
 cat("Preparing coldata...\n")
-coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t',)
-coldata_discovery <- coldata %>% 
-                    dplyr::filter(sample_type==discovery_sample_type)
-coldata_validation <- coldata %>% 
-                    dplyr::filter(sample_type != discovery_sample_type)
+cat("Preparing coldata...\n")
+coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t',) %>%
+            dplyr::filter(dataset_id==dataset)
+
 
 cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
 
@@ -119,21 +116,20 @@ edger_pipeline <- function(count,coldata,
     return(res_df)
 }
 
-cat("Processing discovery set...\n")
-res_discovery <- edger_pipeline(cts, coldata_discovery,
+cat("Processing  set...\n")
+res <- edger_pipeline(cts, coldata,
                                 condition_col= "condition",
                                 case_condition,
                                 control_condition)
-saveRDS(res_discovery, discovery_deg_rds)
-write.table(res_discovery, discovery_deg_tsv, sep='\t', quote=FALSE, row.names=FALSE)
 
-cat("Processing validation set...\n")
-res_validation <- edger_pipeline(cts, coldata_validation,
-                                condition_col= "condition",
-                                case_condition,
-                                control_condition)
-saveRDS(res_validation, validation_deg_rds)
-write.table(res_validation, validation_deg_tsv, sep='\t', quote=FALSE, row.names=FALSE)
+cat("Saving  results...\n")
+
+
+                      
+saveRDS(res, deg_rds)
+write.table(res, deg_tsv, sep='\t', quote=FALSE, row.names=FALSE)
+
+
 
 
 
