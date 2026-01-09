@@ -46,6 +46,11 @@ deseq2_pipeline <- function(design_string,count,
                             case_condition, 
                             control_condition, parallel=TRUE){
     cts <- count[,rownames(coldata)]
+    if(design_string == ""){
+        design_string <- "~ condition"
+    }else{
+        design_string <- paste0("~",design_string,"+ condition")
+    }
     design <- as.formula(design_string)
     dds <- DESeqDataSetFromMatrix(countData=cts,
                               colData=coldata,
