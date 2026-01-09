@@ -122,7 +122,7 @@ rule TPM_matrix_star_FC:
 rule count_matrix_salmon_dataset:
     input:
         expand(
-            "{project}/quantification/featurecounts/{sample}.txt",
+            "{project}/quantification/salmon/{sample}/quant.sf",
             project=project,
             sample=samples.index.tolist(),
         ),
