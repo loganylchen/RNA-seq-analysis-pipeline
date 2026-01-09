@@ -148,4 +148,4 @@ rule pcatools_vis_database:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
-        "../../../scripts/visualization/pca.R"
+        "../../scripts/visualization/pca.R"
