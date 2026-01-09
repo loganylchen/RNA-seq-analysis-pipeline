@@ -23,6 +23,7 @@ dataset<- snakemake@params[["dataset"]]
 case_condition<-snakemake@params[["case_condition"]]
 control_condition<-snakemake@params[["control_condition"]]
 samples<-snakemake@params[["samples"]]
+design_string<-snakemake@params[["design"]]
 counts <- snakemake@input[["counts"]]
 
 
@@ -41,12 +42,13 @@ coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names
 
 cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
 
-deseq2_pipeline <- function(count,coldata,
+deseq2_pipeline <- function(design_string,count,
+                            coldata,
                             condition,
                             case_condition, 
                             control_condition, parallel=TRUE){
     cts <- count[,rownames(coldata)]
-    design <- as.formula(paste("~",condition))
+    design <- as.formula(design_string)
     dds <- DESeqDataSetFromMatrix(countData=cts,
                               colData=coldata,
                               design=design)
@@ -68,7 +70,8 @@ save_list <- function(deseq2_list,
 }
 
 cat("Running DESeq2 for discovery dataset...\n")
-deseq2_data <- deseq2_pipeline(count=cts,
+deseq2_data <- deseq2_pipeline(design_string=design_string,
+                                count=cts,
                                    coldata=coldata,
                                    condition="condition",
                                    case_condition=case_condition,

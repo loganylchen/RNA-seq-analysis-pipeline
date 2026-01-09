@@ -9,6 +9,7 @@ rule limma_trend:
         samples=config["samples"],
         dataset=get_dataset,
         project=get_project,
+        design=get_edeger_design,
         case_condition=get_case_condition,
         control_condition=get_control_condition,
     container:
@@ -38,6 +39,7 @@ rule limma_voom:
         samples=config["samples"],
         dataset=get_dataset,
         project=get_project,
+        design=get_edeger_design,
         case_condition=get_case_condition,
         control_condition=get_control_condition,
     container:

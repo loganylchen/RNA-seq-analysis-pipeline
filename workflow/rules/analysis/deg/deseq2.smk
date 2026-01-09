@@ -11,6 +11,7 @@ rule deseq2:
         samples=config["samples"],
         dataset=get_dataset,
         project=get_project,
+        design=get_deseq2_design,
         case_condition=get_case_condition,
         control_condition=get_control_condition,
     container:

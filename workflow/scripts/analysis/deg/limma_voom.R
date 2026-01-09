@@ -21,7 +21,7 @@ case_condition<-snakemake@params[["case_condition"]]
 control_condition<-snakemake@params[["control_condition"]]
 samples<-snakemake@params[["samples"]]
 counts <- snakemake@input[["counts"]]
-
+design_string<-snakemake@params[["design"]]
 # Read outputs
 
 
@@ -38,7 +38,7 @@ coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names
 
 cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
 
-limma_voom_pipeline <- function(count,coldata,
+limma_voom_pipeline <- function(design_string,count,coldata,
                             condition_col,
                             case_condition,
                             control_condition, parallel=TRUE) {
@@ -48,21 +48,20 @@ limma_voom_pipeline <- function(count,coldata,
     cat("  Columns available:", paste(names(coldata), collapse=", "), "\n")
     cat("Conditions:", case_condition, "vs", control_condition, "\n")
 
-    group <- factor(coldata[[condition_col]], levels=c(control_condition, case_condition))
-    cat("Group levels:", levels(group), "\n")
-    cat("Group counts:\n")
-    print(table(group))
+    condition <- factor(coldata[[condition_col]], levels=c(control_condition, case_condition))
+    cat("Condition levels:", levels(condition), "\n")
+    cat("Condition counts:\n")
+    print(table(condition)) 
 
     cts <- count[,rownames(coldata)]
     cat("Count matrix dimensions:", nrow(cts), "genes x", ncol(cts), "samples\n")
     cat("Count matrix summary:\n")
     print(summary(as.vector(cts)))
 
-    y <- DGEList(counts = cts,
-                group = group)
+    y <- DGEList(counts = cts)
     cat("Original DGEList:", nrow(y), "genes\n")
 
-    design <- model.matrix(~ group)
+    design <- model.matrix(as.formula(design_string))
     cat("Design matrix:\n")
     print(design)
 

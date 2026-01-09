@@ -97,6 +97,18 @@ def get_dataset_samples(wildcards):
     return dataset_samples
 
 
+def get_deseq2_design(wildcards):
+    dataset = wildcards.dataset
+    design = config["datasets"][dataset]["deseq2_design_formula"]
+    return design
+
+
+def get_edeger_design(wildcards):
+    dataset = wildcards.dataset
+    design = config["datasets"][dataset]["edeger_design_formula"]
+    return design
+
+
 def stringtie_strand_infer(qc_file):
     strand = get_sequence_type(qc_file)
     if strand == "FWD":
