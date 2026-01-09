@@ -275,3 +275,25 @@ rule sva_remove_batch_effect:
         )
     script:
         "../../scripts/quantification/sva_remove_batch_effect.R"
+
+
+rule puree_tumor_purity:
+    input:
+        expression="{project}/quantification/{tool}/{dataset}_count_matrix_PUREE.txt",
+    output:
+        purities="{project}/quantification/{tool}/{dataset}_tumor_purities.tsv",
+    log:
+        "logs/{project}/puree_{tool}_{dataset}.log",
+    params:
+        gene_id_type=config.get("puree", {}).get("gene_id_type", "ENSEMBL"),
+    container:
+        (
+            "docker://btrspg/puree:1.0.0"
+            if config["container"].get("puree", None) is None
+            else config["container"].get("puree", None)
+        )
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("puree", 8192),
+    script:
+        "../../scripts/quantification/puree_purity.py"

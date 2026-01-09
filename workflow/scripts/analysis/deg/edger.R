@@ -34,7 +34,7 @@ coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names
             dplyr::filter(dataset_id==dataset)
 
 
-cts <- read.table(counts, header=TRUE, row.names="Geneid", check.names=FALSE,sep='\t')
+cts <- read.table(counts, header=TRUE,  check.names=FALSE,sep='\t')
 
 edger_pipeline <- function(design_string,count,coldata,
                             condition_col,
