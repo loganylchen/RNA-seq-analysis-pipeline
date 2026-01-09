@@ -150,3 +150,37 @@ rule pcatools_vis_database:
         mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
         "../../scripts/visualization/pca.R"
+
+
+rule pcatools_vis_database_batchcorrected:
+    input:
+        counts="{project}/quantification/{tool}/{dataset}_count_matrix_batchcorrected.txt",
+        qc_files=expand(
+            "{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
+            project=project,
+            sample=samples.index.tolist(),
+        ),
+    output:
+        pdf="{project}/visualization/{tool}_{dataset}_pca_batchcorrected.pdf",
+        png="{project}/visualization/{tool}_{dataset}_pca_batchcorrected.png",
+        clinical_info="{project}/visualization/{tool}_{dataset}_pca_batchcorrected_clinical_info.tsv",
+    params:
+        samples=config["samples"],
+        strandness=lambda w, input: get_samples_strandness(input.qc_files),
+        dataset=get_dataset,
+        project=get_project,
+        case_condition=get_case_condition,
+        control_condition=get_control_condition,
+    container:
+        (
+            "docker://btrspg/rlan:20251027"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    log:
+        "logs/{project}/{tool}_{dataset}_vis_pca_batchcorrected.log",
+    threads: config["threads"].get("deseq2", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
+    script:
+        "../../scripts/visualization/pca.R"
