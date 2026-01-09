@@ -33,7 +33,7 @@ database <-snakemake@params[["database"]]
 # output
 output_pdf=snakemake@output[['pdf']]
 output_png=snakemake@output[['png']]
-
+output_clinical_info=snakemake@output[['clinical_info']]
 strandness_df <- data.frame(
     sample_name = names(strandness),
     strandness = unlist(strandness)
@@ -76,7 +76,7 @@ identify_columns <- function(df) {
 }
 
 
-draw_pca <- function(dds,coldata,output_pdf,output_png){
+draw_pca <- function(dds,coldata,output_pdf,output_png,output_clinical_info){
     message('DESeq')
     dds<- DESeq(dds)
     message('DESeq:vst')
@@ -126,6 +126,7 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
     metavars<- identify_columns(as.data.frame(colData(dds)))
     message(metavars)
     message('DESeq:epigencorplot')
+    write.table(as.data.frame(colData(dds))[ ,metavars],file=output_clinical_info,sep='\t',quote=FALSE,row.names=TRUE,col.names=TRUE)
     peigencor <- eigencorplot(p,
     components = getComponents(p, 1:10),
     metavars = metavars,
@@ -172,4 +173,4 @@ draw_pca <- function(dds,coldata,output_pdf,output_png){
     ggsave(output_png,fig,width=20,height=13)
 }
 message('ALL')
-draw_pca(dds,coldata,output_pdf,output_png)
+draw_pca(dds,coldata,output_pdf,output_png,output_clinical_info)

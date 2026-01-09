@@ -129,6 +129,7 @@ rule pcatools_vis_database:
     output:
         pdf="{project}/visualization/{tool}_{dataset}_pca.pdf",
         png="{project}/visualization/{tool}_{dataset}_pca.png",
+        clinical_info="{project}/visualization/{tool}_{dataset}_pca_clinical_info.tsv",
     params:
         samples=config["samples"],
         strandness=lambda w, input: get_samples_strandness(input.qc_files),
