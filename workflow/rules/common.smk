@@ -109,6 +109,12 @@ def get_edeger_design(wildcards):
     return design
 
 
+def get_batch_vars(wildcards):
+    dataset = wildcards.dataset
+    batch_vars = config["datasets"][dataset].get("batch_vars", [])
+    return batch_vars
+
+
 def stringtie_strand_infer(qc_file):
     strand = get_sequence_type(qc_file)
     if strand == "FWD":
