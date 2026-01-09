@@ -124,7 +124,7 @@ rule pcatools_vis_database:
         qc_files=expand(
             "{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
             project=project,
-            sample=config["samples"].index.tolist(),
+            sample=samples.index.tolist(),
         ),
     output:
         pdf="{project}/visualization/{tool}_{dataset}_pca.pdf",
