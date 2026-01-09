@@ -120,15 +120,15 @@ rule pcatools_vis_kallisto:
 
 rule pcatools_vis_database:
     input:
-        counts="{project}/quantification/{tool}/{database}_count_matrix.txt",
+        counts="{project}/quantification/{tool}/{dataset}_count_matrix.txt",
         qc_files=expand(
             "{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
             project=project,
             sample=config["samples"].index.tolist(),
         ),
     output:
-        pdf="{project}/visualization/{tool}_{database}_pca.pdf",
-        png="{project}/visualization/{tool}_{database}_pca.png",
+        pdf="{project}/visualization/{tool}_{dataset}_pca.pdf",
+        png="{project}/visualization/{tool}_{dataset}_pca.png",
     params:
         samples=config["samples"],
         strandness=lambda w, input: get_samples_strandness(input.qc_files),
