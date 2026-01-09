@@ -52,11 +52,11 @@ limma_trend_pipeline <- function(design_string,count,coldata,
     cat("Condition levels:", levels(condition), "\n")
     cat("Condition counts:\n")
     print(table(condition))
-    if(design_string == ""){
-        design_string <- "~ condition"
+    iif(design_string == ""){
+        design <- as.formula("~ condition")
     }else{
         confactor<-factor(coldata[[design_string]])
-        design_string <- paste0("~0+",confactor,"+confactor+confactor:", condition)
+        design <- as.formula(paste0("~0+",confactor,"+confactor+confactor:", condition))
     }
     cts <- count[,rownames(coldata)]
     cat("Count matrix dimensions:", nrow(cts), "genes x", ncol(cts), "samples\n")
@@ -66,7 +66,7 @@ limma_trend_pipeline <- function(design_string,count,coldata,
     y <- DGEList(counts = cts)
     cat("Original DGEList:", nrow(y), "genes\n")
 
-    design <- model.matrix(as.formula(design_string))
+    design <- model.matrix(design)
     cat("Design matrix:\n")
     print(design)
 
