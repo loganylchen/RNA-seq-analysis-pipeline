@@ -48,7 +48,7 @@ cat("Using batch variable:", batch_vars[1], "\n")
 cat("Batch levels:", unique(batch), "\n")
 cat("Condition levels:", unique(condition), "\n")
 
-adjusted_counts <- ComBat_seq(count_matrix, batch=batch, group=condition)
+adjusted_counts <- ComBat_seq(as.matrix(count_matrix), batch=batch, group=condition)
 cat("Batch effect removal completed.\n")
 cat("Adjusted counts class:", class(adjusted_counts), "\n")
 cat("Adjusted counts dimensions:", dim(adjusted_counts), "\n")
