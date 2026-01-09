@@ -42,10 +42,10 @@ if(length(batch_vars) == 0) {
     quit(status=0)
 }
 
-if(ncol(batch_info) == 1) {
-    batch <- as.factor(batch_info[,1])
-} else {
-    batch <- apply(batch_info, 1, function(x) paste(x, collapse="_"))
-}
+
+batch <- as.numeric(as.factor(batch_info[,1]))
 adjusted <- ComBat_seq(count_matrix, batch=batch, group=condition)
+
+
+
 write.table(as.integer(adjusted), file=output_counts, sep="\t", quote=FALSE, col.names=NA)
