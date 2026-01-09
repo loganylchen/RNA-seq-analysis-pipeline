@@ -22,7 +22,7 @@ df = pd.read_csv(
     index_col=0,
 )
 
-df.t.to_csv(
+df.T.to_csv(
     snakemake.output.counts,
     sep="\t",
     header=True,
