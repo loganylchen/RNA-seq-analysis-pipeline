@@ -277,6 +277,72 @@ rule sva_remove_batch_effect:
         "../../scripts/quantification/sva_remove_batch_effect.R"
 
 
+rule TPM_matrix_corrected_STAR_FC:
+    input:
+        featurecounts=expand(
+            "{project}/quantification/featurecounts/{sample}.txt",
+            project=project,
+            sample=samples.index.tolist(),
+        ),
+        corrected_counts="{project}/quantification/STAR_FC/{dataset}_count_matrix_corrected.txt",
+    output:
+        tpm_matrix="{project}/quantification/STAR_FC/{dataset}_TPM_matrix_corrected.txt",
+    log:
+        "logs/{project}/tpm-matrix_corrected_STAR_FC_{dataset}.log",
+    container:
+        (
+            "docker://btrspg/rlan:20251110"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    script:
+        "../../scripts/quantification/tpm_matrix_corrected_STAR_FC.R"
+
+
+rule TPM_matrix_corrected_salmon:
+    input:
+        salmon=expand(
+            "{project}/quantification/salmon/{sample}/quant.sf",
+            project=project,
+            sample=samples.index.tolist(),
+        ),
+        corrected_counts="{project}/quantification/salmon/{dataset}_count_matrix_corrected.txt",
+    output:
+        tpm_matrix="{project}/quantification/salmon/{dataset}_TPM_matrix_corrected.txt",
+    log:
+        "logs/{project}/tpm-matrix_corrected_salmon_{dataset}.log",
+    container:
+        (
+            "docker://btrspg/rlan:20251110"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    script:
+        "../../scripts/quantification/tpm_matrix_corrected_salmon.R"
+
+
+rule TPM_matrix_corrected_kallisto:
+    input:
+        kallisto=expand(
+            "{project}/quantification/kallisto/{sample}/abundance.tsv",
+            project=project,
+            sample=samples.index.tolist(),
+        ),
+        corrected_counts="{project}/quantification/kallisto/{dataset}_count_matrix_corrected.txt",
+    output:
+        tpm_matrix="{project}/quantification/kallisto/{dataset}_TPM_matrix_corrected.txt",
+    log:
+        "logs/{project}/tpm-matrix_corrected_kallisto_{dataset}.log",
+    container:
+        (
+            "docker://btrspg/rlan:20251110"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    script:
+        "../../scripts/quantification/tpm_matrix_corrected_kallisto.R"
+
+
 rule puree_preprocessing:
     input:
         counts="{project}/quantification/STAR_FC/{dataset}_count_matrix_corrected.txt",
