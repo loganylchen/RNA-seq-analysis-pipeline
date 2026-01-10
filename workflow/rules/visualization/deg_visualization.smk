@@ -364,3 +364,57 @@ rule pca_visualization:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 32768),
     script:
         "../../scripts/visualization/pca_visualization.R"
+
+
+rule deg_intersection_union_heatmap:
+    """
+    Comprehensive DEG heatmap visualization for intersection and union of DEGs
+    across all tools (DESeq2, edgeR, limma-trend, limma-voom).
+
+    Generates two heatmaps:
+    1. INTERSECTION: Genes significant in ALL 4 tools
+    2. UNION: Genes significant in AT LEAST 1 tool
+
+    Features:
+    - Uses corrected TPM matrices for expression
+    - Annotates genes with log2FC and -log10(padj) for each tool (NA if not significant)
+    - Annotation bar showing number of tools that identified each DEG
+    - Sample clinical information as column annotations
+    """
+    input:
+        deseq2="{project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
+        edger="{project}/DEG/edger/{tool}/{dataset}_deg.tsv",
+        limma_trend="{project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
+        limma_voom="{project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",
+        tpm="{project}/quantification/{tool}/{dataset}_TPM_matrix_corrected.txt",
+        samples=config["samples"],
+        gene_name_map="resources/gene_id_to_gene_name.tsv",
+    output:
+        intersection_heatmap="{project}/visualization/DEG_{tool}_{dataset}_intersection_heatmap.pdf",
+        union_heatmap="{project}/visualization/DEG_{tool}_{dataset}_union_heatmap.pdf",
+        intersection_gene_list="{project}/visualization/DEG_{tool}_{dataset}_intersection_gene_list.tsv",
+        union_gene_list="{project}/visualization/DEG_{tool}_{dataset}_union_gene_list.tsv",
+        intersection_annotation="{project}/visualization/DEG_{tool}_{dataset}_intersection_annotations.tsv",
+        union_annotation="{project}/visualization/DEG_{tool}_{dataset}_union_annotations.tsv",
+        summary_stats="{project}/visualization/DEG_{tool}_{dataset}_summary_stats.tsv",
+    params:
+        project=project,
+        dataset="{dataset}",
+        tool="{tool}",
+        discovery_sample_type=discovery_sample_type,
+        log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
+        padj_threshold=config.get("deg", {}).get("padj", 0.05),
+        top_n=config.get("deg_vis", {}).get("intersection_union_top_n", 100),
+    container:
+        (
+            "docker://btrspg/rlan:20251229"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    log:
+        "logs/{project}/deg_intersection_union_heatmap_{tool}_{dataset}.log",
+    threads: config["threads"].get("deg_vis", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deg_vis", 32768),
+    script:
+        "../../scripts/visualization/deg_intersection_union_heatmap.R"
