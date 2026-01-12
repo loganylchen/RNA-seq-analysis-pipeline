@@ -170,24 +170,20 @@ for (sample_name in sample_names) {
 
     # fastp data
     fastp_file <- file.path(multiqc_data_dir, "multiqc_fastp.txt")
-    if (file.exists(fastp_file)) {
-        fastp_data <- safe_read_tsv(fastp_file)
-        if (!is.null(fastp_data) && "Sample" %in% colnames(fastp_data)) {
-            sample_row_idx <- which(fastp_data$Sample == sample_name)
-            if (length(sample_row_idx) > 0) {
-                sample_row <- fastp_data[sample_row_idx[1], ]
-                for (col in colnames(sample_row)) {
-                    if (col != "Sample") {
-                        # Skip fastp plot data columns
-                        if (grepl("plot", col, ignore.case = TRUE)) {
-                            next
-                        }
-                        sample_metrics[[paste0("fastp_", col)]] <- sample_row[[col]]
-                    }
-                }
-            }
-        }
-    }
+    # if (file.exists(fastp_file)) {
+    #     fastp_data <- safe_read_tsv(fastp_file)
+    #     if (!is.null(fastp_data) && "Sample" %in% colnames(fastp_data)) {
+    #         sample_row_idx <- which(fastp_data$Sample == sample_name)
+    #         if (length(sample_row_idx) > 0) {
+    #             sample_row <- fastp_data[sample_row_idx[1], ]
+    #             for (col in colnames(sample_row)) {
+    #                 if (col != "Sample") {
+    #                     sample_metrics[[paste0("fastp_", col)]] <- sample_row[[col]]
+    #                 }
+    #             }
+    #         }
+    #     }
+    # }
 
     # STAR data
     star_file <- file.path(multiqc_data_dir, "multiqc_star.txt")
