@@ -13,7 +13,7 @@ suppressPackageStartupMessages({
     library(gridExtra)
     library(readr)
     library(scales)
-    library(viridis)
+    library(ggsci)
 })
 
 # Logging
@@ -457,8 +457,8 @@ create_qc_plot <- function(data, metric_col, plot_title, y_label,
         axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "right"
     ) +
-    scale_fill_viridis(discrete = TRUE, option = "D") +
-    scale_color_viridis(discrete = TRUE, option = "D")
+    scale_fill_pal_d() +
+    scale_color_pal_d()
 
     return(p)
 }
