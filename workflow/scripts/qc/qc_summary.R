@@ -261,8 +261,8 @@ for (i in 1:length(sample_qc_files)) {
                 # Get first of data (after header)
                 if (nrow(picard_align_data) > 0) {
                     first_cat <- picard_align_data[1, ]
-                    sample_metrics$picard_total_reads <- first_cat$FIRST_OF_PAIR_READS if "FIRST_OF_PAIR_READS" %in% colnames(picard_align_data) else NA
-                    sample_metrics$picard_pct_aligned <- first_cat$PCT_PF_READS_ALIGNED if "PCT_PF_READS_ALIGNED" %in% colnames(picard_align_data) else NA
+                    sample_metrics$picard_total_reads <- if ("FIRST_OF_PAIR_READS" %in% colnames(picard_align_data)) first_cat$FIRST_OF_PAIR_READS else NA
+                    sample_metrics$picard_pct_aligned <- if ("PCT_PF_READS_ALIGNED" %in% colnames(picard_align_data)) first_cat$PCT_PF_READS_ALIGNED else NA
                 }
 
                 cat("    Picard alignment metrics loaded\n")
@@ -283,12 +283,12 @@ for (i in 1:length(sample_qc_files)) {
             # Skip header rows
             if (nrow(picard_rna_data) > 1) {
                 metrics_row <- picard_rna_data[2, ]
-                sample_metrics$picard_pct_rRNA <- metrics_row$PCT_RIBOSOMAL_BASES if "PCT_RIBOSOMAL_BASES" %in% colnames(picard_rna_data) else NA
-                sample_metrics$picard_pct_mRNA <- metrics_row$PCT_MRNA_BASES if "PCT_MRNA_BASES" %in% colnames(picard_rna_data) else NA
-                sample_metrics$picard_pct_intronic <- metrics_row$PCT_INTRONIC_BASES if "PCT_INTRONIC_BASES" %in% colnames(picard_rna_data) else NA
-                sample_metrics$picard_pct_intergenic <- metrics_row$PCT_INTERGENIC_BASES if "PCT_INTERGENIC_BASES" %in% colnames(picard_rna_data) else NA
-                sample_metrics$picard_median_5prime <- metrics_row$MEDIAN_5PRIME_BIAS if "MEDIAN_5PRIME_BIAS" %in% colnames(picard_rna_data) else NA
-                sample_metrics$picard_median_3prime <- metrics_row$MEDIAN_3PRIME_BIAS if "MEDIAN_3PRIME_BIAS" %in% colnames(picard_rna_data) else NA
+                sample_metrics$picard_pct_rRNA <- if ("PCT_RIBOSOMAL_BASES" %in% colnames(picard_rna_data)) metrics_row$PCT_RIBOSOMAL_BASES else NA
+                sample_metrics$picard_pct_mRNA <- if ("PCT_MRNA_BASES" %in% colnames(picard_rna_data)) metrics_row$PCT_MRNA_BASES else NA
+                sample_metrics$picard_pct_intronic <- if ("PCT_INTRONIC_BASES" %in% colnames(picard_rna_data)) metrics_row$PCT_INTRONIC_BASES else NA
+                sample_metrics$picard_pct_intergenic <- if ("PCT_INTERGENIC_BASES" %in% colnames(picard_rna_data)) metrics_row$PCT_INTERGENIC_BASES else NA
+                sample_metrics$picard_median_5prime <- if ("MEDIAN_5PRIME_BIAS" %in% colnames(picard_rna_data)) metrics_row$MEDIAN_5PRIME_BIAS else NA
+                sample_metrics$picard_median_3prime <- if ("MEDIAN_3PRIME_BIAS" %in% colnames(picard_rna_data)) metrics_row$MEDIAN_3PRIME_BIAS else NA
             }
 
             cat("    Picard RNA-seq metrics loaded\n")
@@ -308,10 +308,10 @@ for (i in 1:length(sample_qc_files)) {
             # Skip header rows and insert size histogram
             if (nrow(picard_insert_data) > 1) {
                 metrics_row <- picard_insert_data[2, ]
-                sample_metrics$picard_median_insert_size <- metrics_row$MEDIAN_INSERT_SIZE if "MEDIAN_INSERT_SIZE" %in% colnames(picard_insert_data) else NA
-                sample_metrics$picard_mean_insert_size <- metrics_row$MEAN_INSERT_SIZE if "MEAN_INSERT_SIZE" %in% colnames(picard_insert_data) else NA
-                sample_metrics$picard_min_insert_size <- metrics_row$MIN_INSERT_SIZE if "MIN_INSERT_SIZE" %in% colnames(picard_insert_data) else NA
-                sample_metrics$picard_max_insert_size <- metrics_row$MAX_INSERT_SIZE if "MAX_INSERT_SIZE" %in% colnames(picard_insert_data) else NA
+                sample_metrics$picard_median_insert_size <- if ("MEDIAN_INSERT_SIZE" %in% colnames(picard_insert_data)) metrics_row$MEDIAN_INSERT_SIZE else NA
+                sample_metrics$picard_mean_insert_size <- if ("MEAN_INSERT_SIZE" %in% colnames(picard_insert_data)) metrics_row$MEAN_INSERT_SIZE else NA
+                sample_metrics$picard_min_insert_size <- if ("MIN_INSERT_SIZE" %in% colnames(picard_insert_data)) metrics_row$MIN_INSERT_SIZE else NA
+                sample_metrics$picard_max_insert_size <- if ("MAX_INSERT_SIZE" %in% colnames(picard_insert_data)) metrics_row$MAX_INSERT_SIZE else NA
             }
 
             cat("    Picard insert size metrics loaded\n")
@@ -330,8 +330,8 @@ for (i in 1:length(sample_qc_files)) {
                                         stringsAsFactors = FALSE)
             # Get summary metrics
             if (nrow(picard_gc_data) > 0) {
-                sample_metrics$picard_gc_bias <- picard_gc_data$GC_BIAS_METRIC[1] if "GC_BIAS_METRIC" %in% colnames(picard_gc_data) else NA
-                sample_metrics$picard_at_dropout <- picard_gc_data$AT_DROPOUT_METRIC[1] if "AT_DROPOUT_METRIC" %in% colnames(picard_gc_data) else NA
+                sample_metrics$picard_gc_bias <- if ("GC_BIAS_METRIC" %in% colnames(picard_gc_data)) picard_gc_data$GC_BIAS_METRIC[1] else NA
+                sample_metrics$picard_at_dropout <- if ("AT_DROPOUT_METRIC" %in% colnames(picard_gc_data)) picard_gc_data$AT_DROPOUT_METRIC[1] else NA
             }
 
             cat("    Picard GC bias metrics loaded\n")
@@ -350,12 +350,12 @@ for (i in 1:length(sample_qc_files)) {
             tryCatch({
                 rnaseqc2_data <- read.delim(rnaseqc2_metrics, stringsAsFactors = FALSE)
                 if (nrow(rnaseqc2_data) > 0) {
-                    sample_metrics$rnaseqc2_genes_detected <- rnaseqc2_data$Genes.Detected[1] if "Genes.Detected" %in% colnames(rnaseqc2_data) else NA
-                    sample_metrics$rnaseqc2_expression_profiling_efficiency <- rnaseqc2_data$Expression.Profiling.Efficiency[1] if "Expression.Profiling.Efficiency" %in% colnames(rnaseqc2_data) else NA
-                    sample_metrics$rnaseqc2_intragenic_rate <- rnaseqc2_data$Intragenic.rate[1] if "Intragenic.rate" %in% colnames(rnaseqc2_data) else NA
-                    sample_metrics$rnaseqc2_exonic_rate <- rnaseqc2_data$Exonic.Rate[1] if "Exonic.Rate" %in% colnames(rnaseqc2_data) else NA
-                    sample_metrics$rnaseqc2_rRNA_rate <- rnaseqc2_data$rRNA.rate[1] if "rRNA.rate" %in% colnames(rnaseqc2_data) else NA
-                    sample_metrics$rnaseqc2_5prime_3prime_bias <- rnaseqc2_data$`5'.3'bias`[1] if "`5'.3'bias`" %in% colnames(rnaseqc2_data) else NA
+                    sample_metrics$rnaseqc2_genes_detected <- if ("Genes.Detected" %in% colnames(rnaseqc2_data)) rnaseqc2_data$Genes.Detected[1] else NA
+                    sample_metrics$rnaseqc2_expression_profiling_efficiency <- if ("Expression.Profiling.Efficiency" %in% colnames(rnaseqc2_data)) rnaseqc2_data$Expression.Profiling.Efficiency[1] else NA
+                    sample_metrics$rnaseqc2_intragenic_rate <- if ("Intragenic.rate" %in% colnames(rnaseqc2_data)) rnaseqc2_data$Intragenic.rate[1] else NA
+                    sample_metrics$rnaseqc2_exonic_rate <- if ("Exonic.Rate" %in% colnames(rnaseqc2_data)) rnaseqc2_data$Exonic.Rate[1] else NA
+                    sample_metrics$rnaseqc2_rRNA_rate <- if ("rRNA.rate" %in% colnames(rnaseqc2_data)) rnaseqc2_data$rRNA.rate[1] else NA
+                    sample_metrics$rnaseqc2_5prime_3prime_bias <- if ("`5'.3'bias`" %in% colnames(rnaseqc2_data)) rnaseqc2_data$`5'.3'bias`[1] else NA
                 }
 
                 cat("    RNA-SeQC 2 metrics loaded\n")
