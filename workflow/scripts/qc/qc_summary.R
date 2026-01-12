@@ -413,14 +413,13 @@ create_qc_plot <- function(data, metric_col, plot_title, y_label,
         return(NULL)
     }
 
-    metric_data <- data[, c("sample_name", color_col, metric_col)]
-
-    if (color_by %in% colnames(data)) {
-        metric_data[[color_by]] <- data[[color_by]]
-    }
+    # Build columns to extract
+    cols_to_get <- c("sample_name", color_by, metric_col)
     if (!is.null(shape_by) && shape_by %in% colnames(data)) {
-        metric_data[[shape_by]] <- data[[shape_by]]
+        cols_to_get <- c(cols_to_get, shape_by)
     }
+
+    metric_data <- data[, cols_to_get, drop = FALSE]
 
     # Remove NA values
     metric_data <- metric_data[!is.na(metric_data[[metric_col]]), ]
