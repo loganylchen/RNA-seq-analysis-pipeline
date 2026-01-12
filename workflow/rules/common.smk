@@ -220,8 +220,8 @@ def get_qc_files():
             f"{sample_project}/qc/fastp/{sample}/{sample}.fastp.json",
             f"{sample_project}/qc/STAR/{sample}/{sample}.Log.final.out",
             f"{sample_project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
-            # f"{sample_project}/quantification/salmon/{sample}/",
-            # f"{sample_project}/qc/kallisto/{sample}/kallisto.log",
+            f"{sample_project}/quantification/salmon/{sample}/",
+            f"{sample_project}/qc/kallisto/{sample}/kallisto.log",
             f"{sample_project}/qc/hisat2/{sample}/{sample}.log",
             f"{sample_project}/qc/picard/{sample}/{sample}.alignment_summary_metrics.txt",
             f"{sample_project}/qc/picard/{sample}/{sample}.rnaseq_metrics.txt",
@@ -249,10 +249,10 @@ def get_final_output():
         for tool in QUANTIFICATION_TOOLS:
 
             final_output += [
-                # f"{sample_project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
-                # f"{sample_project}/DEG/edger/{tool}/{dataset}_deg.tsv",
-                # f"{sample_project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
-                # f"{sample_project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",
+                f"{sample_project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
+                f"{sample_project}/DEG/edger/{tool}/{dataset}_deg.tsv",
+                f"{sample_project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
+                f"{sample_project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",
                 # f"{sample_project}/visualization/{tool}_{dataset}_pca.png",
                 # f"{sample_project}/visualization/{tool}_{dataset}_pca_batchcorrected.png",
             ]
