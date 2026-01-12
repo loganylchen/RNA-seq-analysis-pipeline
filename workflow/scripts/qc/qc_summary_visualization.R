@@ -26,11 +26,9 @@ cat("==============================================================\n\n")
 
 # Get input parameters
 summary_file <- snakemake@input$summary
-samples_file <- snakemake@params$samples
-project <- snakemake@params$project
 figures_dir <- snakemake@output$figures_dir
 
-cat("Project:", project, "\n")
+
 cat("Summary file:", summary_file, "\n")
 cat("Samples file:", samples_file, "\n")
 cat("Output directory:", figures_dir, "\n\n")
@@ -47,32 +45,8 @@ print(colnames(qc_data))
 cat("\n")
 
 # Load sample metadata
-cat("Loading sample metadata...\n")
-samples_df <- read.delim(samples_file, comment.char = "#", stringsAsFactors = FALSE)
-cat("  Original samples:", nrow(samples_df), "rows\n")
-cat("  Sample columns:", paste(colnames(samples_df), collapse = ", "), "\n")
-samples_df <- samples_df[samples_df$project_id == project, ]
-cat("  Filtered to project", project, ":", nrow(samples_df), "samples\n\n")
 
-# Check required columns in samples_df
-cat("Checking required columns in samples metadata...\n")
-required_cols <- c("sample_name", "patient", "dataset_id", "condition")
-for (col in required_cols) {
-    if (col %in% colnames(samples_df)) {
-        cat("  ✓", col, "found\n")
-    } else {
-        cat("  ✗", col, "NOT FOUND - this will cause errors!\n")
-    }
-}
-cat("\n")
 
-# Merge metadata with QC data
-cat("Merging metadata with QC data...\n")
-cat("  QC data columns before merge:", ncol(qc_data), "\n")
-qc_data <- merge(qc_data, samples_df[, c("sample_name", "patient", "dataset_id", "condition"), with = FALSE],
-                 by = "sample_name", all.x = TRUE)
-cat("  QC data columns after merge:", ncol(qc_data), "\n")
-cat("  Merged data rows:", nrow(qc_data), "\n\n")
 
 # Check if key columns exist after merge
 cat("Checking key columns in merged data...\n")

@@ -64,8 +64,6 @@ rule qc_summary_visualization:
     resources:
         mem_mb=config["resources"]["mem_mb"].get("qc_summary_viz", 16384),
     priority: 10
-    params:
-        project=config["project"],
-        samples=config["samples"],
+
     script:
         "../../scripts/qc/qc_summary_visualization.R"
