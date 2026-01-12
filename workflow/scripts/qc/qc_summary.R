@@ -150,8 +150,13 @@ for (sample_name in sample_names) {
             sample_row <- general_stats[sample_row_idx[1], ]
 
             # Add all available metrics from general stats
+            # Exclude fastp plot data columns (containing "-plot-" in name)
             for (col in colnames(sample_row)) {
                 if (col != "Sample") {
+                    # Skip fastp plot data columns
+                    if (grepl("plot", col, ignore.case = TRUE)) {
+                        next
+                    }
                     # Convert column name to a more readable format if needed
                     # MultiQC column names are already descriptive
                     metric_name <- gsub(" ", "_", col)
@@ -173,6 +178,10 @@ for (sample_name in sample_names) {
                 sample_row <- fastp_data[sample_row_idx[1], ]
                 for (col in colnames(sample_row)) {
                     if (col != "Sample") {
+                        # Skip fastp plot data columns
+                        if (grepl("plot", col, ignore.case = TRUE)) {
+                            next
+                        }
                         sample_metrics[[paste0("fastp_", col)]] <- sample_row[[col]]
                     }
                 }
