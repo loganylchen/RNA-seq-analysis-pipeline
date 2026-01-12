@@ -419,7 +419,8 @@ create_qc_plot <- function(data, metric_col, plot_title, y_label,
         cols_to_get <- c(cols_to_get, shape_by)
     }
 
-    metric_data <- data[, cols_to_get, drop = FALSE]
+    # Convert to data.frame for consistent subsetting (data.table requires .. prefix)
+    metric_data <- as.data.frame(data)[, cols_to_get, drop = FALSE]
 
     # Remove NA values
     metric_data <- metric_data[!is.na(metric_data[[metric_col]]), ]
