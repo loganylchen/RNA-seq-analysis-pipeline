@@ -105,7 +105,7 @@ for (m in metrics_to_plot) {
 }
 cat("\n")
 
-# Function to create bar plot with error bars
+# Function to create bar plot by patient
 create_bar_plot <- function(data, metric, metric_label) {
     cat("  -> create_bar_plot called for metric:", metric, "\n")
     cat("     Data dimensions:", nrow(data), "x", ncol(data), "\n")
@@ -117,6 +117,12 @@ create_bar_plot <- function(data, metric, metric_label) {
     # Check if metric exists
     if (!metric %in% colnames(plot_df)) {
         cat("     ERROR: Metric", metric, "not found in data!\n")
+        return(NULL)
+    }
+
+    # Check if patient column exists
+    if (!"patient" %in% colnames(plot_df)) {
+        cat("     ERROR: 'patient' column not found in data!\n")
         return(NULL)
     }
 
@@ -142,11 +148,11 @@ create_bar_plot <- function(data, metric, metric_label) {
         return(NULL)
     }
 
-    # Check for factor columns
-    cat("     dataset_id type:", class(plot_df$dataset_id), "\n")
-    cat("     condition type:", class(plot_df$condition), "\n")
+    # Create grouping variable for color (dataset_id + condition)
+    plot_df$group <- paste(plot_df$dataset_id, plot_df$condition, sep = "_")
 
-    # Convert to factors if needed
+    # Convert to factors
+    plot_df$patient <- factor(plot_df$patient)
     if (!is.factor(plot_df$dataset_id)) {
         plot_df$dataset_id <- as.factor(plot_df$dataset_id)
     }
@@ -154,41 +160,27 @@ create_bar_plot <- function(data, metric, metric_label) {
         plot_df$condition <- as.factor(plot_df$condition)
     }
 
-    # Calculate summary statistics
-    cat("     Calculating summary statistics...\n")
-    summary_stats <- plot_df %>%
-        group_by(dataset_id, condition) %>%
-        summarise(
-            mean = mean(value, na.rm = TRUE),
-            sd = sd(value, na.rm = TRUE),
-            n = n(),
-            se = sd(value, na.rm = TRUE) / sqrt(n()),
-            .groups = "drop"
-        )
+    # Sort by patient for better visualization
+    plot_df <- plot_df[order(plot_df$patient, plot_df$dataset_id, plot_df$condition), ]
 
-    summary_stats$ymin <- pmax(summary_stats$mean - summary_stats$se, 0)
-    summary_stats$ymax <- summary_stats$mean + summary_stats$se
+    cat("     Number of patients:", length(unique(plot_df$patient)), "\n")
+    cat("     Unique groups:", paste(unique(plot_df$group), collapse = ", "), "\n")
 
-    cat("     Summary stats:", nrow(summary_stats), "groups\n")
-    print(summary_stats)
-
-    # Create bar plot
-    cat("     Creating ggplot bar plot...\n")
-    p <- ggplot(summary_stats, aes(x = condition, y = mean, fill = dataset_id)) +
+    # Create bar plot grouped by patient
+    cat("     Creating ggplot bar plot by patient...\n")
+    p <- ggplot(plot_df, aes(x = patient, y = value, fill = group)) +
         geom_bar(stat = "identity", position = position_dodge(width = 0.9), width = 0.8) +
-        geom_errorbar(aes(ymin = ymin, ymax = ymax),
-                      position = position_dodge(width = 0.9),
-                      width = 0.25) +
         scale_fill_npg() +
         labs(
             title = metric_label,
-            x = "Condition",
-            y = "Mean ± SE"
+            x = "Patient",
+            y = "Value"
         ) +
         theme_bw() +
         theme(
             plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
-            axis.text = element_text(size = 11),
+            axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+            axis.text.y = element_text(size = 11),
             axis.title = element_text(size = 12),
             legend.position = "right",
             legend.title = element_text(size = 11),
@@ -546,7 +538,7 @@ cat("Total individual plots generated:", length(all_plots), "\n\n")
 cat("Output directory:", figures_dir, "\n\n")
 
 cat("Individual plots saved for each metric:\n")
-cat("  - Bar plots (mean ± SE by dataset_id and condition)\n")
+cat("  - Bar plots (by patient, colored by dataset_id and condition)\n")
 cat("  - Box plots with statistical comparisons\n")
 cat("  - Patient-wise comparison plots\n\n")
 
