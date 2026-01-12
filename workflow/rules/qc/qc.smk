@@ -25,7 +25,7 @@ rule multiqc_qc:
 rule qc_summary:
     input:
         samples=config["samples"],
-        multiqc_dir=directory("{project}/qc/multiqc/"),
+        multiqc_dir="{project}/qc/multiqc/",
     output:
         summary="{project}/qc/qc_summary.tsv",
     log:
