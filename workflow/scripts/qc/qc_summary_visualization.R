@@ -179,7 +179,7 @@ create_bar_plot <- function(data, metric, metric_label) {
         geom_errorbar(aes(ymin = ymin, ymax = ymax),
                       position = position_dodge(width = 0.9),
                       width = 0.25) +
-        scale_fill_pal_d(palette = "default") +
+        scale_fill_npg() +
         labs(
             title = metric_label,
             x = "Condition",
@@ -247,7 +247,7 @@ create_box_plot <- function(data, metric, metric_label) {
         geom_boxplot(outlier.shape = NA, alpha = 0.7) +
         geom_point(position = position_jitterdodge(dodge.width = 0.9),
                    size = 2, shape = 21, alpha = 0.8) +
-        scale_fill_pal_d(palette = "default") +
+        scale_fill_npg() +
         labs(
             title = metric_label,
             x = "Condition",
@@ -345,7 +345,7 @@ create_patient_plot <- function(data, metric, metric_label) {
                    size = 2, shape = 21, alpha = 0.8) +
         geom_line(aes(group = patient), position = position_dodge(width = 0.8),
                   alpha = 0.5, linetype = "dashed") +
-        scale_fill_pal_d(palette = "default") +
+        scale_fill_npg() +
         labs(
             title = paste(metric_label, "- by Patient"),
             x = "Patient",
