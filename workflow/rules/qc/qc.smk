@@ -28,16 +28,14 @@ rule qc_summary:
         files=get_qc_files(),
     output:
         summary="{project}/qc/qc_summary.tsv",
-        figures_dir=directory(
-            "{project}/qc/qc_summary_figures/"
-        ),
+        figures_dir=directory("{project}/qc/qc_summary_figures/"),
     log:
         "logs/{project}/qc_summary.log",
     container:
         (
-            "docker://btrspg/rlan:20251120"
-            if config["container"].get("r_base", None) is None
-            else config["container"].get("r_base", None)
+            "docker://btrspg/rlan:20260104"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
         )
     threads: config["threads"].get("default", 1)
     resources:
