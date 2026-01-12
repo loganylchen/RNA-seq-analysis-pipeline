@@ -38,17 +38,27 @@ output_clinical_info=snakemake@output[['clinical_info']]
 output_dir <- dirname(output_png)
 output_prefix <- tools::file_path_sans_ext(basename(output_png))
 
-# Define individual subplot paths
-scree_pdf <- file.path(output_dir, paste0(output_prefix, "_scree.pdf"))
-scree_png <- file.path(output_dir, paste0(output_prefix, "_scree.png"))
-pairs_pdf <- file.path(output_dir, paste0(output_prefix, "_pairs.pdf"))
-pairs_png <- file.path(output_dir, paste0(output_prefix, "_pairs.png"))
-biplot_pdf <- file.path(output_dir, paste0(output_prefix, "_biplot.pdf"))
-biplot_png <- file.path(output_dir, paste0(output_prefix, "_biplot.png"))
-loadings_pdf <- file.path(output_dir, paste0(output_prefix, "_loadings.pdf"))
-loadings_png <- file.path(output_dir, paste0(output_prefix, "_loadings.png"))
-eigencor_pdf <- file.path(output_dir, paste0(output_prefix, "_eigencor.pdf"))
-eigencor_png <- file.path(output_dir, paste0(output_prefix, "_eigencor.png"))
+# Create date-stamped subfolder for separated figures
+current_date <- format(Sys.Date(), "%Y%m%d")
+separated_dir <- file.path(output_dir, paste0(output_prefix, "_", current_date, "_separated_data"))
+dir.create(separated_dir, recursive = TRUE, showWarnings = FALSE)
+
+message('Created directory for separated figures: ', separated_dir)
+
+# Define individual subplot paths in separated folder
+scree_pdf <- file.path(separated_dir, "scree.pdf")
+scree_png <- file.path(separated_dir, "scree.png")
+pairs_pdf <- file.path(separated_dir, "pairs.pdf")
+pairs_png <- file.path(separated_dir, "pairs.png")
+biplot_pdf <- file.path(separated_dir, "biplot.pdf")
+biplot_png <- file.path(separated_dir, "biplot.png")
+loadings_pdf <- file.path(separated_dir, "loadings.pdf")
+loadings_png <- file.path(separated_dir, "loadings.png")
+eigencor_pdf <- file.path(separated_dir, "eigencor.pdf")
+eigencor_png <- file.path(separated_dir, "eigencor.png")
+
+# Define single RDS file path for all data objects
+pca_data_rds <- file.path(separated_dir, "pca_data.rds")
 
 strandness_df <- data.frame(
     sample_name = names(strandness),
@@ -306,6 +316,24 @@ draw_pca <- function(dds,coldata,output_pdf,output_png,output_clinical_info){
     ggsave(eigencor_png, as.grob(peigencor), width=12, height=10)
     message('    Saved: ', eigencor_pdf)
 
+    # Save all data objects in a single RDS file as a list
+    message('Saving data objects to single RDS file...')
+    pca_data_list <- list(
+        pca_object = p,
+        vst_data = vst,
+        coldata = as.data.frame(colData(dds)),
+        metadata = list(
+            date = Sys.Date(),
+            r_version = R.version.string,
+            pca_params = list(
+                removeVar = 0.1,
+                n_components = length(p$components)
+            )
+        )
+    )
+    saveRDS(pca_data_list, pca_data_rds)
+    message('  Saved all data to: ', pca_data_rds)
+
     # Save combined plot
     message('Saving combined PCA plot...')
     message('  Saving PDF: ', output_pdf)
@@ -317,12 +345,16 @@ draw_pca <- function(dds,coldata,output_pdf,output_png,output_clinical_info){
     message('  Combined PCA plot:')
     message('    PDF: ', output_pdf)
     message('    PNG: ', output_png)
+    message('  Separated data directory: ', separated_dir)
     message('  Individual subplots:')
     message('    Scree plot: ', scree_pdf, ' / ', scree_png)
     message('    Pairs plot: ', pairs_pdf, ' / ', pairs_png)
     message('    Biplot: ', biplot_pdf, ' / ', biplot_png)
     message('    Loadings plot: ', loadings_pdf, ' / ', loadings_png)
     message('    Eigencorplot: ', eigencor_pdf, ' / ', eigencor_png)
+    message('  Data objects (all in single RDS):')
+    message('    ', pca_data_rds)
+    message('    Contains: pca_object, vst_data, coldata, plots (scree, pairs, biplot, loadings, eigencor), metadata')
 }
 message('ALL')
 draw_pca(dds,coldata,output_pdf,output_png,output_clinical_info)
