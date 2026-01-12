@@ -30,7 +30,7 @@ figures_dir <- snakemake@output$figures_dir
 
 
 cat("Summary file:", summary_file, "\n")
-cat("Samples file:", samples_file, "\n")
+
 cat("Output directory:", figures_dir, "\n\n")
 
 # Create output directory
