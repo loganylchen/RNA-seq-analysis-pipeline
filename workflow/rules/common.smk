@@ -249,12 +249,12 @@ def get_final_output():
         for tool in QUANTIFICATION_TOOLS:
 
             final_output += [
-                f"{sample_project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
-                f"{sample_project}/DEG/edger/{tool}/{dataset}_deg.tsv",
-                f"{sample_project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
-                f"{sample_project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",
+                # f"{sample_project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
+                # f"{sample_project}/DEG/edger/{tool}/{dataset}_deg.tsv",
+                # f"{sample_project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
+                # f"{sample_project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/visualization/{tool}_{dataset}_pca.png",
-                f"{sample_project}/visualization/{tool}_{dataset}_pca_batchcorrected.png",
+                # f"{sample_project}/visualization/{tool}_{dataset}_pca_batchcorrected.png",
             ]
 
         final_output += [f"{sample_project}/purity/PUREE_{dataset}_tumor_purities.tsv"]
@@ -263,7 +263,7 @@ def get_final_output():
         # f"{sample_project}/visualization/pca.png",
         # f"{sample_project}/visualization/kallisto_pca.png",
         # f"{sample_project}/visualization/salmon_pca.png",
-        f"{sample_project}/qc/multiqc/",
+        # f"{sample_project}/qc/multiqc/",
         # f"{sample_project}/enrichment/clusterprofiler/validation_gsea_enrichment.tsv",
         # f"{sample_project}/modification/modtect/merged.modtect.txt",
         # f"{sample_project}/modification/modtect/annotated_modifications.tsv",
