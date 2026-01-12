@@ -1,7 +1,7 @@
 # tool could be STAR_FC or salmon or kallisto
 rule edger:
     input:
-        counts="{project}/quantification/{tool}/{dataset}_count_matrix_corrected.txt",
+        counts="{project}/quantification/{tool}/{dataset}_count_matrix.txt",
     output:
         deg_rds="{project}/DEG/edger/{tool}/{dataset}_deg.rds",
         deg_tsv="{project}/DEG/edger/{tool}/{dataset}_deg.tsv",
