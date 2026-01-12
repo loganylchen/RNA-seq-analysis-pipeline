@@ -189,7 +189,7 @@ draw_pca <- function(dds,coldata,output_pdf,output_png,output_clinical_info){
     message('DESeq:vst')
     vst <- assay(vst(dds))
     message('DESeq:PCA')
-    p <- pca(vst, metadata = colData(dds), removeVar = 0.5)
+    p <- pca(vst, metadata = colData(dds), removeVar = 0.1)
     message('DESeq:scree')
     pscree <- screeplot(p, components = getComponents(p, 1:30),
             hline = 80, axisLabSize = 14, titleLabSize = 20,
