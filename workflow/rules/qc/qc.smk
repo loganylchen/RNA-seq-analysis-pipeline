@@ -28,7 +28,7 @@ rule qc_summary:
         files=get_qc_files(),
     output:
         summary="{project}/qc/qc_summary.tsv",
-        figures_dir=directory("{project}/qc/qc_summary_figures/"),
+        # figures_dir=directory("{project}/qc/qc_summary_figures/"),
     log:
         "logs/{project}/qc_summary.log",
     container:

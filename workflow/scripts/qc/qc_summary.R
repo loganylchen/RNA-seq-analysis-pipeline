@@ -397,188 +397,188 @@ cat("Writing QC summary to:", output_summary, "\n")
 write.table(qc_summary_df, output_summary, sep = "\t", row.names = FALSE, quote = FALSE)
 
 # Print summary statistics
-cat("\n")
-cat(paste0(rep("=", 78), collapse = ""), "\n")
-cat("Generating QC Visualizations\n")
-cat(paste0(rep("=", 78), collapse = ""), "\n\n")
+# cat("\n")
+# cat(paste0(rep("=", 78), collapse = ""), "\n")
+# cat("Generating QC Visualizations\n")
+# cat(paste0(rep("=", 78), collapse = ""), "\n\n")
 
-# Function to create labeled plots
-create_qc_plot <- function(data, metric_col, plot_title, y_label,
-                           color_by = "condition", shape_by = NULL,
-                           plot_type = "boxplot") {
+# # Function to create labeled plots
+# create_qc_plot <- function(data, metric_col, plot_title, y_label,
+#                            color_by = "condition", shape_by = NULL,
+#                            plot_type = "boxplot") {
 
-    # Check if metric exists and has data
-    if (!metric_col %in% colnames(data)) {
-        cat("  Skipping", metric_col, "- not found in data\n")
-        return(NULL)
-    }
+#     # Check if metric exists and has data
+#     if (!metric_col %in% colnames(data)) {
+#         cat("  Skipping", metric_col, "- not found in data\n")
+#         return(NULL)
+#     }
 
-    # Build columns to extract
-    cols_to_get <- c("sample_name", color_by, metric_col)
-    if (!is.null(shape_by) && shape_by %in% colnames(data)) {
-        cols_to_get <- c(cols_to_get, shape_by)
-    }
+#     # Build columns to extract
+#     cols_to_get <- c("sample_name", color_by, metric_col)
+#     if (!is.null(shape_by) && shape_by %in% colnames(data)) {
+#         cols_to_get <- c(cols_to_get, shape_by)
+#     }
 
-    # Convert to data.frame for consistent subsetting (data.table requires .. prefix)
-    metric_data <- as.data.frame(data)[, cols_to_get, drop = FALSE]
+#     # Convert to data.frame for consistent subsetting (data.table requires .. prefix)
+#     metric_data <- as.data.frame(data)[, cols_to_get, drop = FALSE]
 
-    # Remove NA values
-    metric_data <- metric_data[!is.na(metric_data[[metric_col]]), ]
+#     # Remove NA values
+#     metric_data <- metric_data[!is.na(metric_data[[metric_col]]), ]
 
-    if (nrow(metric_data) == 0) {
-        cat("  Skipping", metric_col, "- no data available\n")
-        return(NULL)
-    }
+#     if (nrow(metric_data) == 0) {
+#         cat("  Skipping", metric_col, "- no data available\n")
+#         return(NULL)
+#     }
 
-    # Create plot
-    p <- ggplot(metric_data, aes_string(x = color_by, y = metric_col, fill = color_by))
+#     # Create plot
+#     p <- ggplot(metric_data, aes_string(x = color_by, y = metric_col, fill = color_by))
 
-    if (plot_type == "boxplot") {
-        p <- p + geom_boxplot(alpha = 0.7) +
-            geom_point(position = position_jitter(width = 0.2), size = 2)
-    } else if (plot_type == "bar") {
-        p <- p + geom_bar(stat = "identity", alpha = 0.7)
-    }
+#     if (plot_type == "boxplot") {
+#         p <- p + geom_boxplot(alpha = 0.7) +
+#             geom_point(position = position_jitter(width = 0.2), size = 2)
+#     } else if (plot_type == "bar") {
+#         p <- p + geom_bar(stat = "identity", alpha = 0.7)
+#     }
 
-    # Add shape if specified
-    if (!is.null(shape_by) && shape_by %in% colnames(metric_data)) {
-        p <- p + aes_string(shape = shape_by)
-    }
+#     # Add shape if specified
+#     if (!is.null(shape_by) && shape_by %in% colnames(metric_data)) {
+#         p <- p + aes_string(shape = shape_by)
+#     }
 
-    # Add labels
-    p <- p + labs(
-        title = plot_title,
-        x = "",
-        y = y_label
-    ) +
-    theme_minimal(base_size = 12) +
-    theme(
-        plot.title = element_text(hjust = 0.5, face = "bold"),
-        axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "right"
-    ) +
-    scale_fill_pal_d() +
-    scale_color_pal_d()
+#     # Add labels
+#     p <- p + labs(
+#         title = plot_title,
+#         x = "",
+#         y = y_label
+#     ) +
+#     theme_minimal(base_size = 12) +
+#     theme(
+#         plot.title = element_text(hjust = 0.5, face = "bold"),
+#         axis.text.x = element_text(angle = 45, hjust = 1),
+#         legend.position = "right"
+#     ) +
+#     scale_fill_pal_d() +
+#     scale_color_pal_d()
 
-    return(p)
-}
+#     return(p)
+# }
 
-# Define color and shape columns
-color_col <- "condition"
-shape_col <- "dataset_type"
+# # Define color and shape columns
+# color_col <- "condition"
+# shape_col <- "dataset_type"
 
-# Check what columns are available for coloring
-if (!color_col %in% colnames(qc_summary_df)) {
-    color_col <- colnames(qc_summary_df)[4]  # Use first available metadata column
-}
+# # Check what columns are available for coloring
+# if (!color_col %in% colnames(qc_summary_df)) {
+#     color_col <- colnames(qc_summary_df)[4]  # Use first available metadata column
+# }
 
-cat("Coloring by:", color_col, "\n")
-cat("Shape by:", shape_col, "\n\n")
+# cat("Coloring by:", color_col, "\n")
+# cat("Shape by:", shape_col, "\n\n")
 
-# Define metrics to visualize
-metrics_to_plot <- list(
-    list(col = "fastp_q30_rate", title = "Q30 Rate", ylab = "Q30 Rate (%)", type = "boxplot"),
-    list(col = "fastp_gc_content", title = "GC Content", ylab = "GC Content (%)", type = "boxplot"),
-    list(col = "star_uniquely_mapped_pct", title = "Uniquely Mapped Reads", ylab = "Uniquely Mapped (%)", type = "boxplot"),
-    list(col = "star_multi_mapped", title = "Multi-Mapped Reads", ylab = "Number of Reads", type = "boxplot"),
-    list(col = "star_unmapped", title = "Unmapped Reads", ylab = "Number of Reads", type = "boxplot"),
-    list(col = "qualimap_mapping_rate", title = "Mapping Rate", ylab = "Mapping Rate (%)", type = "boxplot"),
-    list(col = "qualimap_mean_coverage", title = "Mean Coverage", ylab = "Mean Coverage", type = "boxplot"),
-    list(col = "picard_pct_rRNA", title = "Ribosomal RNA Content", ylab = "rRNA (%)", type = "boxplot"),
-    list(col = "picard_pct_mRNA", title = "mRNA Content", ylab = "mRNA (%)", type = "boxplot"),
-    list(col = "picard_pct_intronic", title = "Intronic Content", ylab = "Intronic (%)", type = "boxplot"),
-    list(col = "picard_pct_intergenic", title = "Intergenic Content", ylab = "Intergenic (%)", type = "boxplot"),
-    list(col = "picard_median_insert_size", title = "Insert Size", ylab = "Median Insert Size (bp)", type = "boxplot"),
-    list(col = "rnaseqc2_genes_detected", title = "Genes Detected", ylab = "Number of Genes", type = "boxplot"),
-    list(col = "rnaseqc2_expression_profiling_efficiency", title = "Expression Profiling Efficiency", ylab = "EPE", type = "boxplot")
-)
+# # Define metrics to visualize
+# metrics_to_plot <- list(
+#     list(col = "fastp_q30_rate", title = "Q30 Rate", ylab = "Q30 Rate (%)", type = "boxplot"),
+#     list(col = "fastp_gc_content", title = "GC Content", ylab = "GC Content (%)", type = "boxplot"),
+#     list(col = "star_uniquely_mapped_pct", title = "Uniquely Mapped Reads", ylab = "Uniquely Mapped (%)", type = "boxplot"),
+#     list(col = "star_multi_mapped", title = "Multi-Mapped Reads", ylab = "Number of Reads", type = "boxplot"),
+#     list(col = "star_unmapped", title = "Unmapped Reads", ylab = "Number of Reads", type = "boxplot"),
+#     list(col = "qualimap_mapping_rate", title = "Mapping Rate", ylab = "Mapping Rate (%)", type = "boxplot"),
+#     list(col = "qualimap_mean_coverage", title = "Mean Coverage", ylab = "Mean Coverage", type = "boxplot"),
+#     list(col = "picard_pct_rRNA", title = "Ribosomal RNA Content", ylab = "rRNA (%)", type = "boxplot"),
+#     list(col = "picard_pct_mRNA", title = "mRNA Content", ylab = "mRNA (%)", type = "boxplot"),
+#     list(col = "picard_pct_intronic", title = "Intronic Content", ylab = "Intronic (%)", type = "boxplot"),
+#     list(col = "picard_pct_intergenic", title = "Intergenic Content", ylab = "Intergenic (%)", type = "boxplot"),
+#     list(col = "picard_median_insert_size", title = "Insert Size", ylab = "Median Insert Size (bp)", type = "boxplot"),
+#     list(col = "rnaseqc2_genes_detected", title = "Genes Detected", ylab = "Number of Genes", type = "boxplot"),
+#     list(col = "rnaseqc2_expression_profiling_efficiency", title = "Expression Profiling Efficiency", ylab = "EPE", type = "boxplot")
+# )
 
-# Generate individual plots
-cat("Generating individual QC metric plots...\n")
-plots_list <- list()
+# # Generate individual plots
+# cat("Generating individual QC metric plots...\n")
+# plots_list <- list()
 
-for (i in 1:length(metrics_to_plot)) {
-    metric_info <- metrics_to_plot[[i]]
-    cat("  Creating plot for:", metric_info$title, "\n")
+# for (i in 1:length(metrics_to_plot)) {
+#     metric_info <- metrics_to_plot[[i]]
+#     cat("  Creating plot for:", metric_info$title, "\n")
 
-    p <- create_qc_plot(
-        data = qc_summary_df,
-        metric_col = metric_info$col,
-        plot_title = metric_info$title,
-        y_label = metric_info$ylab,
-        color_by = color_col,
-        shape_by = shape_col,
-        plot_type = metric_info$type
-    )
+#     p <- create_qc_plot(
+#         data = qc_summary_df,
+#         metric_col = metric_info$col,
+#         plot_title = metric_info$title,
+#         y_label = metric_info$ylab,
+#         color_by = color_col,
+#         shape_by = shape_col,
+#         plot_type = metric_info$type
+#     )
 
-    if (!is.null(p)) {
-        # Save individual plot
-        safe_name <- gsub("[^A-Za-z0-9]", "_", metric_info$title)
-        plot_file_png <- file.path(figures_dir, paste0(safe_name, ".png"))
-        plot_file_pdf <- file.path(figures_dir, paste0(safe_name, ".pdf"))
+#     if (!is.null(p)) {
+#         # Save individual plot
+#         safe_name <- gsub("[^A-Za-z0-9]", "_", metric_info$title)
+#         plot_file_png <- file.path(figures_dir, paste0(safe_name, ".png"))
+#         plot_file_pdf <- file.path(figures_dir, paste0(safe_name, ".pdf"))
 
-        ggsave(plot_file_png, p, width = 8, height = 6, dpi = 300)
-        ggsave(plot_file_pdf, p, width = 8, height = 6)
+#         ggsave(plot_file_png, p, width = 8, height = 6, dpi = 300)
+#         ggsave(plot_file_pdf, p, width = 8, height = 6)
 
-        cat("    Saved:", plot_file_png, "\n")
+#         cat("    Saved:", plot_file_png, "\n")
 
-        plots_list[[metric_info$title]] <- p
-    }
-}
+#         plots_list[[metric_info$title]] <- p
+#     }
+# }
 
-# Create summary figure with multiple panels
-cat("\nCreating summary multi-panel figure...\n")
-n_plots <- min(length(plots_list), 12)  # Limit to 12 plots for readability
+# # Create summary figure with multiple panels
+# cat("\nCreating summary multi-panel figure...\n")
+# n_plots <- min(length(plots_list), 12)  # Limit to 12 plots for readability
 
-if (n_plots > 0) {
-    # Arrange plots in grid
-    n_cols <- min(4, n_plots)
-    summary_plot <- do.call(gridExtra::grid.arrange, c(plots_list[1:n_plots], ncol = n_cols))
+# if (n_plots > 0) {
+#     # Arrange plots in grid
+#     n_cols <- min(4, n_plots)
+#     summary_plot <- do.call(gridExtra::grid.arrange, c(plots_list[1:n_plots], ncol = n_cols))
 
-    summary_file_png <- file.path(figures_dir, "QC_summary_overview.png")
-    summary_file_pdf <- file.path(figures_dir, "QC_summary_overview.pdf")
+#     summary_file_png <- file.path(figures_dir, "QC_summary_overview.png")
+#     summary_file_pdf <- file.path(figures_dir, "QC_summary_overview.pdf")
 
-    ggsave(summary_file_png, summary_plot, width = n_cols * 4, height = ceiling(n_plots/n_cols) * 4, dpi = 300)
-    ggsave(summary_file_pdf, summary_plot, width = n_cols * 4, height = ceiling(n_plots/n_cols) * 4)
+#     ggsave(summary_file_png, summary_plot, width = n_cols * 4, height = ceiling(n_plots/n_cols) * 4, dpi = 300)
+#     ggsave(summary_file_pdf, summary_plot, width = n_cols * 4, height = ceiling(n_plots/n_cols) * 4)
 
-    cat("  Saved summary figure:", summary_file_png, "\n")
-}
+#     cat("  Saved summary figure:", summary_file_png, "\n")
+# }
 
-# Print summary statistics
-cat("\n")
-cat(paste0(rep("=", 78), collapse = ""), "\n")
-cat("QC Summary Statistics\n")
-cat(paste0(rep("=", 78), collapse = ""), "\n\n")
+# # Print summary statistics
+# cat("\n")
+# cat(paste0(rep("=", 78), collapse = ""), "\n")
+# cat("QC Summary Statistics\n")
+# cat(paste0(rep("=", 78), collapse = ""), "\n\n")
 
-cat("Total samples processed:", nrow(qc_summary_df), "\n")
-cat("Total metrics collected:", ncol(qc_summary_df), "\n\n")
+# cat("Total samples processed:", nrow(qc_summary_df), "\n")
+# cat("Total metrics collected:", ncol(qc_summary_df), "\n\n")
 
-# Show data completeness
-cat("Metric completeness:\n")
-metric_completeness <- sapply(qc_summary_df, function(x) sum(!is.na(x)) / length(x) * 100)
-completeness_df <- data.frame(
-    Metric = names(metric_completeness),
-    Completeness = round(metric_completeness, 1),
-    stringsAsFactors = FALSE
-)
-completeness_df <- completeness_df[order(-completeness_df$Completeness), ]
-colnames(completeness_df) <- c("Metric", "Completeness_%")
-print(completeness_df, row.names = FALSE)
+# # Show data completeness
+# cat("Metric completeness:\n")
+# metric_completeness <- sapply(qc_summary_df, function(x) sum(!is.na(x)) / length(x) * 100)
+# completeness_df <- data.frame(
+#     Metric = names(metric_completeness),
+#     Completeness = round(metric_completeness, 1),
+#     stringsAsFactors = FALSE
+# )
+# completeness_df <- completeness_df[order(-completeness_df$Completeness), ]
+# colnames(completeness_df) <- c("Metric", "Completeness_%")
+# print(completeness_df, row.names = FALSE)
 
-# Condition distribution
-if ("condition" %in% colnames(qc_summary_df)) {
-    cat("\nCondition distribution:\n")
-    print(table(qc_summary_df$condition))
-}
+# # Condition distribution
+# if ("condition" %in% colnames(qc_summary_df)) {
+#     cat("\nCondition distribution:\n")
+#     print(table(qc_summary_df$condition))
+# }
 
-cat("\n")
-cat(paste0(rep("=", 78), collapse = ""), "\n")
-cat("QC Summary Complete!\n")
-cat(paste0(rep("=", 78), collapse = ""), "\n")
-cat("\nOutput files:\n")
-cat("  Summary table:", output_summary, "\n")
-cat("  Individual plots:", figures_dir, "/\n")
-cat("  Summary overview:", file.path(figures_dir, "QC_summary_overview.png"), "\n")
+# cat("\n")
+# cat(paste0(rep("=", 78), collapse = ""), "\n")
+# cat("QC Summary Complete!\n")
+# cat(paste0(rep("=", 78), collapse = ""), "\n")
+# cat("\nOutput files:\n")
+# cat("  Summary table:", output_summary, "\n")
+# cat("  Individual plots:", figures_dir, "/\n")
+# cat("  Summary overview:", file.path(figures_dir, "QC_summary_overview.png"), "\n")
 
 # Close sinks
 sink()
