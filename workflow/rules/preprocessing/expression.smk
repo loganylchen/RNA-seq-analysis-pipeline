@@ -345,7 +345,7 @@ rule TPM_matrix_corrected_kallisto:
 
 rule puree_preprocessing:
     input:
-        counts="{project}/quantification/STAR_FC/{dataset}_count_matrix.txt",
+        counts="{project}/quantification/STAR_FC/{dataset}_count_matrix_corrected.txt",
     output:
         counts="{project}/quantification/STAR_FC/{dataset}_count_matrix_PUREE.tsv",
     log:
