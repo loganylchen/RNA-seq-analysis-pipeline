@@ -20,3 +20,31 @@ rule multiqc_qc:
     shell:
         "multiqc -f "
         "--outdir {output.outdir} {input} &>{log}"
+
+
+rule qc_summary:
+    input:
+        samples=config["samples"],
+        files=get_qc_files(),
+    output:
+        summary="{project}/qc/qc_summary.tsv",
+        figures_dir=directory(
+            "{project}/qc/qc_summary_figures/"
+        ),
+    log:
+        "logs/{project}/qc_summary.log",
+    container:
+        (
+            "docker://btrspg/rlan:20251120"
+            if config["container"].get("r_base", None) is None
+            else config["container"].get("r_base", None)
+        )
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("qc_summary", 16384),
+    priority: 10
+    params:
+        project=config["project"],
+        samples=config["samples"],
+    script:
+        "../../scripts/qc/qc_summary.R"
