@@ -36,7 +36,7 @@ coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names
             dplyr::filter(dataset_id==dataset)
 
 
-cts <- read.table(counts, header=TRUE,  check.names=FALSE,sep='\t')
+cts <- read.table(counts, header=TRUE,  check.names=FALSE,sep='\t',row.names=1)
 
 limma_voom_pipeline <- function(design_string,count,coldata,
                             condition_col,
@@ -48,7 +48,7 @@ limma_voom_pipeline <- function(design_string,count,coldata,
     cat("  Columns available:", paste(names(coldata), collapse=", "), "\n")
     cat("Conditions:", case_condition, "vs", control_condition, "\n")
 
-    condition <- factor(coldata[[condition_col]], levels=c(case_condition, control_condition))
+    condition <- factor(coldata[[condition_col]], levels=c(control_condition, case_condition))
     cat("Condition levels:", levels(condition), "\n")
     cat("Condition counts:\n")
     print(table(condition))
