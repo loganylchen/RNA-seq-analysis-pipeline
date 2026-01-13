@@ -270,7 +270,7 @@ for (method in c("deseq2", "edger", "limma_trend", "limma_voom")) {
     select(padj_threshold, log2fc_threshold, n_degs) %>%
     tidyr::pivot_wider(names_from = padj_threshold,
                        values_from = n_degs) %>%
-    column_to_rownames(var = "log2fc_threshold") %>%
+    tibble::column_to_rownames(var = "log2fc_threshold") %>%
     as.matrix()
 
   # Convert log2fc_threshold to character for row names
