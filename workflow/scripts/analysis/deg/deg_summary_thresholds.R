@@ -272,7 +272,7 @@ for (method in c("deseq2", "edger", "limma_trend", "limma_voom")) {
                        values_from = n_degs) %>%
     tibble::column_to_rownames(var = "log2fc_threshold") %>%
     as.matrix()
-
+  print(mat)
   # Convert log2fc_threshold to character for row names
   rownames(mat) <- paste0("FC", rownames(mat))
 
