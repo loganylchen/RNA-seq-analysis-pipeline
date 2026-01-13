@@ -184,3 +184,38 @@ rule pcatools_vis_database_batchcorrected:
         mem_mb=config["resources"]["mem_mb"].get("deseq2", 8192),
     script:
         "../../scripts/visualization/pca.R"
+
+
+rule extract_strandness_to_samples:
+    """
+    Extract strandness information from QualiMap RNA-seq QC results and
+    add it as a new column to the samples.tsv file.
+
+    This rule reads the rnaseq_qc_results.txt files from QualiMap RNA-seq,
+    extracts the strand specificity percentage for each sample, and adds
+    it as a 'strandness' column to an updated samples file.
+    """
+    input:
+        qualimap=expand(
+            "{project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
+            project=project,
+            sample=samples.index.tolist(),
+        ),
+        samples=config["samples"],
+    output:
+        samples_with_strandness="{project}/config/samples_with_strandness.tsv",
+    params:
+        project=project,
+    container:
+        (
+            "docker://btrspg/rlan:20251027"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    log:
+        "logs/{project}/extract_strandness_to_samples.log",
+    threads: config["threads"].get("default", 1)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
+    script:
+        "../../scripts/qc/extract_strandness_to_samples.R"
