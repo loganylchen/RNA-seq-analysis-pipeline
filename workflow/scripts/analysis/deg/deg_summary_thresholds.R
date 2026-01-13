@@ -287,13 +287,15 @@ colnames(combined_heatmap_data) <- c(
   rep("limma-trend", length(padj_thresholds)),
   rep("limma-voom", length(padj_thresholds))
 )
-
+cat("Combined heatmap data dimensions:", dim(combined_heatmap_data), "\n")
 # Create annotation for columns
 col_anno <- data.frame(
   Method = rep(c("DESeq2", "edgeR", "limma-trend", "limma-voom"),
                each = length(padj_thresholds)),
   padj = rep(padj_thresholds, 4)
 )
+cat("Column annotation:\n")
+print(col_anno)
 rownames(col_anno) <- colnames(combined_heatmap_data)
 
 # Create heatmap
