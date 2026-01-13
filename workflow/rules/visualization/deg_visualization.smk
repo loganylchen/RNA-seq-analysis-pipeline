@@ -418,3 +418,46 @@ rule deg_intersection_union_heatmap:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 32768),
     script:
         "../../scripts/visualization/deg_intersection_union_heatmap.R"
+
+
+rule deg_summary_thresholds:
+    """
+    Generate comprehensive DEG summaries across multiple thresholds.
+
+    Creates:
+    1. Summary table with DEG counts for all threshold combinations
+    2. Upset-style data for overlap analysis
+    3. Heatmap of DEG counts across thresholds
+    4. Bar plot comparing methods across thresholds
+
+    Thresholds tested:
+    - padj: 0.05, 0.01, 0.001, 0.0001
+    - log2FC: 1, 1.2, 1.5, 2
+    """
+    input:
+        deseq2="{project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
+        edger="{project}/DEG/edger/{tool}/{dataset}_deg.tsv",
+        limma_trend="{project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
+        limma_voom="{project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",
+    output:
+        summary_table="{project}/DEG/{tool}_{dataset}_summary_thresholds.tsv",
+        upset_data="{project}/DEG/{tool}_{dataset}_upset_data.tsv",
+        heatmap="{project}/visualization/DEG_{tool}_{dataset}_thresholds_heatmap.pdf",
+        comparison_plot="{project}/visualization/DEG_{tool}_{dataset}_thresholds_comparison.pdf",
+    params:
+        project=project,
+        dataset="{dataset}",
+        tool="{tool}",
+    container:
+        (
+            "docker://btrspg/rlan:20251229"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    log:
+        "logs/{project}/deg_summary_thresholds_{tool}_{dataset}.log",
+    threads: config["threads"].get("deg_vis", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
+    script:
+        "../../scripts/analysis/deg/deg_summary_thresholds.R"
