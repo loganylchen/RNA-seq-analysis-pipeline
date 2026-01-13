@@ -260,6 +260,7 @@ def get_final_output():
                 f"{sample_project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/visualization/{tool}_{dataset}_pca.png",
                 f"{sample_project}/visualization/{tool}_{dataset}_pca_batchcorrected.png",
+                f"{sample_project}/DEG/{tool}_{dataset}_summary_thresholds.tsv",
             ]
 
         final_output += [
