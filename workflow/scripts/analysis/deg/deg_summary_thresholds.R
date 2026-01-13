@@ -281,38 +281,60 @@ for (method in c("deseq2", "edger", "limma_trend", "limma_voom")) {
 
 # Combine all methods
 combined_heatmap_data <- do.call(cbind, heatmap_data_list)
-colnames(combined_heatmap_data) <- c(
-  rep("DESeq2", length(padj_thresholds)),
-  rep("edgeR", length(padj_thresholds)),
-  rep("limma-trend", length(padj_thresholds)),
-  rep("limma-voom", length(padj_thresholds))
-)
+
+# Create proper column names with method and threshold
+method_cols <- list()
+for (i in seq_along(padj_thresholds)) {
+  for (method in c("DESeq2", "edgeR", "limma_trend", "limma_voom")) {
+    method_cols[[length(method_cols) + 1]] <- paste0(method, "_", padj_thresholds[i])
+  }
+}
+colnames(combined_heatmap_data) <- method_cols
+
 cat("Combined heatmap data dimensions:", dim(combined_heatmap_data), "\n")
-# Create annotation for columns
+
+# Create annotation for columns with matching row names
 col_anno <- data.frame(
-  Method = rep(c("DESeq2", "edgeR", "limma-trend", "limma-voom"),
+  Method = rep(c("DESeq2", "edgeR", "limma_trend", "limma_voom"),
                each = length(padj_thresholds)),
-  padj = rep(padj_thresholds, 4)
+  padj = rep(padj_thresholds, 4),
+  stringsAsFactors = FALSE
 )
+rownames(col_anno) <- colnames(combined_heatmap_data)
+
 cat("Column annotation:\n")
 print(col_anno)
-print(combined_heatmap_data)
-# rownames(col_anno) <- colnames(combined_heatmap_data)
+cat("\nHeatmap data preview:\n")
+print(combined_heatmap_data[1:3, 1:6])
 
 # Create heatmap
-pdf(heatmap_plot, width = 12, height = 8)
-pheatmap(combined_heatmap_data,
-         annotation_col = col_anno,
-         annotation_names_col = TRUE,
-         cluster_cols = FALSE,
-         cluster_rows = FALSE,
-         display_numbers = TRUE,
-         number_format = "%.0f",
-         main = paste0("DEG Counts Across Thresholds\n", project, " - ", dataset, " (", tool, ")"),
-         fontsize = 10,
-         fontsize_number = 8,
-         angle_col = "45",
-         color = colorRampPalette(c("white", "yellow", "orange", "red"))(100))
+cat("Generating heatmap...\n")
+pdf(heatmap_plot, width = 14, height = 8)
+
+# Check if there are any valid values (non-zero, non-NA) in the data
+max_val <- max(combined_heatmap_data, na.rm = TRUE)
+if (is.finite(max_val) && max_val > 0) {
+  pheatmap(combined_heatmap_data,
+           annotation_col = col_anno,
+           annotation_names_col = TRUE,
+           cluster_cols = FALSE,
+           cluster_rows = FALSE,
+           display_numbers = TRUE,
+           number_format = "%.0f",
+           number_color = "black",
+           main = paste0("DEG Counts Across Thresholds\n(", project, " - ", dataset, " - ", tool, ")"),
+           fontsize = 10,
+           fontsize_number = 8,
+           angle_col = "45",
+           color = colorRampPalette(c("white", "yellow", "orange", "red"))(100),
+           breaks = seq(0, max_val, length.out = 101))
+} else {
+  # If all zeros or NA, create a simple text plot
+  plot.new()
+  text(0.5, 0.5, "No significant DEGs found at any threshold",
+       cex = 1.5, col = "red")
+  title(main = paste0("DEG Counts Across Thresholds\n(", project, " - ", dataset, " - ", tool, ")"))
+}
 dev.off()
 
 cat("Heatmap saved to:", heatmap_plot, "\n")
