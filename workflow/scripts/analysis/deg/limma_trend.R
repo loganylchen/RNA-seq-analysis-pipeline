@@ -48,7 +48,7 @@ limma_trend_pipeline <- function(design_string,count,coldata,
     cat("  Columns available:", paste(names(coldata), collapse=", "), "\n")
     cat("Conditions:", case_condition, "vs", control_condition, "\n")
 
-    condition <- factor(coldata[[condition_col]], levels=c(control_condition, case_condition))
+    condition <- factor(coldata[[condition_col]], levels=c(case_condition, control_condition))
     cat("Condition levels:", levels(condition), "\n")
     cat("Condition counts:\n")
     print(table(condition))
