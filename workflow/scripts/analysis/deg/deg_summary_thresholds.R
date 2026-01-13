@@ -296,6 +296,7 @@ col_anno <- data.frame(
 )
 cat("Column annotation:\n")
 print(col_anno)
+print(combined_heatmap_data)
 rownames(col_anno) <- colnames(combined_heatmap_data)
 
 # Create heatmap
