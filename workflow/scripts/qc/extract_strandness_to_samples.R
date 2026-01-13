@@ -38,61 +38,41 @@ extract_strandness <- function(qualimap_file) {
   # The file has sections and we need to find the strandness section
   lines <- readLines(qualimap_file, warn=FALSE)
 
-  # Find the strandness section
-  # Format: "Strand specificity" section with value
+  # Initialize strandness values
   strandness <- NA
+  fwd_strandness <- NA
+  rev_strandness <- NA
 
-  # Look for strandness information
+  # Look for SSP estimation format: "SSP estimation (fwd/rev) = 0.9 / 0.1"
+  # This is the most reliable format for QualiMap RNA-seq results
   for (i in seq_along(lines)) {
     line <- lines[i]
 
-    # Look for various strandness indicators
-    if (grepl("Strand", line, ignore.case=TRUE)) {
-      # Check for specific patterns
-      if (grepl("specificity", line, ignore.case=TRUE)) {
-        # Extract value after "Strand specificity"
-        value <- str_extract(line, "\\d+\\.?\\d*")
-        if (!is.na(value)) {
-          strandness <- as.numeric(value)
-          break
-        }
+    # Look for SSP estimation line
+    if (grepl("SSP estimation", line, ignore.case=TRUE)) {
+      # Extract the forward and reverse values
+      # Format: "SSP estimation (fwd/rev) = 0.9 / 0.1"
+      # or: "SSP estimation (fwd/rev) = 0.90 / 0.10"
+
+      # Extract both numbers from the line
+      numbers <- str_extract_all(line, "\\d+\\.?\\d*")[[1]]
+
+      if (length(numbers) >= 2) {
+        fwd_strandness <- as.numeric(numbers[1])
+        rev_strandness <- as.numeric(numbers[2])
+
+        # Strandness is the larger of the two (dominant strand)
+        strandness <- max(fwd_strandness, rev_strandness)
+
+        cat("    Found SSP estimation: fwd =", fwd_strandness, ", rev =", rev_strandness, "\n")
+        break
       }
     }
   }
 
-  # If not found in summary, check the gene body coverage section
-  # QualiMap may have strandness metrics in other sections
+  # If SSP not found, try other formats
   if (is.na(strandness)) {
-    # Try to parse from file sections
-    in_strand_section <- FALSE
-    for (line in lines) {
-      if (grepl("^=+\\s*Strand", line, ignore.case=TRUE)) {
-        in_strand_section <- TRUE
-        next
-      }
-
-      if (in_strand_section) {
-        if (grepl("^=+", line)) {
-          # Next section started
-          break
-        }
-
-        # Look for the strandness value
-        if (grepl("strand", line, ignore.case=TRUE) &&
-            grepl("\\d+", line)) {
-          value <- str_extract(line, "\\d+\\.?\\d*")
-          if (!is.na(value)) {
-            strandness <- as.numeric(value)
-            break
-          }
-        }
-      }
-    }
-  }
-
-  # Additional parsing: Check for specific QualiMap format
-  # Sometimes strandness is shown as a percentage
-  if (is.na(strandness)) {
+    # Look for strand specificity percentage
     for (line in lines) {
       # Format: "Strand specificity : 99.5%"
       if (grepl("Strand.*specificity", line, ignore.case=TRUE)) {
@@ -100,6 +80,7 @@ extract_strandness <- function(qualimap_file) {
         value <- str_extract(line, "\\d+\\.?\\d*")
         if (!is.na(value)) {
           strandness <- as.numeric(value)
+          cat("    Found strand specificity:", strandness, "%\n")
           break
         }
       }
@@ -108,7 +89,9 @@ extract_strandness <- function(qualimap_file) {
 
   return(list(
     sample_name = sample_name,
-    strandness = strandness
+    strandness = strandness,
+    fwd_strandness = fwd_strandness,
+    rev_strandness = rev_strandness
   ))
 }
 
@@ -130,13 +113,18 @@ cat("  Project samples:", nrow(samples_df), "\n\n")
 # ============================================================================
 cat("Extracting strandness from QualiMap files...\n")
 strandness_list <- list()
+fwd_list <- list()
+rev_list <- list()
 
 for (qualimap_file in qualimap_files) {
   result <- extract_strandness(qualimap_file)
   strandness_list[[result$sample_name]] <- result$strandness
+  fwd_list[[result$sample_name]] <- result$fwd_strandness
+  rev_list[[result$sample_name]] <- result$rev_strandness
 
   if (!is.na(result$strandness)) {
-    cat("  ", result$sample_name, ": ", result$strandness, "%\n", sep = "")
+    cat("  ", result$sample_name, ": ", result$strandness, "% ",
+        "(fwd: ", result$fwd_strandness, ", rev: ", result$rev_strandness, ")\n", sep = "")
   } else {
     cat("  ", result$sample_name, ": NA (strandness not found)\n", sep = "")
   }
@@ -158,14 +146,61 @@ strandness_values <- sapply(samples_df$sample_name, function(x) {
   }
 })
 
-# Add the strandness column
+# Create forward strandness vector
+fwd_strandness_values <- sapply(samples_df$sample_name, function(x) {
+  if (x %in% names(fwd_list)) {
+    return(fwd_list[[x]])
+  } else {
+    return(NA)
+  }
+})
+
+# Create reverse strandness vector
+rev_strandness_values <- sapply(samples_df$sample_name, function(x) {
+  if (x %in% names(rev_list)) {
+    return(rev_list[[x]])
+  } else {
+    return(NA)
+  }
+})
+
+# Add the strandness columns
 samples_df$strandness <- strandness_values
+samples_df$strandness_fwd <- fwd_strandness_values
+samples_df$strandness_rev <- rev_strandness_values
+
+# Classify strandness based on forward and reverse values
+# FWD: forward > 0.9
+# REV: reverse > 0.9
+# UNSTRAND: everything else
+samples_df$strandness_classification <- sapply(seq_len(nrow(samples_df)), function(i) {
+  fwd <- fwd_strandness_values[i]
+  rev <- rev_strandness_values[i]
+
+  if (is.na(fwd) || is.na(rev)) {
+    return(NA)
+  } else if (fwd > 0.9) {
+    return("FWD")
+  } else if (rev > 0.9) {
+    return("REV")
+  } else {
+    return("UNSTRAND")
+  }
+})
 
 # Count NA values
 na_count <- sum(is.na(samples_df$strandness))
 cat("  Added strandness column to", nrow(samples_df), "samples\n")
 cat("  NA values:", na_count, "\n")
-cat("  Non-NA values:", sum(!is.na(samples_df$strandness)), "\n\n")
+cat("  Non-NA values:", sum(!is.na(samples_df$strandness)), "\n")
+
+# Print classification distribution
+cat("\n  Strandness classification:\n")
+class_counts <- table(samples_df$strandness_classification, useNA = "ifany")
+for (class_name in names(class_counts)) {
+  cat("    ", class_name, ": ", as.character(class_counts[class_name]), " samples\n", sep = "")
+}
+cat("\n")
 
 # ============================================================================
 # Determine overall strandness for the dataset
@@ -213,18 +248,48 @@ all_samples_strandness <- sapply(original_samples_df$sample_name, function(x) {
   }
 })
 
-original_samples_df$strandness <- all_samples_strandness
+all_samples_fwd <- sapply(original_samples_df$sample_name, function(x) {
+  if (x %in% samples_df$sample_name) {
+    return(samples_df$strandness_fwd[samples_df$sample_name == x])
+  } else {
+    return(NA)
+  }
+})
 
-# Reorder columns: put strandness after other metadata columns
+all_samples_rev <- sapply(original_samples_df$sample_name, function(x) {
+  if (x %in% samples_df$sample_name) {
+    return(samples_df$strandness_rev[samples_df$sample_name == x])
+  } else {
+    return(NA)
+  }
+})
+
+all_samples_classification <- sapply(original_samples_df$sample_name, function(x) {
+  if (x %in% samples_df$sample_name) {
+    return(samples_df$strandness_classification[samples_df$sample_name == x])
+  } else {
+    return(NA)
+  }
+})
+
+original_samples_df$strandness <- all_samples_strandness
+original_samples_df$strandness_fwd <- all_samples_fwd
+original_samples_df$strandness_rev <- all_samples_rev
+original_samples_df$strandness_classification <- all_samples_classification
+
+# Reorder columns: put strandness columns after other metadata columns
 col_order <- c(
-  setdiff(colnames(original_samples_df), "strandness"),
-  "strandness"
+  setdiff(colnames(original_samples_df), c("strandness", "strandness_fwd", "strandness_rev", "strandness_classification")),
+  "strandness",
+  "strandness_fwd",
+  "strandness_rev",
+  "strandness_classification"
 )
 original_samples_df <- original_samples_df[, col_order]
 
 # Write the complete file (overwrite original with strandness added)
 write_tsv(original_samples_df, samples_file)
-cat("\nUpdated original samples file with strandness column\n")
+cat("\nUpdated original samples file with strandness columns\n")
 
 cat("\n=== Strandness Extraction Complete ===\n")
 

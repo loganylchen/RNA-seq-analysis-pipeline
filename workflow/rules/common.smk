@@ -57,7 +57,7 @@ def get_samples_strandness(qc_files):
 
 def get_info(wildcards):
     project = wildcards.project
-    dataset_samples = "{project}/config/samples_with_strandness.tsv"
+    dataset_samples = f"{project}/config/samples_with_strandness.tsv"
     return dataset_samples
 
 
