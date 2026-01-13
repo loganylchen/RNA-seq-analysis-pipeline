@@ -11,6 +11,7 @@ suppressPackageStartupMessages({
   library(ggplot2)
   library(pheatmap)
   library(gridExtra)
+  library(tibble)
 })
 
 # Get parameters from Snakemake
