@@ -2,13 +2,14 @@
 rule deseq2:
     input:
         counts="{project}/quantification/{tool}/{dataset}_count_matrix_corrected.txt",
+        samples=get_info,
     output:
         count_rds="{project}/DEG/deseq2/{tool}/{dataset}_count_matrix.rds",
         vst_rds="{project}/DEG/deseq2/{tool}/{dataset}_vst_matrix.rds",
         deg_rds="{project}/DEG/deseq2/{tool}/{dataset}_deg.rds",
         deg_tsv="{project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
     params:
-        samples=config["samples"],
+        samples=get_info,
         dataset=get_dataset,
         project=get_project,
         design=get_deseq2_design,

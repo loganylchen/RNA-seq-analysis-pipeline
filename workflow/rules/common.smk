@@ -55,6 +55,11 @@ def get_samples_strandness(qc_files):
         strandness_dict[sample_name] = get_sequence_type(qc_file)
     return strandness_dict
 
+def get_info(wildcards):
+    project = wildcards.project
+    dataset_samples = "{project}/config/samples_with_strandness.tsv"
+    return dataset_samples
+
 
 def get_condition(wildcards, condition_type):
     dataset = wildcards.dataset

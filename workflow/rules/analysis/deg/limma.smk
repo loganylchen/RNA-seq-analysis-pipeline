@@ -2,11 +2,12 @@
 rule limma_trend:
     input:
         counts="{project}/quantification/{tool}/{dataset}_count_matrix_corrected.txt",
+        samples=get_info,
     output:
         deg_rds="{project}/DEG/limma_trend/{tool}/{dataset}_deg.rds",
         deg_tsv="{project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
     params:
-        samples=config["samples"],
+        samples=get_info,
         dataset=get_dataset,
         project=get_project,
         design=get_edeger_design,
@@ -32,11 +33,12 @@ rule limma_trend:
 rule limma_voom:
     input:
         counts="{project}/quantification/{tool}/{dataset}_count_matrix_corrected.txt",
+        samples=get_info,
     output:
         deg_rds="{project}/DEG/limma_voom/{tool}/{dataset}_deg.rds",
         deg_tsv="{project}/DEG/limma_voom/{tool}/{dataset}_deg.tsv",
     params:
-        samples=config["samples"],
+        samples=get_info,
         dataset=get_dataset,
         project=get_project,
         design=get_edeger_design,
