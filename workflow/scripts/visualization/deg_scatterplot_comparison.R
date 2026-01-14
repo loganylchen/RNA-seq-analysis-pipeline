@@ -123,6 +123,7 @@ for (info in deg_info) {
 # Function to read DEG TSV
 read_deg_data <- function(filepath) {
     deg <- read_tsv(filepath, show_col_types = FALSE)
+    print(head(deg))
     return(deg)
 }
 
