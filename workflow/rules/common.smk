@@ -279,6 +279,7 @@ def get_final_output():
         for tool in QUANTIFICATION_TOOLS:
 
             final_output += [
+                f"{sample_project}/mime/{tool}/combined_response_datasets.rds",
                 f"{sample_project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/DEG/edger/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
@@ -327,4 +328,5 @@ def get_final_output():
         # f"{sample_project}/DEG/classifier/lasso_roc_curve.png",
     ]
 
-    return final_output + get_qc_files()
+    all_targets = final_output + get_qc_files()
+    return list(set(all_targets))
