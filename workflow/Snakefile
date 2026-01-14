@@ -43,7 +43,13 @@ include: "rules/analysis/deg/deseq2.smk"
 include: "rules/analysis/deg/edger.smk"
 include: "rules/analysis/deg/limma.smk"
 include: "rules/analysis/enrichment.smk"
+
+
 # include: "rules/analysis/dark_channel_biomarker.smk"
+
+
+# utilities
+include: "rules/utilities/mime.smk"
 # visualization
 include: "rules/visualization/vis.smk"
 # include: "rules/visualization/deg_visualization.smk"
