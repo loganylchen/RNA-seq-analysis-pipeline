@@ -32,7 +32,7 @@
 rule prepare_mime_dataset_response:
     """Prepare Mime-compatible dataset for response prediction"""
     input:
-        counts="{project}/quantification/{tool}/{dataset}_TPM_matrix_corrected.txt",
+        expression="{project}/quantification/{tool}/{dataset}_TPM_matrix_corrected.txt",
         samples=get_info,
     output:
         mime_rds="{project}/mime/{tool}/{dataset}_response_dataset.rds",
@@ -61,8 +61,10 @@ rule combine_mime_datasets:
         rds_files=expand(
             "{project}/mime/{{tool}}/{dataset}_response_dataset.rds",
             project=config["project"],
-            dataset=config.get("mime_datasets", {}).get("datasets", ["discovery", "validation"]),
-            tool=config.get("mime_datasets", {}).get("tool", "salmon")
+            dataset=config.get("mime_datasets", {}).get(
+                "datasets", ["discovery", "validation"]
+            ),
+            tool=config.get("mime_datasets", {}).get("tool", "salmon"),
         ),
     output:
         combined_rds="{project}/mime/{tool}/combined_response_datasets.rds",
