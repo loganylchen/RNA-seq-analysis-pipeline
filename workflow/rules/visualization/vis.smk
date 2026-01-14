@@ -219,8 +219,11 @@ rule deg_scatterplot_comparison:
     input:
         combined_deg="{project}/DEG/{tool}_{dataset}_combined_degs.tsv",
         deg_files=expand(
-            "{{project}}/DEG/{{tool}}/{quant_tool}/{{dataset}}_deg.tsv",
-            quant_tool=["deseq2", "edger", "limma_trend", "limma_voom"]
+            "{project}/DEG/{tool}/{quant_tool}/{dataset}_deg.tsv",
+            quant_tool=["deseq2", "edger", "limma_trend", "limma_voom"],
+            project=get_project,
+            dataset=get_dataset,
+            tool=get_tool,
         ),
     output:
         pdf="{project}/visualization/{tool}_{dataset}_scatterplot_comparison.pdf",

@@ -82,6 +82,10 @@ def get_dataset(wildcards):
     return get_wildcards_element(wildcards, "dataset")
 
 
+def get_tool(wildcards):
+    return get_wildcards_element(wildcards, "tool")
+
+
 def get_project(wildcards):
     return get_wildcards_element(wildcards, "project")
 
