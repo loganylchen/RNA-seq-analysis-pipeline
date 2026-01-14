@@ -58,21 +58,14 @@ rule prepare_mime_dataset_response:
 rule combine_mime_datasets:
     """Combine individual Mime dataset RDS files into one list for Mime"""
     input:
-        rds_files=expand(
-            "{project}/mime/{{tool}}/{dataset}_response_dataset.rds",
-            project=config["project"],
-            dataset=config.get("mime_datasets", {}).get(
-                "datasets", ["discovery", "validation"]
-            ),
-            tool=config.get("mime_datasets", {}).get("tool", "salmon"),
-        ),
+        rds_files=get_mime_rds_files,
     output:
         combined_rds="{project}/mime/{tool}/combined_response_datasets.rds",
     log:
         "logs/{project}/combine_mime_datasets_{tool}.log",
     container:
         (
-            "docker://btrspg/rlan:20260104"
+            "docker://btrspg/rlan:20260114"
             if config["container"].get("r", None) is None
             else config["container"].get("r", None)
         )
@@ -81,7 +74,6 @@ rule combine_mime_datasets:
         mem_mb=config["resources"]["mem_mb"].get("prepare_mime", 8192),
     params:
         samples=config["samples"],
-        project=config["project"],
-        discovery_dataset=config.get("mime_datasets", {}).get("discovery", "discovery"),
+        project=get_project,
     script:
         "../../scripts/utilities/combine_mime_datasets.R"
