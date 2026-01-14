@@ -256,7 +256,7 @@ set_order <- c("DESeq2_up", "edgeR_up", "limma_trend_up", "limma_voom_up",
 
 m <- make_comb_mat(gene_sets_8)
 UpSet(m,
-      comb_order = order(comb_name(m)),
+      comb_order = order(comb_size(m), decreasing = TRUE),
       set_order = set_order,
       top_annotation = upset_top_annotation(m,
                                             add_numbers = TRUE,
