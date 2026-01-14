@@ -15,59 +15,85 @@ suppressPackageStartupMessages({
 making_TPM_from_corrected_salmon_counts <- function(salmon_files, corrected_count_matrix, tpm_matrix) {
     # Step 1: Extract effective lengths from Salmon quant.sf files
     cat("Extracting effective lengths from Salmon quant.sf files...\n")
-    effective_length_list <- list()
+    gene_length_df <- NULL
 
     for(f in salmon_files){
-        sample_name <- basename(dirname(f))
-        message('Reading effective lengths from:', f, 'for sample:', sample_name)
+        message('Reading gene lengths from:', f)
         tmp_df <- read_tsv(f, comment = "#", progress = FALSE) %>%
-                        dplyr::select(Name, EffectiveLength) %>%
-                        dplyr::mutate(Sample = sample_name)
-        effective_length_list[[sample_name]] <- tmp_df
+                        dplyr::select(Name, EffectiveLength)
+        if(is.null(gene_length_df)){
+            gene_length_df <- tmp_df
+        } else {
+            # Verify consistency of gene lengths across samples
+            if(!all(gene_length_df$Name == tmp_df$Name)){
+                stop("Gene IDs or order differs between samples. Please check Salmon files.")
+            }
+        }
+        break  # Only need to read one file to get gene lengths
     }
 
-    cat("Effective lengths extracted for", length(effective_length_list), "samples.\n")
+    cat("Gene lengths extracted for", nrow(gene_length_df), "genes.\n")
+    cat("First few rows of gene length data:\n")
+    print(head(gene_length_df))
 
     # Step 2: Read the batch-corrected count matrix
-    cat("Reading batch-corrected count matrix:", corrected_count_matrix, "\n")
+    cat("\nReading batch-corrected count matrix:", corrected_count_matrix, "\n")
     corrected_counts <- read.table(corrected_count_matrix, header=TRUE, row.names=1, check.names=FALSE, sep='\t')
     cat("Corrected count matrix dimensions:", nrow(corrected_counts), "genes x", ncol(corrected_counts), "samples.\n")
+    cat("Sample names in count matrix:", paste(colnames(corrected_counts), collapse=", "), "\n")
+    cat("First few gene names:", paste(head(rownames(corrected_counts)), collapse=", "), "\n")
 
-    # Step 3: Calculate TPM from corrected counts using sample-specific effective lengths
-    cat("Calculating TPM from batch-corrected counts using effective lengths...\n")
+    # Check if genes in count matrix match genes in Salmon
+    common_genes <- intersect(rownames(corrected_counts), gene_length_df$Name)
+    cat("Common genes between count matrix and Salmon:", length(common_genes), "\n")
 
-    # Create a data frame for TPM values
+    if (length(common_genes) == 0) {
+        stop("ERROR: No common genes found between count matrix and Salmon files!")
+    }
+
+    if (length(common_genes) < nrow(corrected_counts)) {
+        cat("WARNING: Only", length(common_genes), "of", nrow(corrected_counts),
+            "genes in count matrix found in Salmon.\n")
+        cat("Filtering count matrix to common genes...\n")
+        corrected_counts <- corrected_counts[common_genes, ]
+    }
+
+    # Step 3: Calculate TPM from corrected counts
+    cat("\nCalculating TPM from batch-corrected counts...\n")
+
+    # Create a copy for TPM calculation
     tpm_df <- as.data.frame(matrix(0, nrow=nrow(corrected_counts), ncol=ncol(corrected_counts)))
     rownames(tpm_df) <- rownames(corrected_counts)
     colnames(tpm_df) <- colnames(corrected_counts)
 
     # Calculate TPM for each sample
     for(sample_name in colnames(corrected_counts)){
-        cat("Processing sample:", sample_name, "\n")
+        cat("\nProcessing sample:", sample_name, "\n")
 
-        if(!sample_name %in% names(effective_length_list)){
-            warning(paste("Sample", sample_name, "not found in Salmon files. Skipping TPM calculation for this sample."))
-            next
-        }
-
-        # Get counts for this sample
+        # Get counts for this sample as a named vector
         counts <- corrected_counts[, sample_name]
+        cat("  Non-zero counts:", sum(counts != 0), "/", length(counts), "\n")
 
-        # Get effective lengths for this sample
-        eff_length_df <- effective_length_list[[sample_name]]
-
-        # Prepare data frame for calculation
+        # Create data frame with gene IDs and counts
         sample_df <- data.frame(
-            Name = names(counts),
+            Name = rownames(corrected_counts),
             Count = as.numeric(counts),
             stringsAsFactors = FALSE
         )
 
-        # Merge with effective lengths
-        sample_df <- merge(sample_df, eff_length_df, by="Name", all.x=TRUE)
+        cat("  Sample data frame dimensions:", nrow(sample_df), "x", ncol(sample_df), "\n")
 
-        # Calculate TPM: TPM = (Count / EffectiveLength) * 1e3 / sum(Count / EffectiveLength) * 1e6
-        # This is equivalent to: RPK = Count / (EffectiveLength / 1000), then TPM = RPK / (sum(RPK) / 1e6)
+        # Merge with gene lengths
+        sample_df <- merge(sample_df, gene_length_df, by="Name", all.x=TRUE)
+        cat("  After merge with gene lengths:", nrow(sample_df), "genes\n")
+
+        # Check if we have any genes with valid lengths
+        if (nrow(sample_df) == 0) {
+            cat("  WARNING: No genes found for sample", sample_name, "- setting TPM to 0\n")
+            next
+        }
+
+        # Calculate RPK (reads per kilobase)
         sample_df <- sample_df %>%
             dplyr::mutate(length_kb = EffectiveLength / 1000) %>%
             dplyr::mutate(rpk = Count / length_kb)
@@ -75,26 +101,35 @@ making_TPM_from_corrected_salmon_counts <- function(salmon_files, corrected_coun
         # Handle zero or negative effective lengths
         sample_df$rpk[is.na(sample_df$rpk) | is.infinite(sample_df$rpk)] <- 0
 
-        # Calculate scaling factor
+        # Calculate TPM: RPK / (sum(RPK) / 1e6)
         total_rpk <- sum(sample_df$rpk, na.rm=TRUE)
+        cat("  Total RPK:", total_rpk, "\n")
 
-        if(total_rpk > 0){
-            sample_df <- sample_df %>%
-                dplyr::mutate(tpm = (rpk / total_rpk) * 1e6)
-        } else {
-            sample_df$tpm <- 0
+        if (total_rpk == 0) {
+            cat("  WARNING: Total RPK is 0 for sample", sample_name, "- setting TPM to 0\n")
+            next
         }
 
+        sample_df <- sample_df %>%
+            dplyr::mutate(tpm = rpk / (total_rpk / 1e6))
+
         # Store TPM values
-        rownames(sample_df) <- sample_df$Name
         tpm_df[sample_df$Name, sample_name] <- sample_df$tpm
+        cat("  TPM range:", min(sample_df$tpm, na.rm=TRUE), "-", max(sample_df$tpm, na.rm=TRUE), "\n")
     }
 
-    cat("TPM calculation completed.\n")
+    cat("\nTPM calculation completed.\n")
     cat("TPM matrix dimensions:", nrow(tpm_df), "genes x", ncol(tpm_df), "samples.\n")
 
+    # Summary statistics
+    cat("\nTPM summary:\n")
+    for (sample_name in colnames(tpm_df)) {
+        cat("  ", sample_name, ": ", sum(tpm_df[, sample_name], na.rm=TRUE),
+            " total TPM,", sum(tpm_df[, sample_name] > 0, na.rm=TRUE), " genes detected\n")
+    }
+
     # Step 4: Write TPM matrix
-    cat("Writing TPM matrix to:", tpm_matrix, "\n")
+    cat("\nWriting TPM matrix to:", tpm_matrix, "\n")
     write.table(tpm_df, tpm_matrix, quote=FALSE, sep='\t', col.names=NA)
     cat("Done!\n")
 }
@@ -104,3 +139,10 @@ making_TPM_from_corrected_salmon_counts(
     corrected_count_matrix = snakemake@input[["corrected_counts"]],
     tpm_matrix = snakemake@output[['tpm_matrix']]
 )
+
+cat("\n==============================================================\n")
+cat("TPM calculation complete!\n")
+cat("==============================================================\n")
+
+sink()
+sink(type="message")
