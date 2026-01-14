@@ -34,6 +34,7 @@ limma_voom_file <- snakemake@input[["limma_voom"]]
 upset_plot <- snakemake@output[["upset_plot"]]
 upset_data_file <- snakemake@output[["upset_data"]]
 summary_file <- snakemake@output[["summary"]]
+combined_deg_file <- snakemake@output[["combined_deg"]]
 
 cat("=== DEG Upset Plot Analysis (8 sets) ===\n")
 cat("Project:", project, "\n")
@@ -121,6 +122,61 @@ upset_df <- data.frame(
 write_tsv(upset_df, upset_data_file)
 cat("\nUpset data written to:", upset_data_file, "\n")
 
+# Create combined DEG table with format:
+# gene_id | up_DESeq2 | up_edgeR | up_limma_trend | up_limma_voom | up_consistent_count |
+# down_DESeq2 | down_edgeR | down_limma_trend | down_limma_voom | down_consistent_count
+# If a gene is both up and down regulated by different tools, set both counts to -1
+
+cat("\n--- Creating combined DEG table ---\n")
+
+combined_deg <- data.frame(
+  gene_id = all_genes,
+  deseq2_up = as.integer(all_genes %in% deseq2_genes$up),
+  edger_up = as.integer(all_genes %in% edger_genes$up),
+  limma_trend_up = as.integer(all_genes %in% limma_trend_genes$up),
+  limma_voom_up = as.integer(all_genes %in% limma_voom_genes$up),
+  stringsAsFactors = FALSE
+)
+
+# Calculate up-consistent count
+combined_deg$up_consistent_count <- rowSums(combined_deg[, c("deseq2_up", "edger_up", "limma_trend_up", "limma_voom_up")])
+
+# Add down-regulated columns
+combined_deg$deseq2_down <- as.integer(all_genes %in% deseq2_genes$down)
+combined_deg$edger_down <- as.integer(all_genes %in% edger_genes$down)
+combined_deg$limma_trend_down <- as.integer(all_genes %in% limma_trend_genes$down)
+combined_deg$limma_voom_down <- as.integer(all_genes %in% limma_voom_genes$down)
+
+# Calculate down-consistent count
+combined_deg$down_consistent_count <- rowSums(combined_deg[, c("deseq2_down", "edger_down", "limma_trend_down", "limma_voom_down")])
+
+# Check for conflicting genes (both up and down in different tools)
+conflicting <- (combined_deg$up_consistent_count > 0) & (combined_deg$down_consistent_count > 0)
+cat("Genes with conflicting regulation:", sum(conflicting), "\n")
+
+# Set counts to -1 for conflicting genes
+combined_deg$up_consistent_count[conflicting] <- -1
+combined_deg$down_consistent_count[conflicting] <- -1
+
+# Reorder columns to match requested format
+combined_deg <- combined_deg[, c("gene_id",
+                                  "deseq2_up", "edger_up", "limma_trend_up", "limma_voom_up",
+                                  "up_consistent_count",
+                                  "deseq2_down", "edger_down", "limma_trend_down", "limma_voom_down",
+                                  "down_consistent_count")]
+
+# Rename columns to match requested format
+colnames(combined_deg) <- c("gene_id",
+                             "DESeq2_up", "edgeR_up", "limma_trend_up", "limma_voom_up",
+                             "up_regulated_count",
+                             "DESeq2_down", "edgeR_down", "limma_trend_down", "limma_voom_down",
+                             "down_regulated_count")
+
+write_tsv(combined_deg, combined_deg_file)
+cat("Combined DEG table written to:", combined_deg_file, "\n")
+cat("  Format: gene_id | 4 up-regulated tools | up_count | 4 down-regulated tools | down_count\n")
+cat("  Conflicting genes (both up and down): marked with -1 in both count columns\n")
+
 # Calculate summary statistics
 n_up_deseq2 <- length(deseq2_genes$up)
 n_up_edger <- length(edger_genes$up)
@@ -194,9 +250,13 @@ cat("\n--- Generating upset plot with", n_sets, "sets ---\n")
 
 pdf(upset_plot, width = 14, height = 5)
 
-m <- make_comb_mat(gene_sets_8)
+# Define the order for sets: all up sets first, then all down sets
+set_order <- c("DESeq2_up", "edgeR_up", "limma_trend_up", "limma_voom_up",
+               "DESeq2_down", "edgeR_down", "limma_trend_down", "limma_voom_down")
+
+m <- make_comb_mat(gene_sets_8, set_order = set_order)
 UpSet(m,
-      comb_order = order(comb_size(m), decreasing = TRUE),
+      comb_order = order(comb_name(m)),
       top_annotation = upset_top_annotation(m,
                                             add_numbers = TRUE,
                                             numbers_gp = gpar(fontsize = 10)),

@@ -8,6 +8,7 @@ rule deg_upset_plot:
         upset_plot="{project}/visualization/{tool}_{dataset}_upset.pdf",
         upset_data="{project}/DEG/{tool}_{dataset}_upset_data.tsv",
         summary="{project}/DEG/{tool}_{dataset}_upset_summary.txt",
+        combined_deg="{project}/DEG/{tool}_{dataset}_combined_degs.tsv",
     params:
         project=get_project,
         log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
