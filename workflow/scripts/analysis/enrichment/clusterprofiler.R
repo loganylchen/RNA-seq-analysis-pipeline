@@ -41,14 +41,14 @@ loading_data <- function(deg_tsv,deg_tool_n_threshold=deg_tool_n_threshold  ){
     cat("deg_tool_n_threshold is:")
     cat(deg_tool_n_threshold)
     DEG_df <- read.table(deg_tsv,header=TRUE, row.names=1) %>%
-            dplyr::mutate(Ensembl_ID=rownames(.)) 
+            dplyr::mutate(Ensembl_ID=rownames(.)) %>% as.data.frame()
     print(head(DEG_df))
     DEG_list <- DEG_df %>%
-            dplyr::filter(up_regulated_count >= deg_tool_n_threshold,down_regulated_count >= deg_tool_n_threshold)
+            dplyr::filter(up_regulated_count >= !!deg_tool_n_threshold,down_regulated_count >= !!deg_tool_n_threshold)
     if(dim(DEG_list)[1]==0){
         deg_tool_n_threshold <- 1
         DEG_list <- DEG_df %>%
-            dplyr::filter(up_regulated_count >= deg_tool_n_threshold,down_regulated_count >= deg_tool_n_threshold)
+            dplyr::filter(up_regulated_count >= !!deg_tool_n_threshold,down_regulated_count >= !!deg_tool_n_threshold)
     }
     ID_CONV <- bitr(DEG_list$Ensembl_ID, fromType="ENSEMBL", toType=c("ENTREZID","SYMBOL"),OrgDb=org.eg.db)
 
@@ -57,8 +57,8 @@ loading_data <- function(deg_tsv,deg_tool_n_threshold=deg_tool_n_threshold  ){
                 
 
 
-    up_regulated_deg_list <- DEG_list %>% dplyr::filter(up_regulated_count>=deg_tool_n_threshold)
-    down_regulated_deg_list <- DEG_list %>% dplyr::filter(down_regulated_count>=deg_tool_n_threshold)
+    up_regulated_deg_list <- DEG_list %>% dplyr::filter(up_regulated_count>=!!deg_tool_n_threshold)
+    down_regulated_deg_list <- DEG_list %>% dplyr::filter(down_regulated_count>=!!deg_tool_n_threshold)
     return(list(
         deg_list=DEG_list,
         up_deg_list=up_regulated_deg_list,
