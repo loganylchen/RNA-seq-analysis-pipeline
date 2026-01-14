@@ -97,6 +97,15 @@ def get_deg_results(wildcards):
     return deg_results
 
 
+def get_mime_rds_files(wildcards):
+    project = wildcards.project
+    tool = wildcards.tool
+    rds_files = []
+    for dataset in datasets:
+        rds_files.append(f"{project}/mime/{tool}/{dataset}_response_dataset.rds")
+    return rds_files
+
+
 def get_project(wildcards):
     return get_wildcards_element(wildcards, "project")
 
@@ -295,7 +304,7 @@ def get_final_output():
         # f"{sample_project}/visualization/salmon_pca.png",
         f"{sample_project}/qc/multiqc/",
         f"{sample_project}/qc/qc_summary.tsv",
-        f"{sample_project}/qc/qc_summary_figures/",
+        # f"{sample_project}/qc/qc_summary_figures/",
         # f"{sample_project}/enrichment/clusterprofiler/validation_gsea_enrichment.tsv",
         # f"{sample_project}/modification/modtect/merged.modtect.txt",
         # f"{sample_project}/modification/modtect/annotated_modifications.tsv",
