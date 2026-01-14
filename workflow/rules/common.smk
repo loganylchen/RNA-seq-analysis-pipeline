@@ -55,6 +55,7 @@ def get_samples_strandness(qc_files):
         strandness_dict[sample_name] = get_sequence_type(qc_file)
     return strandness_dict
 
+
 def get_info(wildcards):
     project = wildcards.project
     dataset_samples = f"{project}/config/samples_with_strandness.tsv"
@@ -261,6 +262,7 @@ def get_final_output():
                 f"{sample_project}/visualization/{tool}_{dataset}_pca.png",
                 f"{sample_project}/visualization/{tool}_{dataset}_pca_batchcorrected.png",
                 f"{sample_project}/DEG/{tool}_{dataset}_summary_thresholds.tsv",
+                f"{sample_project}/visualization/{tool}_{dataset}_upset.pdf",
             ]
 
         final_output += [
