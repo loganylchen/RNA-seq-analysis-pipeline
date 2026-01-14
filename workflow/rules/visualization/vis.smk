@@ -199,3 +199,46 @@ rule deg_summary_thresholds:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
     script:
         "../../scripts/analysis/deg/deg_summary_thresholds.R"
+
+
+rule deg_scatterplot_comparison:
+    """
+    Generate scatterplots comparing log2 fold changes between datasets.
+
+    Creates large multi-panel figures showing:
+    - Scatterplots of log2FC for each tool comparing multiple datasets
+    - Different colors for each tool (DESeq2, edgeR, limma-trend, limma-voom)
+    - Special shapes for genes significant in both datasets
+    - Only includes up-regulated genes from combined DEG results
+
+    Automatically detects tool and dataset names from file paths.
+    Supports any number of datasets for comparison.
+
+    Outputs both PDF and PNG formats.
+    """
+    input:
+        combined_deg="{project}/DEG/{tool}_{dataset}_combined_degs.tsv",
+        deg_files=expand(
+            "{{project}}/DEG/{{tool}}/{quant_tool}/{{dataset}}_deg.tsv",
+            quant_tool=["deseq2", "edger", "limma_trend", "limma_voom"]
+        ),
+    output:
+        pdf="{project}/visualization/{tool}_{dataset}_scatterplot_comparison.pdf",
+        png="{project}/visualization/{tool}_{dataset}_scatterplot_comparison.png",
+    params:
+        project=project,
+        log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
+        padj_threshold=config.get("deg", {}).get("padj", 0.05),
+    container:
+        (
+            "docker://btrspg/rlan:20251229"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    log:
+        "logs/{project}/deg_scatterplot_{tool}_{dataset}.log",
+    threads: config["threads"].get("deg_vis", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
+    script:
+        "../../scripts/visualization/deg_scatterplot_comparison.R"
