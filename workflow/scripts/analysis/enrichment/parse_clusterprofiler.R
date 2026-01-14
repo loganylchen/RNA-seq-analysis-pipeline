@@ -49,6 +49,6 @@ discovery_go <- rbind(
 
 
 
-write.table(validation_go,validation_go_output,quote=FALSE,sep='\t',row.names=F)
-write.table(validation_kegg,validation_kegg_output,quote=FALSE,sep='\t',row.names=F)
-write.table(validation_others,validation_others_output,quote=FALSE,sep='\t',row.names=F)
+write.table(discovery_go,discovery_go_output,quote=FALSE,sep='\t',row.names=F)
+write.table(discovery_kegg,discovery_kegg_output,quote=FALSE,sep='\t',row.names=F)
+write.table(discovery_others,discovery_others_output,quote=FALSE,sep='\t',row.names=F)
