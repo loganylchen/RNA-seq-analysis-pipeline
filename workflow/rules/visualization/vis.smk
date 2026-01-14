@@ -277,3 +277,41 @@ rule ma_plot:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 4096),
     script:
         "../../scripts/visualization/ma_plot.R"
+
+
+rule deg_faceted_plot:
+    """
+    Generate faceted DEG plot with top genes labeled.
+
+    Creates a multi-panel figure showing:
+    - All DEG results from different tools in separate facets
+    - Labels for top 3 genes by log2FC in each tool
+    - Color-coded by regulation direction (up/down/NS)
+    - Threshold lines for significance criteria
+    - Summary table with DEG counts and top genes
+
+    Combines DESeq2, edgeR, limma-trend, and limma-voom results.
+    """
+    input:
+        combined_deg="{project}/DEG/{tool}_{dataset}_combined_degs.tsv",
+        deg_files=get_deg_results,
+    output:
+        pdf="{project}/visualization/{tool}_{dataset}_faceted_plot.pdf",
+        png="{project}/visualization/{tool}_{dataset}_faceted_plot.png",
+    params:
+        project=project,
+        log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
+        padj_threshold=config.get("deg", {}).get("padj", 0.05),
+    container:
+        (
+            "docker://btrspg/rlan:20251229"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    log:
+        "logs/{project}/deg_faceted_plot_{tool}_{dataset}.log",
+    threads: config["threads"].get("deg_vis", 4)
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
+    script:
+        "../../scripts/visualization/deg_faceted_plot.R"
