@@ -38,7 +38,7 @@ deg_tool_n_threshold <- as.numeric(snakemake@params[["deg_tool_n_threshold"]])
 
 loading_data <- function(deg_tsv,deg_tool_n_threshold){
     message(paste0('Loading:',deg_tsv))
-    DEG_df <- read.table(deg_tsv) 
+    DEG_df <- read.table(deg_tsv,header=TRUE, row.names=1) 
     print(head(DEG_df))
     DEG_list <- DEG_df %>%
             dplyr::mutate(Ensembl_ID=rownames(.)) %>%
