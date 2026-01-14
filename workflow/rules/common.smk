@@ -263,6 +263,7 @@ def get_final_output():
                 f"{sample_project}/visualization/{tool}_{dataset}_pca_batchcorrected.png",
                 f"{sample_project}/DEG/{tool}_{dataset}_summary_thresholds.tsv",
                 f"{sample_project}/visualization/{tool}_{dataset}_upset.pdf",
+                f"{sample_project}/quantification/{tool}/{dataset}_TPM_matrix_corrected.txt",
             ]
 
         final_output += [
