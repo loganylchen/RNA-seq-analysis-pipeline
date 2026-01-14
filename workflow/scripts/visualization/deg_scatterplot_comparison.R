@@ -257,8 +257,17 @@ create_scatterplot <- function(scatter_obj) {
     cat("\nCreating scatterplot for", tool_name, "-", dataset1, "vs", dataset2, "...\n")
 
     # Calculate correlation
-    cor_test <- cor.test(scatter_df$x_log2FC, scatter_df$y_log2FC,
-                         method = "pearson", use = "complete.obs")
+    tryCatch(
+        {
+            cor_test <- cor.test(scatter_df$x_log2FC, scatter_df$y_log2FC,
+                                 method = "pearson", use = "complete.obs")
+        },
+        error = function(e) {
+            cat("  Warning: Correlation test failed:", e$message, "\n")
+            cor_test <<- list(estimate = NA, p.value = NA)
+        }
+    )
+    
 
     # Update significance labels for this comparison
     dataset1_only <- paste(dataset1, "only")
