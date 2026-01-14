@@ -260,28 +260,34 @@ create_scatterplot <- function(scatter_obj) {
                          method = "pearson", use = "complete.obs")
 
     # Update significance labels for this comparison
+    dataset1_only <- paste(dataset1, "only")
+    dataset2_only <- paste(dataset2, "only")
+
     scatter_df$significant <- factor(scatter_df$significant,
                                      levels = c("Not significant",
-                                               paste(dataset1, "only"),
-                                               paste(dataset2, "only"),
+                                               dataset1_only,
+                                               dataset2_only,
                                                "Both significant"))
+
+    # Create named vectors for color and shape scales
+    color_values <- c("Not significant", dataset1_only, dataset2_only, "Both significant")
+    color_names <- c("grey70", "lightblue", "lightcoral", tool_color)
+    names(color_names) <- color_values
+
+    shape_values <- c("Not significant", dataset1_only, dataset2_only, "Both significant")
+    shape_names <- c(16, 16, 16, 17)
+    names(shape_names) <- shape_values
 
     # Create plot
     p <- ggplot(scatter_df, aes(x = x_log2FC, y = y_log2FC)) +
         geom_point(aes(shape = significant, color = significant), alpha = 0.6, size = 1.5) +
         scale_color_manual(
-            values = c("Not significant" = "grey70",
-                       paste(dataset1, "only") = "lightblue",
-                       paste(dataset2, "only") = "lightcoral",
-                       "Both significant" = tool_color),
+            values = color_names,
             name = "Significance",
             drop = FALSE
         ) +
         scale_shape_manual(
-            values = c("Not significant" = 16,
-                       paste(dataset1, "only") = 16,
-                       paste(dataset2, "only") = 16,
-                       "Both significant" = 17),
+            values = shape_names,
             name = "Significance",
             drop = FALSE
         ) +
