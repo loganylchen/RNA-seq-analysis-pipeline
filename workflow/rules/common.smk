@@ -86,6 +86,17 @@ def get_tool(wildcards):
     return get_wildcards_element(wildcards, "tool")
 
 
+def get_deg_results(wildcards):
+    project = wildcards.project
+    tool = wildcards.tool
+    deg_results = []
+    for quant_tool in ["deseq2", "edger", "limma_trend", "limma_voom"]:
+        for dataset in datasets:
+            deg_file = f"{project}/DEG/{quant_tool}/{tool}/{dataset}_deg.tsv"
+            deg_results.append(deg_file)
+    return deg_results
+
+
 def get_project(wildcards):
     return get_wildcards_element(wildcards, "project")
 
