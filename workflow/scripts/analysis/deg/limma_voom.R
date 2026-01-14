@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-# Differential expression analysis using edgeR
+# Differential expression analysis using limma-voom
 
 # Set up log file sink BEFORE loading libraries
 log_file <- snakemake@log[[1]]
@@ -29,8 +29,7 @@ deg_rds<-snakemake@output[["deg_rds"]]
 deg_tsv<-snakemake@output[["deg_tsv"]]
 
 
-cat("=== Limma Trend Analysis ===\n")
-cat("Preparing coldata...\n")
+cat("=== Limma Voom Analysis ===\n")
 cat("Preparing coldata...\n")
 coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t',) %>%
             dplyr::filter(dataset_id==dataset)
@@ -131,13 +130,13 @@ limma_voom_pipeline <- function(design_string,count,coldata,
     return(res_df)
 }
 
-cat("Processing set...\n")
+cat("Processing dataset...\n")
 res <- limma_voom_pipeline(design_string,cts, coldata,
                                 condition_col= "condition",
                                 case_condition,
                                 control_condition)
 
-cat("Saving  results...\n")
+cat("Saving results...\n")
 saveRDS(res, deg_rds)
 write.table(res, deg_tsv, sep='\t', quote=FALSE, row.names=FALSE)
 

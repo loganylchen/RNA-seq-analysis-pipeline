@@ -36,16 +36,21 @@ deg_tsv<-snakemake@output[["deg_tsv"]]
 
 
 cat("Preparing coldata...\n")
-coldata <- read.table(samples, header=TRUE, row.names=1, check.names=FALSE,sep='\t',) %>%
+coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t',) %>%
             dplyr::filter(dataset_id==dataset)
 cts <- read.table(counts, header=TRUE, row.names=1, check.names=FALSE,sep='\t')
 
 deseq2_pipeline <- function(design_string,count,
                             coldata,
-                            condition,
-                            case_condition, 
+                            condition_col,
+                            case_condition,
                             control_condition, parallel=TRUE){
     cts <- count[,rownames(coldata)]
+
+    # Create condition factor with proper levels
+    condition <- factor(coldata[[condition_col]], levels=c(control_condition, case_condition))
+    coldata$condition <- condition
+
     if(design_string == ""){
         design_string <- "~ condition"
     }else{
@@ -76,7 +81,7 @@ cat("Running DESeq2 for discovery dataset...\n")
 deseq2_data <- deseq2_pipeline(design_string=design_string,
                                 count=cts,
                                    coldata=coldata,
-                                   condition="condition",
+                                   condition_col="condition",
                                    case_condition=case_condition,
                                    control_condition=control_condition,
                                    parallel=parallel)
@@ -88,3 +93,8 @@ save_list(deseq2_data,
           tsv_file=deg_tsv)   
     
 cat("DESeq2 analysis completed successfully.\n")
+
+# Close sink connections
+sink()
+sink(type="message")
+close(log)

@@ -29,7 +29,6 @@ deg_tsv<-snakemake@output[["deg_tsv"]]
 
 cat("=== edgeR Analysis ===\n")
 cat("Preparing coldata...\n")
-cat("Preparing coldata...\n")
 coldata <- read.table(samples, header=TRUE, row.names="sample_name", check.names=FALSE,sep='\t',) %>%
             dplyr::filter(dataset_id==dataset)
 
@@ -128,16 +127,13 @@ edger_pipeline <- function(design_string,count,coldata,
     return(res_df)
 }
 
-cat("Processing  set...\n")
+cat("Processing dataset...\n")
 res <- edger_pipeline(design_string,cts, coldata,
                                 condition_col= "condition",
                                 case_condition,
                                 control_condition)
 
-cat("Saving  results...\n")
-
-
-                      
+cat("Saving results...\n")
 saveRDS(res, deg_rds)
 write.table(res, deg_tsv, sep='\t', quote=FALSE, row.names=FALSE)
 
