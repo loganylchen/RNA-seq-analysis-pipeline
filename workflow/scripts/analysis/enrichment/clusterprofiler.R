@@ -38,7 +38,9 @@ deg_tool_n_threshold <- as.numeric(snakemake@params[["deg_tool_n_threshold"]])
 
 loading_data <- function(deg_tsv,deg_tool_n_threshold){
     message(paste0('Loading:',deg_tsv))
-    DEG_list <- read.table(deg_tsv) %>%
+    DEG_df <- read.table(deg_tsv) 
+    print(head(DEG_df))
+    DEG_list <- DEG_df %>%
             dplyr::mutate(Ensembl_ID=rownames(.)) %>%
             dplyr::filter(up_regulated_count >= deg_tool_n_threshold,down_regulated_count >= deg_tool_n_threshold)
             
