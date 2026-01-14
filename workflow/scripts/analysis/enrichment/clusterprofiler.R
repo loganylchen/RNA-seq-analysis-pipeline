@@ -31,17 +31,16 @@ if(species == 'human'){
 
 
 
-pvalueCutoff <- 0.05
+
 padj_threshold <- as.numeric(snakemake@params[["padj_threshold"]])
-log2foldchange_threshold <- as.numeric(snakemake@params[["log2fc_threshold"]])
+deg_tool_n_threshold <- as.numeric(snakemake@params[["deg_tool_n_threshold"]])
 
 
-loading_data <- function(deg_tsv){
-
+loading_data <- function(deg_tsv,deg_tool_n_threshold){
     message(paste0('Loading:',deg_tsv))
     DEG_list <- read.table(deg_tsv) %>%
-            dplyr::filter(!is.na(baseMean)) %>% 
-            dplyr::mutate(Ensembl_ID=rownames(.))
+            dplyr::mutate(Ensembl_ID=rownames(.)) %>%
+            dplyr::filter(up_regulated_count >= deg_tool_n_threshold,down_regulated_count >= deg_tool_n_threshold)
             
     ID_CONV <- bitr(DEG_list$Ensembl_ID, fromType="ENSEMBL", toType=c("ENTREZID","SYMBOL"),OrgDb=org.eg.db)
 
@@ -49,11 +48,9 @@ loading_data <- function(deg_tsv){
                 dplyr::full_join(ID_CONV, by=c('Ensembl_ID'='ENSEMBL'))
                 
 
-    sig_deg_list <- DEG_list %>% 
-                    dplyr::filter(padj<padj_threshold,abs(log2FoldChange)>log2foldchange_threshold)
 
-    up_regulated_deg_list <- sig_deg_list %>% dplyr::filter(log2FoldChange>0)
-    down_regulated_deg_list <- sig_deg_list %>% dplyr::filter(log2FoldChange<0)
+    up_regulated_deg_list <- DEG_list %>% dplyr::filter(up_regulated_count>=deg_tool_n_threshold)
+    down_regulated_deg_list <- DEG_list %>% dplyr::filter(down_regulated_count>=deg_tool_n_threshold)
     return(list(
         deg_list=DEG_list,
         up_deg_list=up_regulated_deg_list,
@@ -62,57 +59,7 @@ loading_data <- function(deg_tsv){
 }
 
 
-
-gsea_enrichment <- function(full_deg_list){
-    message(paste0('full_deg_list: ', dim(full_deg_list)[1]))
-    sorted_gene_list  <- full_deg_list %>% 
-    dplyr::filter(!is.na(ENTREZID),!is.na(log2FoldChange)) %>% 
-    distinct(ENTREZID,.keep_all=TRUE) %>%
-    arrange(-log2FoldChange)
-    gene_list <- sorted_gene_list$log2FoldChange
-    names(gene_list) <- sorted_gene_list$ENTREZID
-    message(paste0('gene_list: ', length(gene_list)))
-    # message(gene_list)
-    message("GSEA on KEGG")
-    gsea_kegg <- gseKEGG(geneList     =  gene_list,
-                    organism     = kegg_org,
-                    pvalueCutoff = pvalueCutoff,
-                    verbose      = FALSE) 
-    gsea_kegg <- setReadable(gsea_kegg,org.eg.db,keyType='ENTREZID')
-    message("GSEA on WP")
-    gsea_wp <- gseWP(geneList     =  gene_list,
-                    organism     = wp_org,
-                    pvalueCutoff = pvalueCutoff,
-                    verbose      = FALSE) 
-    gsea_wp <- setReadable(gsea_wp,org.eg.db,keyType='ENTREZID')
-    message("GSEA on DO")
-    gsea_do <- gseDO(gene_list,
-           pAdjustMethod = "BH",
-           pvalueCutoff = pvalueCutoff,
-           verbose       = FALSE)
-    gsea_do <- setReadable(gsea_do,org.eg.db,keyType='ENTREZID')
-    message("GSEA on NCG")
-    gsea_ncg <-  gseNCG(gene_list,
-              pAdjustMethod = "BH",
-              pvalueCutoff = pvalueCutoff,
-              verbose       = FALSE)
-    gsea_ncg <- setReadable(gsea_ncg,org.eg.db,keyType='ENTREZID')
-    message("GSEA on DGN")
-    gsea_dgn <- gseDGN(gene_list,
-              pAdjustMethod = "BH",
-              pvalueCutoff = pvalueCutoff,
-              verbose       = FALSE) 
-    gsea_dgn <- setReadable(gsea_dgn,org.eg.db,keyType='ENTREZID')
-    return(list(
-        kegg=gsea_kegg,
-        wp=gsea_wp,
-        do=gsea_do,
-        ncg=gsea_ncg,
-        dgn=gsea_dgn
-    ))
-}
-
-ora_enrichment <- function(deg_list){
+ora_enrichment <- function(deg_list,padj_threshold=padj_threshold){
     message(paste0('The shape of the ORA deg_list:',dim(deg_list)[1]))
     if(dim(deg_list)[1]>=5){
 
@@ -124,7 +71,7 @@ ora_enrichment <- function(deg_list){
                     readable=TRUE,
                     keyType       = 'ENSEMBL',
                     pAdjustMethod = "BH",
-                    pvalueCutoff = pvalueCutoff) 
+                    pvalueCutoff = padj_threshold,qvalueCutoff = padj_threshold) 
     message("GO CC enrichment")
     go_cc <- enrichGO(gene=  unique(deg_list$Ensembl_ID),
                     OrgDb         = org.eg.db,
@@ -132,7 +79,7 @@ ora_enrichment <- function(deg_list){
                     readable=TRUE,
                     keyType       = 'ENSEMBL',
                     pAdjustMethod = "BH",
-                    pvalueCutoff = pvalueCutoff) 
+                    pvalueCutoff = padj_threshold,qvalueCutoff = padj_threshold) 
 
     message("GO BP enrichment")
     go_bp <- enrichGO(gene=  unique(deg_list$Ensembl_ID),
@@ -141,12 +88,12 @@ ora_enrichment <- function(deg_list){
                     readable=TRUE,
                     keyType       = 'ENSEMBL',
                     pAdjustMethod = "BH",
-                    pvalueCutoff = pvalueCutoff) 
+                    pvalueCutoff = padj_threshold,qvalueCutoff = padj_threshold) 
 
     message("KEGG enrichment")
     kegg_id <- enrichKEGG(gene=  unique(deg_list$ENTREZID),
                  organism     = kegg_org,pAdjustMethod = "BH",
-                 pvalueCutoff = pvalueCutoff) 
+                 pvalueCutoff = padj_threshold,qvalueCutoff = padj_threshold) 
     message('Readable on KEGG')
     # message(kegg_id%>% as.data.frame() %>% head())
     kegg_dim <- kegg_id%>% as.data.frame() %>% dim()
@@ -159,7 +106,7 @@ ora_enrichment <- function(deg_list){
 
     message("WIKIPATHWAY enrichment")
     wp_res<- enrichWP(gene=  unique(deg_list$ENTREZID), organism = wp_org,
-                 pvalueCutoff = pvalueCutoff) 
+                 pvalueCutoff = padj_threshold,qvalueCutoff = padj_threshold) 
     # message(wp_res%>% as.data.frame() %>% head())
     wp_dim <- wp_res%>% as.data.frame() %>% dim()
     if(wp_dim[1]>0){
@@ -173,7 +120,7 @@ ora_enrichment <- function(deg_list){
     do_res <- enrichDO(gene  = unique(deg_list$ENTREZID),
               ont           = "HDO",
               pAdjustMethod = "BH",
-              pvalueCutoff = pvalueCutoff,
+              pvalueCutoff = padj_threshold,qvalueCutoff = padj_threshold,
               readable      = FALSE)
     # message(do_res%>% as.data.frame() %>% head())
     do_dim <- do_res%>% as.data.frame() %>% dim()
@@ -184,7 +131,7 @@ ora_enrichment <- function(deg_list){
     }
     message("NCG enrichment")
     ncg_res <- enrichNCG(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
-    pvalueCutoff = pvalueCutoff,
+    pvalueCutoff = padj_threshold,qvalueCutoff = padj_threshold,
               readable      = FALSE) 
     # message(ncg_res %>% as.data.frame() %>% head())
     ncg_dim <- ncg_res%>% as.data.frame() %>% dim()
@@ -196,7 +143,7 @@ ora_enrichment <- function(deg_list){
     
     message("DGN enrichment")
     dgn_res <- enrichDGN(gene  = unique(deg_list$ENTREZID),pAdjustMethod = "BH",
-    pvalueCutoff = pvalueCutoff,
+    pvalueCutoff = padj_threshold,qvalueCutoff = padj_threshold,
               readable      = FALSE) 
     # message(dgn_res%>% as.data.frame() %>% head())
     dgn_dim <- dgn_res%>% as.data.frame() %>% dim()
@@ -232,39 +179,18 @@ ora_enrichment <- function(deg_list){
 
 
 
-discovery_data_list <- loading_data(snakemake@input[['discovery_deg_tsv']])
-validation_data_list <- loading_data(snakemake@input[['validation_deg_tsv']])
+data_list <- loading_data(snakemake@input[['combined_deg_tsv']])
+
 message('Discovery')
 message('Up ORA')
-up_ora <- ora_enrichment(discovery_data_list$up_deg_list)
+up_ora <- ora_enrichment(data_list$up_deg_list)
 message('Down ORA')
-down_ora<-ora_enrichment(discovery_data_list$down_deg_list)
-message('Running GSEA')
-gsea_res <- gsea_enrichment(discovery_data_list$deg_list)
+down_ora<-ora_enrichment(data_list$down_deg_list)
+
 discovery=list(
         up_ora=up_ora,
-        down_ora=down_ora,
-        gsea=gsea_res)
-message('Validation')
+        down_ora=down_ora)
 
-message('Up ORA')
-up_ora <- ora_enrichment(validation_data_list$up_deg_list)
-message('Down ORA')
-down_ora<-ora_enrichment(validation_data_list$down_deg_list)
-
-message('Running GSEA')
-gsea_res <- gsea_enrichment(validation_data_list$deg_list)
-
-
-validation=list(
-        up_ora=up_ora,
-        down_ora=down_ora,
-        gsea=gsea_res)
-
-final_res <- list(
-    discovery=discovery,
-    validation=validation
-)
 
 
 
@@ -274,4 +200,4 @@ final_res <- list(
 
 output<-snakemake@output[['enrichment']]
 message("Wrting results into file")
-saveRDS(final_res,file=output)
+saveRDS(discovery,file=output)
