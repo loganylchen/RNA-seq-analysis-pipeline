@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 # Combine individual Mime dataset RDS files into one list for Mime analysis
-# Uses samples.tsv to determine training and validation datasets
+# Determines training dataset from dataset_type == "discovery" in samples.tsv
 
 log <- file(snakemake@log[[1]], open="wt")
 sink(log)
@@ -18,7 +18,6 @@ cat("==============================================================\n\n")
 # Get parameters from Snakemake
 samples_file <- snakemake@params[["samples"]]
 project <- snakemake@params[["project"]]
-discovery_dataset <- snakemake@params[["discovery_dataset"]]  # e.g., "tissue" or specific dataset name
 
 # Get individual RDS files from input
 rds_files <- snakemake@input[["rds_files"]]
@@ -27,7 +26,6 @@ output_file <- snakemake@output[["combined_rds"]]
 cat("Parameters:\n")
 cat("  Samples file:", samples_file, "\n")
 cat("  Project:", project, "\n")
-cat("  Discovery dataset:", discovery_dataset, "\n")
 cat("  Number of RDS files:", length(rds_files), "\n")
 cat("  Output file:", output_file, "\n\n")
 
@@ -37,10 +35,16 @@ samples_df <- read.delim(samples_file, header=TRUE, stringsAsFactors = FALSE)
 samples_df <- samples_df[samples_df$project_id == project, ]
 cat("  Loaded", nrow(samples_df), "samples for project", project, "\n")
 
-# Show unique sample_types to help identify datasets
-cat("  Available sample types:", paste(unique(samples_df$sample_type), collapse=", "), "\n")
+# Show unique dataset_types and dataset_ids
+if ("dataset_type" %in% colnames(samples_df)) {
+    cat("  Available dataset_types:", paste(unique(samples_df$dataset_type), collapse=", "), "\n")
+} else {
+    cat("  WARNING: dataset_type column not found in samples file\n")
+}
 if ("dataset_id" %in% colnames(samples_df)) {
     cat("  Available dataset_ids:", paste(unique(samples_df$dataset_id), collapse=", "), "\n")
+} else {
+    cat("  WARNING: dataset_id column not found in samples file\n")
 }
 cat("\n")
 
@@ -85,29 +89,43 @@ for (name in names(all_datasets)) {
 }
 cat("\n")
 
-# Determine which dataset is training (discovery) and which are validation
-if (discovery_dataset %in% names(all_datasets)) {
-    # User specified exact dataset name
-    training_name <- discovery_dataset
-} else if (discovery_dataset %in% unique(samples_df$sample_type)) {
-    # User specified a sample_type (e.g., "tissue")
-    # Find the corresponding RDS file
-    matching_names <- names(all_datasets)[grepl(discovery_dataset, names(all_datasets), ignore.case = TRUE)]
-    if (length(matching_names) == 1) {
-        training_name <- matching_names
-    } else {
-        stop("ERROR: Found multiple datasets matching '", discovery_dataset, "': ",
-              paste(matching_names, collapse=", "),
-              "\nPlease specify the exact dataset name.")
-    }
-} else {
-    stop("ERROR: Discovery dataset '", discovery_dataset, "' not found.\n",
+# Determine training and validation datasets
+# Filter samples where dataset_type == "discovery" and extract unique dataset_id
+training_dataset_ids <- samples_df %>%
+    filter(dataset_type == "discovery") %>%
+    pull(dataset_id) %>%
+    unique()
+
+if (length(training_dataset_ids) == 0) {
+    stop("ERROR: No samples found with dataset_type 'discovery'")
+}
+
+if (length(training_dataset_ids) > 1) {
+    stop("ERROR: Multiple dataset_ids found with dataset_type 'discovery': ",
+         paste(training_dataset_ids, collapse=", "))
+}
+
+training_dataset_id <- training_dataset_ids[1]
+cat("  Training dataset_id (from dataset_type='discovery'):", training_dataset_id, "\n")
+
+# Find the matching dataset name in RDS files
+# Dataset names in RDS files are the dataset_id values
+training_name <- training_dataset_id
+
+if (!training_name %in% names(all_datasets)) {
+    stop("ERROR: Training dataset '", training_name, "' not found in RDS files.\n",
          "Available datasets: ", paste(names(all_datasets), collapse=", "))
 }
 
-cat("Training dataset:", training_name, "\n")
 validation_names <- setdiff(names(all_datasets), training_name)
-cat("Validation datasets:", paste(validation_names, collapse=", "), "\n\n")
+
+cat("\nTraining dataset (Dataset1):", training_name, "\n")
+if (length(validation_names) > 0) {
+    cat("Validation datasets:", paste(validation_names, collapse=", "), "\n")
+} else {
+    cat("No validation datasets\n")
+}
+cat("\n")
 
 # Create Mime-compatible list
 # Dataset1 = training (discovery)
