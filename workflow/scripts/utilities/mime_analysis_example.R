@@ -2,33 +2,7 @@
 # Example script for running Mime analysis with prepared datasets
 # This script demonstrates how to use Mime for survival analysis and response prediction
 
-# ============================================================================
-# SETUP
-# ============================================================================
 
-# Install Mime if not already installed
-if (!requireNamespace("Mime", quietly = TRUE)) {
-    # Install dependencies
-    if (!requireNamespace("BiocManager", quietly = TRUE))
-        install.packages("BiocManager")
-
-    dependons <- c('GSEABase', 'GSVA', 'cancerclass', 'mixOmics', 'sparrow',
-                    'sva', 'ComplexHeatmap')
-    for (depen in dependons) {
-        if (!requireNamespace(depen, quietly = TRUE))
-            BiocManager::install(depen, update = FALSE)
-    }
-
-    # Install GitHub packages
-    if (!requireNamespace("CoxBoost", quietly = TRUE))
-        devtools::install_github("binderh/CoxBoost")
-
-    if (!requireNamespace("fastAdaboost", quietly = TRUE))
-        devtools::install_github("souravc83/fastAdaboost")
-
-    # Install Mime
-    devtools::install_github("l-magnificence/Mime")
-}
 
 library(Mime)
 

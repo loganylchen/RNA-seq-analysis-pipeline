@@ -68,9 +68,10 @@ cat("  Transposed to:", nrow(expression_df), "samples x", ncol(expression_df), "
 # Apply log2(x+1) transformation (standard for RNA-seq)
 cat("Applying log2(x+1) transformation...\n")
 gene_cols <- setdiff(colnames(expression_df), "ID")
-for (col in gene_cols) {
-    expression_df[[col]] <- log2(expression_df[[col]] + 1)
-}
+# for (col in gene_cols) {
+#     expression_df[[col]] <- log2(expression_df[[col]] + 1)
+# }
+expression_df[, gene_cols] <- log2(expression_df[, gene_cols] + 1)  
 cat("  Transformation applied to", length(gene_cols), "genes\n")
 
 # Filter samples to those in count matrix

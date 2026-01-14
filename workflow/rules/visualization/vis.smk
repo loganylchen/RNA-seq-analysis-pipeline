@@ -239,3 +239,41 @@ rule deg_scatterplot_comparison:
         mem_mb=config["resources"]["mem_mb"].get("deg_vis", 16384),
     script:
         "../../scripts/visualization/deg_scatterplot_comparison.R"
+
+
+rule ma_plot:
+    """
+    Generate MA plots for DEG results from each tool.
+
+    MA plots show:
+    - M (y-axis): log2 fold change
+    - A (x-axis): average expression (log2 mean)
+    - Color-coded by regulation direction (up/down/not significant)
+    - Threshold lines for significance criteria
+
+    Supports DESeq2, edgeR, limma-trend, and limma-voom results.
+    """
+    input:
+        deg_file="{project}/DEG/{tool}/{dataset}_deg.tsv",
+    output:
+        pdf="{project}/visualization/{tool}_{dataset}_ma_plot.pdf",
+        png="{project}/visualization/{tool}_{dataset}_ma_plot.png",
+    params:
+        project=config["project"],
+        dataset=get_dataset,
+        tool=get_tool,
+        log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
+        padj_threshold=config.get("deg", {}).get("padj", 0.05),
+    container:
+        (
+            "docker://btrspg/rlan:20251229"
+            if config["container"].get("r", None) is None
+            else config["container"].get("r", None)
+        )
+    log:
+        "logs/{project}/ma_plot_{tool}_{dataset}.log",
+    threads: 1
+    resources:
+        mem_mb=config["resources"]["mem_mb"].get("deg_vis", 4096),
+    script:
+        "../../scripts/visualization/ma_plot.R"
