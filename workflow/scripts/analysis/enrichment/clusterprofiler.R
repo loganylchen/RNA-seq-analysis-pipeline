@@ -36,19 +36,18 @@ padj_threshold <- as.numeric(snakemake@params[["padj_threshold"]])
 deg_tool_n_threshold <- as.numeric(snakemake@params[["deg_tool_n_threshold"]])
 
 
-loading_data <- function(deg_tsv,deg_tool_n_threshold=deg_tool_n_threshold  ){
-    message(paste0('Loading:',deg_tsv))
-    cat("deg_tool_n_threshold is:")
-    cat(deg_tool_n_threshold)
+loading_data <- function(deg_tsv, deg_tool_n_threshold){
+    message(paste0('Loading:', deg_tsv))
+    cat("deg_tool_n_threshold is:", deg_tool_n_threshold, "\n")
     DEG_df <- read.table(deg_tsv,header=TRUE, row.names=1) %>%
             dplyr::mutate(Ensembl_ID=rownames(.)) %>% as.data.frame()
     print(head(DEG_df))
     DEG_list <- DEG_df %>%
-            dplyr::filter(up_regulated_count >= !!deg_tool_n_threshold,down_regulated_count >= !!deg_tool_n_threshold)
+            dplyr::filter(up_regulated_count >= deg_tool_n_threshold,down_regulated_count >= deg_tool_n_threshold)
     if(dim(DEG_list)[1]==0){
         deg_tool_n_threshold <- 1
         DEG_list <- DEG_df %>%
-            dplyr::filter(up_regulated_count >= !!deg_tool_n_threshold,down_regulated_count >= !!deg_tool_n_threshold)
+            dplyr::filter(up_regulated_count >= deg_tool_n_threshold,down_regulated_count >= deg_tool_n_threshold)
     }
     ID_CONV <- bitr(DEG_list$Ensembl_ID, fromType="ENSEMBL", toType=c("ENTREZID","SYMBOL"),OrgDb=org.eg.db)
 
@@ -57,8 +56,8 @@ loading_data <- function(deg_tsv,deg_tool_n_threshold=deg_tool_n_threshold  ){
                 
 
 
-    up_regulated_deg_list <- DEG_list %>% dplyr::filter(up_regulated_count>=!!deg_tool_n_threshold)
-    down_regulated_deg_list <- DEG_list %>% dplyr::filter(down_regulated_count>=!!deg_tool_n_threshold)
+    up_regulated_deg_list <- DEG_list %>% dplyr::filter(up_regulated_count>=deg_tool_n_threshold)
+    down_regulated_deg_list <- DEG_list %>% dplyr::filter(down_regulated_count>=deg_tool_n_threshold)
     return(list(
         deg_list=DEG_list,
         up_deg_list=up_regulated_deg_list,
@@ -67,7 +66,7 @@ loading_data <- function(deg_tsv,deg_tool_n_threshold=deg_tool_n_threshold  ){
 }
 
 
-ora_enrichment <- function(deg_list,padj_threshold=padj_threshold){
+ora_enrichment <- function(deg_list, padj_threshold){
     message(paste0('The shape of the ORA deg_list:',dim(deg_list)[1]))
     if(dim(deg_list)[1]>=5){
 
@@ -187,13 +186,13 @@ ora_enrichment <- function(deg_list,padj_threshold=padj_threshold){
 
 
 
-data_list <- loading_data(snakemake@input[['combined_deg_tsv']])
+data_list <- loading_data(snakemake@input[['combined_deg_tsv']], deg_tool_n_threshold)
 
 message('Discovery')
 message('Up ORA')
-up_ora <- ora_enrichment(data_list$up_deg_list)
+up_ora <- ora_enrichment(data_list$up_deg_list, padj_threshold)
 message('Down ORA')
-down_ora<-ora_enrichment(data_list$down_deg_list)
+down_ora<-ora_enrichment(data_list$down_deg_list, padj_threshold)
 
 discovery=list(
         up_ora=up_ora,
