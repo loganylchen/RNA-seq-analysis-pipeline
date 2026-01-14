@@ -28,6 +28,12 @@ dataset <- snakemake@params[["dataset"]]
 project <- snakemake@params[["project"]]
 response_col <- snakemake@params[["response_col"]]
 
+# Ensure response_col is a character string
+if (is.list(response_col)) {
+    response_col <- unlist(response_col)[1]
+}
+response_col <- as.character(response_col)
+
 
 cat("==============================================================\n")
 cat("Mime Dataset Preparation\n")
@@ -73,24 +79,38 @@ cat("  Matched", nrow(expression_df), "samples between count matrix and metadata
 
 
 cat("\nPreparing response prediction dataset...\n")
+cat("  Response column:", response_col, "\n")
+cat("  Response column type:", class(response_col), "\n")
 
 # Validate required columns
-if (is.null(response_col)) {
+if (is.null(response_col) || response_col == "" || is.na(response_col)) {
     stop("ERROR: response_col is required for response prediction")
 }
 
 if (!response_col %in% colnames(samples_df)) {
+    cat("  Available columns in samples_df:\n")
+    print(colnames(samples_df))
     stop("ERROR: Response column '", response_col, "' not found in samples metadata")
 }
 
+# Prepare columns to select from samples_df
+cols_to_select <- c("sample_name", response_col)
+cat("  Columns to select from samples_df:", paste(cols_to_select, collapse = ", "), "\n")
+
+# Create a safe subset of samples_df
+samples_subset <- samples_df[, cols_to_select, drop = FALSE]
+cat("  samples_subset dimensions:", nrow(samples_subset), "x", ncol(samples_subset), "\n")
+
 # Merge response information
+cat("  Merging expression data with response information...\n")
 result_df <- merge(
     expression_df,
-    samples_df[, c("sample_name", response_col)],
+    samples_subset,
     by.x = "ID",
     by.y = "sample_name",
     all.x = TRUE
 )
+cat("  Merged result dimensions:", nrow(result_df), "x", ncol(result_df), "\n")
 
 # Rename column to Mime format
 colnames(result_df)[colnames(result_df) == response_col] <- "Var"
