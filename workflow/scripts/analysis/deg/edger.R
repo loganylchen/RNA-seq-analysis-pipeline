@@ -71,9 +71,12 @@ edger_pipeline <- function(design_string,count,coldata,
     coldata$condition <- condition
 
     design <- model.matrix(as.formula(formula_str), data=coldata)
-    
+
     cat("Design matrix:\n")
     print(design)
+    cat("Design matrix columns:\n")
+    print(colnames(design))
+    cat("Number of coefficients:", ncol(design), "\n")
 
     keep <- filterByExpr(y, design)
     cat("Genes passing filterByExpr:", sum(keep), "/", length(keep), "\n")
@@ -101,7 +104,16 @@ edger_pipeline <- function(design_string,count,coldata,
     fit <- glmQLFit(y, design)
     cat("GLM fit completed\n")
 
-    qlf <- glmQLFTest(fit, coef = 2)
+    # Determine which coefficient to test
+    # The condition effect is always the last coefficient in the design matrix
+    n_coefs <- ncol(design)
+    condition_coef <- n_coefs
+    cat("Coefficient information:\n")
+    cat("  Total coefficients:", n_coefs, "\n")
+    cat("  Coefficient names:", paste(colnames(design), collapse = ", "), "\n")
+    cat("  Testing coefficient:", condition_coef, "=", colnames(design)[condition_coef], "\n")
+
+    qlf <- glmQLFTest(fit, coef = condition_coef)
     cat("QLF test completed\n")
 
     res <- topTags(qlf, n = Inf, adjust.method = "BH")
