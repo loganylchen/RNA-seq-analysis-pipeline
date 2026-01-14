@@ -254,9 +254,10 @@ pdf(upset_plot, width = 14, height = 5)
 set_order <- c("DESeq2_up", "edgeR_up", "limma_trend_up", "limma_voom_up",
                "DESeq2_down", "edgeR_down", "limma_trend_down", "limma_voom_down")
 
-m <- make_comb_mat(gene_sets_8, set_order = set_order)
+m <- make_comb_mat(gene_sets_8)
 UpSet(m,
       comb_order = order(comb_name(m)),
+      set_order = set_order,
       top_annotation = upset_top_annotation(m,
                                             add_numbers = TRUE,
                                             numbers_gp = gpar(fontsize = 10)),
