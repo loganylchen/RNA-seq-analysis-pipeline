@@ -51,7 +51,7 @@ cat("  Loaded", nrow(combined_deg), "genes\n\n")
 # ============================================================================
 
 cat("Loading gene ID to gene name mapping...\n")
-gene_name_file <- "resources/gene_id_to_gene_name.tsv"
+gene_name_file <- snakemake@input[["gene_name_map"]]
 
 if (file.exists(gene_name_file)) {
     gene_name_map <- read.delim(gene_name_file, stringsAsFactors = FALSE)
@@ -110,7 +110,17 @@ for (i in seq_along(deg_files)) {
 
     cat("  Loading:", tool, "-", basename(deg_file), "\n")
 
-    deg_data <- read.delim(deg_file, stringsAsFactors = FALSE, row.names = 1)
+    # Read file - check if it has gene_id column or uses rownames
+    first_line <- readLines(deg_file, n = 1)
+    has_gene_id_col <- grepl("^gene_id", first_line)
+
+    if (has_gene_id_col) {
+        # edgeR, limma_trend, limma_voom have gene_id as first column
+        deg_data <- read.delim(deg_file, stringsAsFactors = FALSE)
+    } else {
+        # DESeq2 uses rownames (no gene_id column)
+        deg_data <- read.delim(deg_file, stringsAsFactors = FALSE, row.names = 1)
+    }
 
     # Standardize column names across tools
     if ("log2FoldChange" %in% colnames(deg_data)) {
@@ -123,6 +133,11 @@ for (i in seq_along(deg_files)) {
         deg_data$padj <- deg_data$FDR
     } else if ("PValue" %in% colnames(deg_data)) {
         deg_data$padj <- deg_data$PValue
+    }
+
+    # Ensure gene_id column exists
+    if (!"gene_id" %in% colnames(deg_data)) {
+        deg_data$gene_id <- rownames(deg_data)
     }
 
     # Add tool identifier
@@ -138,9 +153,6 @@ for (i in seq_along(deg_files)) {
                 TRUE ~ "NS"
             )
         )
-
-    # Add gene_id column from rownames
-    deg_data$gene_id <- rownames(deg_data)
 
     all_deg_data[[tool]] <- deg_data
 
@@ -197,12 +209,24 @@ cat("Preparing data for plotting...\n")
 # Combine all DEG data
 combined_plot_data <- bind_rows(all_deg_data, .id = "source")
 
-# Calculate expression if baseMean not available
-if (!"baseMean" %in% colnames(combined_plot_data)) {
-    # Use a default value for visualization
-    combined_plot_data$baseMean <- 10
-    cat("  Warning: baseMean not found, using default value\n")
-}
+# Standardize expression column across tools
+# DESeq2: baseMean
+# edgeR: logCPM (need to back-transform)
+# limma: average_expression
+# Since different tools may have different columns, handle this after combining
+combined_plot_data <- combined_plot_data %>%
+    mutate(
+        baseMean = case_when(
+            # DESeq2 - use baseMean directly if available
+            !is.na(baseMean) ~ baseMean,
+            # edgeR - back-transform from logCPM
+            !is.na(logCPM) ~ exp(logCPM),
+            # limma - use average_expression
+            !is.na(average_expression) ~ average_expression,
+            # Fallback - use default value
+            TRUE ~ 10
+        )
+    )
 
 # Log10 transform expression (add small value to avoid log(0))
 combined_plot_data <- combined_plot_data %>%

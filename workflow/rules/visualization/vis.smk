@@ -295,6 +295,7 @@ rule deg_faceted_plot:
     input:
         combined_deg="{project}/DEG/{tool}_{dataset}_combined_degs.tsv",
         deg_files=get_deg_results,
+        gene_name_map="resources/gene_id_to_gene_name.tsv",
     output:
         pdf="{project}/visualization/{tool}_{dataset}_faceted_plot.pdf",
         png="{project}/visualization/{tool}_{dataset}_faceted_plot.png",
