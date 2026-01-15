@@ -15,6 +15,7 @@ suppressPackageStartupMessages({
     library(patchwork)
     library(stringr)
     library(ggrepel)
+    library(tibble)
 })
 
 # Get parameters from Snakemake
