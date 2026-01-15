@@ -10,7 +10,7 @@ sink(log)
 sink(log, type="message")
 
 suppressPackageStartupMessages({
-    library(Mime)
+    library(Mime1)
     library(dplyr)
     library(readr)
 })

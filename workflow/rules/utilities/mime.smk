@@ -98,13 +98,24 @@ rule mime_response_analysis:
         tool=get_tool,
         log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
         padj_threshold=config.get("deg", {}).get("padj", 0.05),
-        methods=config.get("mime", {}).get("response_methods", ["nb", "svmRadialWeights", "rf", "kknn", "adaboost", "LogitBoost", "cancerclass"]),
+        methods=config.get("mime", {}).get(
+            "response_methods",
+            [
+                "nb",
+                "svmRadialWeights",
+                "rf",
+                "kknn",
+                "adaboost",
+                "LogitBoost",
+                "cancerclass",
+            ],
+        ),
         seed=config.get("mime", {}).get("seed", 5201314),
     container:
         (
-            "docker://btrspg/rlan:20260114"
-            if config["container"].get("r", None) is None
-            else config["container"].get("r", None)
+            "docker://btrspg/mime:9a9f6ac89851bf631f9df3868b2fa624bed49df2"
+            if config["container"].get("mime", None) is None
+            else config["container"].get("mime", None)
         )
     threads: config["threads"].get("mime", 4)
     resources:
