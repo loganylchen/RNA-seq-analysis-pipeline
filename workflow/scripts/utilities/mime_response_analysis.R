@@ -97,7 +97,7 @@ cat("Using", length(genelist), "genes as features\n\n")
 
 # Train models
 res.ici <- ML.Dev.Pred.Category.Sig(
-    train_data = list_train_vali_Data[[1]],
+    train_data = list_train_vali_Data[["training"]],
     list_train_vali_Data = list_train_vali_Data,
     candidate_genes  = genelist,
     methods = c("nb", "svmRadialWeights", "rf", "kknn", "adaboost", "LogitBoost", "cancerclass"),
