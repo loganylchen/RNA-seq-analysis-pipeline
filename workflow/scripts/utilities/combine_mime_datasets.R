@@ -136,14 +136,14 @@ mime_datasets <- list()
 # Add training dataset as Dataset1
 cat("\nCreating Mime dataset structure:\n")
 cat("  Dataset1 (training):", training_name, "\n")
-mime_datasets[["Dataset1"]] <- all_datasets[[training_name]]
-cat("    Samples:", nrow(mime_datasets[["Dataset1"]]), "\n")
+mime_datasets[["training"]] <- all_datasets[[training_name]]
+cat("    Samples:", nrow(mime_datasets[["training"]]), "\n")
 
 # Add validation datasets
 if (length(validation_names) > 0) {
     for (i in seq_along(validation_names)) {
         dataset_name <- validation_names[i]
-        mime_dataset_name <- paste0("Dataset", i + 1)
+        mime_dataset_name <- paste0("validation:",dataset_name,"_", i)
         cat("  ", mime_dataset_name, " (validation):", dataset_name, "\n")
         mime_datasets[[mime_dataset_name]] <- all_datasets[[dataset_name]]
         cat("    Samples:", nrow(mime_datasets[[mime_dataset_name]]), "\n")
