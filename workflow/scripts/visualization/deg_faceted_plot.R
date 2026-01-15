@@ -72,24 +72,44 @@ cat("\n")
 
 cat("Loading individual DEG files...\n")
 
-# Get the target dataset from output path
-# Output path format: {project}/visualization/{tool}_{dataset}_faceted_plot.pdf
-# We need to extract just the dataset name (remove tool prefix)
-output_basename <- basename(sub("_faceted_plot\\.(pdf|png)$", "", output_pdf))
-# The output_basename will be like "kallisto_InHouseBlood", we need to extract "InHouseBlood"
-# The dataset is everything after the first underscore
-# But first, let's try a different approach - extract from the full path
-parts <- strsplit(output_pdf, "/")[[1]]
-# Find the part that ends with _faceted_plot.pdf/png
-faceted_idx <- grep("_faceted_plot\\.(pdf|png)$", parts)
-if (length(faceted_idx) > 0) {
-    # The format is {tool}_{dataset}_faceted_plot.pdf
-    target_dataset <- sub("_faceted_plot\\.(pdf|png)$", "", parts[faceted_idx])
-    # Remove the tool prefix (everything before and including the first underscore)
-    target_dataset <- sub("^[^_]+_", "", target_dataset)
-} else {
-    target_dataset <- output_basename
+# Get the target dataset from combined_deg_file path
+# Format: {project}/DEG/{tool}_{dataset}_combined_degs.tsv
+# The tool might contain underscores (e.g., STAR_FC), so we need to be careful
+
+# Extract from combined_deg_file: {tool}_{dataset}_combined_degs.tsv
+combined_basename <- basename(combined_deg_file)
+# Remove "_combined_degs.tsv" suffix
+tool_dataset <- sub("_combined_degs\\.tsv$", "", combined_basename)
+
+# Now we need to figure out which part is the tool and which is the dataset
+# The DEG files are named {dataset}_deg.tsv
+# Let's check what dataset names exist in the DEG files
+cat("  Determining target dataset...\n")
+cat("  Combined basename:", combined_basename, "\n")
+cat("  Tool+Dataset:", tool_dataset, "\n")
+
+# Extract all unique dataset names from DEG files
+dataset_names <- unique(sapply(deg_files, function(f) {
+    filename <- basename(f)
+    sub("_deg\\.tsv$", "", filename)
+}))
+cat("  Available datasets in DEG files:", paste(dataset_names, collapse=", "), "\n")
+
+# Find which dataset from the DEG files is present in tool_dataset
+target_dataset <- NULL
+for (ds in dataset_names) {
+    if (grepl(ds, tool_dataset, fixed=TRUE)) {
+        target_dataset <- ds
+        break
+    }
 }
+
+if (is.null(target_dataset)) {
+    # Fallback: use the last underscore-separated part
+    parts <- strsplit(tool_dataset, "_")[[1]]
+    target_dataset <- parts[length(parts)]
+}
+
 cat("  Target dataset:", target_dataset, "\n")
 
 # Function to parse file path and extract tool name
