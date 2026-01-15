@@ -115,15 +115,13 @@ def get_mime_genelist(wildcards):
     Get the common up-regulated genes file from the discovery dataset.
     Returns the combined DEG file for the discovery dataset.
     """
-    from samples import samples as samples_df
-
     project = wildcards.project
     tool = wildcards.tool
 
     # Find discovery dataset from samples.tsv
-    discovery_datasets = samples_df[
-        (samples_df["project_id"] == project) &
-        (samples_df["dataset_type"] == "discovery")
+    discovery_datasets = samples[
+        (samples["project_id"] == project) &
+        (samples["dataset_type"] == "discovery")
     ]["dataset_id"].unique().tolist()
 
     if not discovery_datasets:
