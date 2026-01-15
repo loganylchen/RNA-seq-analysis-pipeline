@@ -45,7 +45,7 @@ dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 # ============================================================================
 
 cat("Loading combined datasets...\n")
-load(combined_rds)  # Creates mime_datasets
+mime_datasets <- readRDS(combined_rds)  # Creates mime_datasets
 cat("  Loaded:", length(mime_datasets), "datasets\n")
 for (name in names(mime_datasets)) {
     cat("    ", name, ":", nrow(mime_datasets[[name]]), "samples\n")
