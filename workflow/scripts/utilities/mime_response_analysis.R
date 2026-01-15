@@ -115,75 +115,75 @@ cat("  Saved results to:", file.path(output_dir, "mime_results.rds"), "\n")
 # GENERATE SUMMARY STATISTICS
 # ============================================================================
 
-# cat("\n==============================================================\n")
-# cat("Step 2: Generating Summary Statistics\n")
-# cat("==============================================================\n\n")
+cat("\n==============================================================\n")
+cat("Step 2: Generating Summary Statistics\n")
+cat("==============================================================\n\n")
 
-# # Extract performance metrics
-# summary_stats <- data.frame(
-#     Dataset = character(),
-#     Method = character(),
-#     AUC = numeric(),
-#     Accuracy = numeric(),
-#     Sensitivity = numeric(),
-#     Specificity = numeric(),
-#     stringsAsFactors = FALSE
-# )
+# Extract performance metrics
+summary_stats <- data.frame(
+    Dataset = character(),
+    Method = character(),
+    AUC = numeric(),
+    Accuracy = numeric(),
+    Sensitivity = numeric(),
+    Specificity = numeric(),
+    stringsAsFactors = FALSE
+)
 
-# for (dataset_name in names(res.ici$test_performance)) {
-#     perf <- res.ici$test_performance[[dataset_name]]
-#     for (method_name in names(perf)) {
-#         if (!is.null(perf[[method_name]])) {
-#             metrics <- perf[[method_name]]
-#             summary_stats <- rbind(summary_stats, data.frame(
-#                 Dataset = dataset_name,
-#                 Method = method_name,
-#                 AUC = ifelse(!is.null(metrics$auc), metrics$auc, NA),
-#                 Accuracy = ifelse(!is.null(metrics$acc), metrics$acc, NA),
-#                 Sensitivity = ifelse(!is.null(metrics$sensitivity), metrics$sensitivity, NA),
-#                 Specificity = ifelse(!is.null(metrics$specificity), metrics$specificity, NA),
-#                 stringsAsFactors = FALSE
-#             ))
-#         }
-#     }
-# }
+for (dataset_name in names(res.ici$test_performance)) {
+    perf <- res.ici$test_performance[[dataset_name]]
+    for (method_name in names(perf)) {
+        if (!is.null(perf[[method_name]])) {
+            metrics <- perf[[method_name]]
+            summary_stats <- rbind(summary_stats, data.frame(
+                Dataset = dataset_name,
+                Method = method_name,
+                AUC = ifelse(!is.null(metrics$auc), metrics$auc, NA),
+                Accuracy = ifelse(!is.null(metrics$acc), metrics$acc, NA),
+                Sensitivity = ifelse(!is.null(metrics$sensitivity), metrics$sensitivity, NA),
+                Specificity = ifelse(!is.null(metrics$specificity), metrics$specificity, NA),
+                stringsAsFactors = FALSE
+            ))
+        }
+    }
+}
 
-# # Save summary table
-# summary_file <- file.path(output_dir, "benchmark_summary.tsv")
-# write.table(summary_stats, summary_file, sep = "\t", row.names = FALSE, quote = FALSE)
-# cat("  Saved summary to:", summary_file, "\n")
+# Save summary table
+summary_file <- file.path(output_dir, "benchmark_summary.tsv")
+write.table(summary_stats, summary_file, sep = "\t", row.names = FALSE, quote = FALSE)
+cat("  Saved summary to:", summary_file, "\n")
 
-# # Print summary
-# cat("\nPerformance Summary:\n")
-# print(summary_stats)
-# cat("\n")
+# Print summary
+cat("\nPerformance Summary:\n")
+print(summary_stats)
+cat("\n")
 
-# # ============================================================================
-# # SAVE TRAINED MODELS
-# # ============================================================================
+# ============================================================================
+# SAVE TRAINED MODELS
+# ============================================================================
 
-# cat("\n==============================================================\n")
-# cat("Step 3: Saving Trained Models\n")
-# cat("==============================================================\n\n")
+cat("\n==============================================================\n")
+cat("Step 3: Saving Trained Models\n")
+cat("==============================================================\n\n")
 
-# # Save trained models for each method
-# model_dir <- file.path(output_dir, "models")
-# dir.create(model_dir, recursive = TRUE, showWarnings = FALSE)
+# Save trained models for each method
+model_dir <- file.path(output_dir, "models")
+dir.create(model_dir, recursive = TRUE, showWarnings = FALSE)
 
-# trained_models <- list()
-# for (method in methods) {
-#     if (!is.null(res.ici$trained_model[[method]])) {
-#         model_file <- file.path(model_dir, paste0(method, "_model.rds"))
-#         saveRDS(res.ici$trained_model[[method]], model_file)
-#         trained_models[[method]] <- model_file
-#         cat("  Saved", method, "model to:", model_file, "\n")
-#     }
-# }
+trained_models <- list()
+for (method in methods) {
+    if (!is.null(res.ici$trained_model[[method]])) {
+        model_file <- file.path(model_dir, paste0(method, "_model.rds"))
+        saveRDS(res.ici$trained_model[[method]], model_file)
+        trained_models[[method]] <- model_file
+        cat("  Saved", method, "model to:", model_file, "\n")
+    }
+}
 
-# # Save model list for easy loading
-# model_list_file <- file.path(output_dir, "trained_models.rds")
-# saveRDS(trained_models, model_list_file)
-# cat("\n  Saved model list to:", model_list_file, "\n")
+# Save model list for easy loading
+model_list_file <- file.path(output_dir, "trained_models.rds")
+saveRDS(trained_models, model_list_file)
+cat("\n  Saved model list to:", model_list_file, "\n")
 
 # # ============================================================================
 # # CREATE IMPLEMENTATION GUIDE
