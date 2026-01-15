@@ -137,7 +137,7 @@ if (is.numeric(result_df$Var)) {
     result_df$Var <- ifelse(result_df$Var, "Y", "N")
 } else if (is.character(result_df$Var) || is.factor(result_df$Var)) {
     cat("  Converting character/factor response to Y/N format...\n")
-    result_df$Var <- ifelse(toupper(as.character(result_df$Var)) %in% c("Y", "YES", "1", "TRUE","TUMOR","PREOP"), "Y", "N")
+    result_df$Var <- ifelse(toupper(as.character(result_df$Var)) %in% c("Y", "YES", "1", "TRUE","NORMAL","POSTOP"), "Y", "N")
 } else {
     stop("ERROR: Unsupported data type for response variable 'Var'")
 }
