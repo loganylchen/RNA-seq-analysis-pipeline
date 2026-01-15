@@ -147,10 +147,14 @@ for (i in seq_along(deg_files)) {
         deg_data$log2FC <- deg_data$logFC
     }
 
-    if ("FDR" %in% colnames(deg_data)) {
-        deg_data$padj <- deg_data$FDR
-    } else if ("PValue" %in% colnames(deg_data)) {
-        deg_data$padj <- deg_data$PValue
+    # Standardize p-value column
+    # DESeq2 already has 'padj', edgeR has 'FDR', limma has 'PValue' or 'FDR'
+    if (!"padj" %in% colnames(deg_data)) {
+        if ("FDR" %in% colnames(deg_data)) {
+            deg_data$padj <- deg_data$FDR
+        } else if ("PValue" %in% colnames(deg_data)) {
+            deg_data$padj <- deg_data$PValue
+        }
     }
 
     # Ensure gene_id column exists

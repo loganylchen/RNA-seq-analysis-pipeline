@@ -126,6 +126,24 @@ for (info in deg_info) {
 read_deg_data <- function(filepath) {
     deg <- read.table(filepath, header = TRUE, row.names = 1, sep = "\t", stringsAsFactors = FALSE)
     print(head(deg))
+
+    # Standardize column names across tools
+    # DESeq2 already has 'padj', edgeR has 'FDR', limma has 'PValue' or 'FDR'
+    if (!"padj" %in% colnames(deg)) {
+        if ("FDR" %in% colnames(deg)) {
+            deg$padj <- deg$FDR
+        } else if ("PValue" %in% colnames(deg)) {
+            deg$padj <- deg$PValue
+        }
+    }
+
+    # Standardize log2FC column
+    if (!"log2FoldChange" %in% colnames(deg)) {
+        if ("logFC" %in% colnames(deg)) {
+            deg$log2FoldChange <- deg$logFC
+        }
+    }
+
     return(deg)
 }
 

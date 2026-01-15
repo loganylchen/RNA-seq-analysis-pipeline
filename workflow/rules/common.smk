@@ -119,10 +119,14 @@ def get_mime_genelist(wildcards):
     tool = wildcards.tool
 
     # Find discovery dataset from samples.tsv
-    discovery_datasets = samples[
-        (samples["project_id"] == project) &
-        (samples["dataset_type"] == "discovery")
-    ]["dataset_id"].unique().tolist()
+    discovery_datasets = (
+        samples[
+            (samples["project_id"] == project)
+            & (samples["dataset_type"] == "discovery")
+        ]["dataset_id"]
+        .unique()
+        .tolist()
+    )
 
     if not discovery_datasets:
         # Fallback: try to find dataset with "discovery" in name
@@ -159,6 +163,18 @@ def get_deseq2_design(wildcards):
     dataset = wildcards.dataset
     design = config["datasets"][dataset]["deseq2_design_formula"]
     return design
+
+
+def get_deg_log2fc(wildcards):
+    tool = wildcards.tool
+    log2fc = config.get("deg", {}).get(tool, {}).get("log2fc", 1)
+    return log2fc
+
+
+def get_deg_padj(wildcards):
+    tool = wildcards.tool
+    padj = config.get("deg", {}).get(tool, {}).get("padj", 0.05)
+    return padj
 
 
 def get_edeger_design(wildcards):

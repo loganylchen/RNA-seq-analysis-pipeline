@@ -11,8 +11,8 @@ rule deg_upset_plot:
         combined_deg="{project}/DEG/{tool}_{dataset}_combined_degs.tsv",
     params:
         project=get_project,
-        log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
-        padj_threshold=config.get("deg", {}).get("padj", 0.05),
+        log2fc_threshold=get_deg_log2fc,
+        padj_threshold=get_deg_padj,
     container:
         (
             "docker://btrspg/rlan:20251229"
@@ -224,8 +224,8 @@ rule deg_scatterplot_comparison:
         png="{project}/visualization/{tool}_{dataset}_scatterplot_comparison.png",
     params:
         project=project,
-        log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
-        padj_threshold=config.get("deg", {}).get("padj", 0.05),
+        log2fc_threshold=get_deg_log2fc,
+        padj_threshold=get_deg_padj,
     container:
         (
             "docker://btrspg/rlan:20251229"
@@ -262,8 +262,8 @@ rule ma_plot:
         project=config["project"],
         dataset=get_dataset,
         tool=get_tool,
-        log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
-        padj_threshold=config.get("deg", {}).get("padj", 0.05),
+        log2fc_threshold=get_deg_log2fc,
+        padj_threshold=get_deg_padj,
     container:
         (
             "docker://btrspg/rlan:20251229"
@@ -301,8 +301,8 @@ rule deg_faceted_plot:
         png="{project}/visualization/{tool}_{dataset}_faceted_plot.png",
     params:
         project=project,
-        log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
-        padj_threshold=config.get("deg", {}).get("padj", 0.05),
+        log2fc_threshold=get_deg_log2fc,
+        padj_threshold=get_deg_padj,
     container:
         (
             "docker://btrspg/rlan:20251229"

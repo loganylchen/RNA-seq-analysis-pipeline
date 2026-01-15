@@ -96,8 +96,15 @@ gffread:
   extra: ""
 
 deg:
-  padj: 0.05
-  log2fc: 1
+  STAR_FC:
+    padj: 0.001
+    log2fc: 2
+  kallisto:
+    padj: 0.05
+    log2fc: 1
+  salmon:
+    padj: 0.05
+    log2fc: 1
 
 # Dark Channel Biomarker (DCB) analysis parameters
 # DCB workflow: Discovery (tissue) -> Validation (cfRNA)
