@@ -91,7 +91,7 @@ cat("\n==============================================================\n")
 cat("Step 1: Training Response Prediction Models\n")
 cat("==============================================================\n\n")
 
-cat("Training on:", names(list_train_vali_Data)[1], "\n")
+
 cat("Validating on:", paste(names(list_train_vali_Data), collapse=", "), "\n")
 cat("Using", length(genelist), "genes as features\n\n")
 
