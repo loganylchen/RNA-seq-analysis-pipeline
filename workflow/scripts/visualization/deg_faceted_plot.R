@@ -70,6 +70,10 @@ cat("\n")
 
 cat("Loading individual DEG files...\n")
 
+# Get the target dataset from output path
+target_dataset <- basename(sub("_faceted_plot\\.(pdf|png)$", "", output_pdf))
+cat("  Target dataset:", target_dataset, "\n")
+
 # Function to parse file path and extract tool name
 parse_tool_from_path <- function(filepath) {
     parts <- strsplit(filepath, "/")[[1]]
@@ -81,11 +85,27 @@ parse_tool_from_path <- function(filepath) {
     return(NA)
 }
 
+# Function to check if file matches target dataset
+matches_dataset <- function(filepath, target) {
+    filename <- basename(filepath)
+    # Check if filename starts with the quant tool and ends with target dataset
+    # Format: {quant_tool}_{target}_deg.tsv
+    return(grepl(paste0(target, "_deg\\.tsv$"), filename) ||
+           grepl(paste0("_", target, "_deg\\.tsv$"), filename))
+}
+
 # Read and combine all DEG files
 all_deg_data <- list()
 
 for (i in seq_along(deg_files)) {
     deg_file <- deg_files[i]
+
+    # Skip files that don't match target dataset
+    if (!matches_dataset(deg_file, target_dataset)) {
+        cat("  Skipping:", basename(deg_file), "(not target dataset)\n")
+        next
+    }
+
     tool <- parse_tool_from_path(deg_file)
 
     cat("  Loading:", tool, "-", basename(deg_file), "\n")
@@ -358,18 +378,24 @@ summary_table <- data.frame(
 for (tool in names(all_deg_data)) {
     deg_data <- all_deg_data[[tool]]
 
-    # Get gene names for top genes
-    top_up_gene <- deg_data %>%
-        filter(direction == "Up") %>%
-        arrange(desc(log2FC)) %>%
-        head(1) %>%
-        pull(gene_id)
+    # Get gene names for top genes (handle empty results)
+    top_up_gene <- tryCatch({
+        gene <- deg_data %>%
+            filter(direction == "Up") %>%
+            arrange(desc(log2FC)) %>%
+            head(1) %>%
+            pull(gene_id)
+        if (length(gene) == 0) "NA" else gene
+    }, error = function(e) "NA")
 
-    top_down_gene <- deg_data %>%
-        filter(direction == "Down") %>%
-        arrange(log2FC) %>%
-        head(1) %>%
-        pull(gene_id)
+    top_down_gene <- tryCatch({
+        gene <- deg_data %>%
+            filter(direction == "Down") %>%
+            arrange(log2FC) %>%
+            head(1) %>%
+            pull(gene_id)
+        if (length(gene) == 0) "NA" else gene
+    }, error = function(e) "NA")
 
     # Convert to gene names if mapping available
     if (!is.null(gene_name_lookup)) {
