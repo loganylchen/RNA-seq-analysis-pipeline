@@ -280,6 +280,7 @@ def get_final_output():
 
             final_output += [
                 f"{sample_project}/mime/{tool}/combined_response_datasets.rds",
+                f"{sample_project}/mime/{tool}/response_analysis/",
                 f"{sample_project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/DEG/edger/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
