@@ -14,6 +14,7 @@ suppressPackageStartupMessages({
     library(stringr)
     library(ggrepel)
     library(tibble)
+    library(rlang)
 })
 
 cat("==============================================================\n")
@@ -71,7 +72,23 @@ cat("\n")
 cat("Loading individual DEG files...\n")
 
 # Get the target dataset from output path
-target_dataset <- basename(sub("_faceted_plot\\.(pdf|png)$", "", output_pdf))
+# Output path format: {project}/visualization/{tool}_{dataset}_faceted_plot.pdf
+# We need to extract just the dataset name (remove tool prefix)
+output_basename <- basename(sub("_faceted_plot\\.(pdf|png)$", "", output_pdf))
+# The output_basename will be like "kallisto_InHouseBlood", we need to extract "InHouseBlood"
+# The dataset is everything after the first underscore
+# But first, let's try a different approach - extract from the full path
+parts <- strsplit(output_pdf, "/")[[1]]
+# Find the part that ends with _faceted_plot.pdf/png
+faceted_idx <- grep("_faceted_plot\\.(pdf|png)$", parts)
+if (length(faceted_idx) > 0) {
+    # The format is {tool}_{dataset}_faceted_plot.pdf
+    target_dataset <- sub("_faceted_plot\\.(pdf|png)$", "", parts[faceted_idx])
+    # Remove the tool prefix (everything before and including the first underscore)
+    target_dataset <- sub("^[^_]+_", "", target_dataset)
+} else {
+    target_dataset <- output_basename
+}
 cat("  Target dataset:", target_dataset, "\n")
 
 # Function to parse file path and extract tool name
@@ -88,10 +105,10 @@ parse_tool_from_path <- function(filepath) {
 # Function to check if file matches target dataset
 matches_dataset <- function(filepath, target) {
     filename <- basename(filepath)
-    # Check if filename starts with the quant tool and ends with target dataset
-    # Format: {quant_tool}_{target}_deg.tsv
-    return(grepl(paste0(target, "_deg\\.tsv$"), filename) ||
-           grepl(paste0("_", target, "_deg\\.tsv$"), filename))
+    # DEG files are named: {dataset}_deg.tsv
+    # We just need to check if the filename starts with the target dataset
+    # Format: {target}_deg.tsv
+    return(grepl(paste0("^", target, "_deg\\.tsv$"), filename))
 }
 
 # Read and combine all DEG files
@@ -213,16 +230,16 @@ combined_plot_data <- bind_rows(all_deg_data, .id = "source")
 # DESeq2: baseMean
 # edgeR: logCPM (need to back-transform)
 # limma: average_expression
-# Since different tools may have different columns, handle this after combining
+# Since different tools may have different columns, check for column existence first
 combined_plot_data <- combined_plot_data %>%
     mutate(
         baseMean = case_when(
             # DESeq2 - use baseMean directly if available
-            !is.na(baseMean) ~ baseMean,
+            "baseMean" %in% names(.) & !is.na(.data$baseMean) ~ .data$baseMean,
             # edgeR - back-transform from logCPM
-            !is.na(logCPM) ~ exp(logCPM),
+            "logCPM" %in% names(.) & !is.na(.data$logCPM) ~ exp(.data$logCPM),
             # limma - use average_expression
-            !is.na(average_expression) ~ average_expression,
+            "average_expression" %in% names(.) & !is.na(.data$average_expression) ~ .data$average_expression,
             # Fallback - use default value
             TRUE ~ 10
         )
