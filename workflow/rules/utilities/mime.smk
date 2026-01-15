@@ -85,15 +85,19 @@ rule mime_response_analysis:
 
     Trains ML models on discovery dataset, validates on all datasets,
     and saves trained models for future implementation.
+
+    Uses common up-regulated genes from discovery dataset as features.
     """
     input:
         combined_rds="{project}/mime/{tool}/combined_response_datasets.rds",
-        genelist="{project}/DEG/{tool}_{dataset}_combined_degs.tsv",  # Or use a specific gene list
+        genelist=get_mime_genelist,
     output:
         directory="{project}/mime/{tool}/response_analysis/",
     params:
         project=config["project"],
         tool=get_tool,
+        log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
+        padj_threshold=config.get("deg", {}).get("padj", 0.05),
         methods=config.get("mime", {}).get("response_methods", ["nb", "svmRadialWeights", "rf", "kknn", "adaboost", "LogitBoost", "cancerclass"]),
         seed=config.get("mime", {}).get("seed", 5201314),
     container:

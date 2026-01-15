@@ -110,6 +110,36 @@ def get_project(wildcards):
     return get_wildcards_element(wildcards, "project")
 
 
+def get_mime_genelist(wildcards):
+    """
+    Get the common up-regulated genes file from the discovery dataset.
+    Returns the combined DEG file for the discovery dataset.
+    """
+    from samples import samples as samples_df
+
+    project = wildcards.project
+    tool = wildcards.tool
+
+    # Find discovery dataset from samples.tsv
+    discovery_datasets = samples_df[
+        (samples_df["project_id"] == project) &
+        (samples_df["dataset_type"] == "discovery")
+    ]["dataset_id"].unique().tolist()
+
+    if not discovery_datasets:
+        # Fallback: try to find dataset with "discovery" in name
+        for dataset in datasets:
+            if "discovery" in dataset.lower() or dataset == datasets[0]:
+                discovery_datasets = [dataset]
+                break
+
+    if not discovery_datasets:
+        raise ValueError(f"No discovery dataset found for project {project}")
+
+    discovery_dataset = discovery_datasets[0]
+    return f"{project}/DEG/{tool}_{discovery_dataset}_combined_degs.tsv"
+
+
 def get_case_condition(wildcards):
     return get_condition(wildcards, "case")
 

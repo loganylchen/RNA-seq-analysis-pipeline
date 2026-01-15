@@ -12,6 +12,7 @@ sink(log, type="message")
 suppressPackageStartupMessages({
     library(Mime)
     library(dplyr)
+    library(readr)
 })
 
 cat("==============================================================\n")
@@ -21,9 +22,11 @@ cat("==============================================================\n\n")
 # Get parameters from Snakemake
 combined_rds <- snakemake@input[["combined_rds"]]
 genelist_file <- snakemake@input[["genelist"]]
-output_dir <- snakemake@output[["output_dir"]]
+output_dir <- snakemake@output[["directory"]]
 project <- snakemake@params[["project"]]
 tool <- snakemake@params[["tool"]]
+log2fc_threshold <- snakemake@params[["log2fc_threshold"]]
+padj_threshold <- snakemake@params[["padj_threshold"]]
 methods <- snakemake@params[["methods"]]
 seed <- snakemake@params[["seed"]]
 
@@ -31,7 +34,9 @@ cat("Parameters:\n")
 cat("  Project:", project, "\n")
 cat("  Tool:", tool, "\n")
 cat("  Combined RDS:", combined_rds, "\n")
-cat("  Gene list:", genelist_file, "\n")
+cat("  Gene list file:", genelist_file, "\n")
+cat("  log2FC threshold:", log2fc_threshold, "\n")
+cat("  padj threshold:", padj_threshold, "\n")
 cat("  Output directory:", output_dir, "\n")
 cat("  Methods:", paste(methods, collapse=", "), "\n")
 cat("  Seed:", seed, "\n\n")
@@ -53,10 +58,34 @@ for (name in names(mime_datasets)) {
 # Rename for Mime compatibility
 list_train_vali_Data <- mime_datasets
 
-# Load gene list
-cat("\nLoading gene list...\n")
-genelist <- read.delim(genelist_file, header=FALSE, stringsAsFactors = FALSE)$V1
-cat("  Loaded", length(genelist), "genes\n")
+# Load and filter gene list - get common up-regulated genes from discovery dataset
+cat("\nLoading and filtering gene list from discovery dataset...\n")
+combined_deg <- read.delim(genelist_file, stringsAsFactors = FALSE)
+cat("  Loaded", nrow(combined_deg), "genes from combined DEG file\n")
+
+# Filter for common up-regulated genes detected by ALL 4 tools
+# up_regulated_count == 4 means detected as up-regulated by all tools
+genelist <- combined_deg %>%
+    filter(up_regulated_count == 4) %>%
+    pull(gene_id)
+
+cat("  Common up-regulated genes (detected by all 4 tools):", length(genelist), "\n")
+
+# Check if we have enough genes
+if (length(genelist) == 0) {
+    cat("  WARNING: No common up-regulated genes found!\n")
+    cat("  Using top 100 up-regulated genes instead...\n")
+    genelist <- combined_deg %>%
+        arrange(desc(up_regulated_count), desc(padj)) %>%
+        head(100) %>%
+        pull(gene_id)
+    cat("  Using", length(genelist), "genes\n")
+}
+
+# Save gene list for reference
+genelist_output <- file.path(output_dir, "genelist_used.txt")
+writeLines(genelist, genelist_output)
+cat("  Saved gene list to:", genelist_output, "\n")
 
 # ============================================================================
 # TRAIN RESPONSE PREDICTION MODELS
@@ -67,263 +96,186 @@ cat("Step 1: Training Response Prediction Models\n")
 cat("==============================================================\n\n")
 
 cat("Training on:", names(list_train_vali_Data)[1], "\n")
-cat("Validating on:", paste(names(list_train_vali_Data), collapse=", "), "\n\n")
+cat("Validating on:", paste(names(list_train_vali_Data), collapse=", "), "\n")
+cat("Using", length(genelist), "genes as features\n\n")
 
 # Train models
 res.ici <- ML.Dev.Pred.Category.Sig(
-    train_data = list_train_vali_Data$Dataset1,
-    list_train_vali_Data = list_train_vali_Data,
-    candidate_genes = genelist,
+    train_data = list_train_vali_Data[[1]],
+    test_data_list = list_train_vali_Data,
+    sig = genelist,
     methods = methods,
-    seed = seed,
-    cores_for_parallel = 4
+    seed = seed
 )
 
-cat("\nTraining complete!\n")
-cat("Models trained:", paste(names(res.ici), collapse=", "), "\n")
+# Save results
+saveRDS(res.ici, file.path(output_dir, "mime_results.rds"))
+cat("  Saved results to:", file.path(output_dir, "mime_results.rds"), "\n")
+
+# ============================================================================
+# GENERATE SUMMARY STATISTICS
+# ============================================================================
+
+cat("\n==============================================================\n")
+cat("Step 2: Generating Summary Statistics\n")
+cat("==============================================================\n\n")
+
+# Extract performance metrics
+summary_stats <- data.frame(
+    Dataset = character(),
+    Method = character(),
+    AUC = numeric(),
+    Accuracy = numeric(),
+    Sensitivity = numeric(),
+    Specificity = numeric(),
+    stringsAsFactors = FALSE
+)
+
+for (dataset_name in names(res.ici$test_performance)) {
+    perf <- res.ici$test_performance[[dataset_name]]
+    for (method_name in names(perf)) {
+        if (!is.null(perf[[method_name]])) {
+            metrics <- perf[[method_name]]
+            summary_stats <- rbind(summary_stats, data.frame(
+                Dataset = dataset_name,
+                Method = method_name,
+                AUC = ifelse(!is.null(metrics$auc), metrics$auc, NA),
+                Accuracy = ifelse(!is.null(metrics$acc), metrics$acc, NA),
+                Sensitivity = ifelse(!is.null(metrics$sensitivity), metrics$sensitivity, NA),
+                Specificity = ifelse(!is.null(metrics$specificity), metrics$specificity, NA),
+                stringsAsFactors = FALSE
+            ))
+        }
+    }
+}
+
+# Save summary table
+summary_file <- file.path(output_dir, "benchmark_summary.tsv")
+write.table(summary_stats, summary_file, sep = "\t", row.names = FALSE, quote = FALSE)
+cat("  Saved summary to:", summary_file, "\n")
+
+# Print summary
+cat("\nPerformance Summary:\n")
+print(summary_stats)
+cat("\n")
 
 # ============================================================================
 # SAVE TRAINED MODELS
 # ============================================================================
 
 cat("\n==============================================================\n")
-cat("Step 2: Saving Trained Models\n")
+cat("Step 3: Saving Trained Models\n")
 cat("==============================================================\n\n")
 
-model_save_path <- file.path(output_dir, "trained_models.rds")
-saveRDS(res.ici, file = model_save_path)
-cat("  Saved models to:", model_save_path, "\n")
+# Save trained models for each method
+model_dir <- file.path(output_dir, "models")
+dir.create(model_dir, recursive = TRUE, showWarnings = FALSE)
 
-# Also save model metadata
-model_metadata <- list(
-    project = project,
-    tool = tool,
-    train_dataset = names(list_train_vali_Data)[1],
-    validation_datasets = names(list_train_vali_Data)[-1],
-    all_datasets = names(list_train_vali_Data),
-    n_genes = length(genelist),
-    methods = methods,
-    seed = seed,
-    train_date = Sys.Date(),
-    model_file = model_save_path
-)
-
-metadata_path <- file.path(output_dir, "model_metadata.rds")
-saveRDS(model_metadata, file = metadata_path)
-cat("  Saved metadata to:", metadata_path, "\n")
-
-# ============================================================================
-# BENCHMARK ON ALL DATASETS
-# ============================================================================
-
-cat("\n==============================================================\n")
-cat("Step 3: Benchmarking on All Datasets\n")
-cat("==============================================================\n\n")
-
-# Calculate AUC for each dataset
-auc_results <- list()
-for (model_name in names(res.ici)) {
-    cat("\nModel:", model_name, "\n")
-
-    auc_results[[model_name]] <- list()
-
-    for (dataset_name in names(list_train_vali_Data)) {
-        # Get predictions for this dataset
-        pred_obj <- res.ici[[model_name]]$prediction_list[[dataset_name]]
-
-        if (!is.null(pred_obj)) {
-            auc_results[[model_name]][[dataset_name]] <- pred_obj$auc
-            cat("  ", dataset_name, "AUC:", round(pred_obj$auc, 3), "\n")
-        }
+trained_models <- list()
+for (method in methods) {
+    if (!is.null(res.ici$trained_model[[method]])) {
+        model_file <- file.path(model_dir, paste0(method, "_model.rds"))
+        saveRDS(res.ici$trained_model[[method]], model_file)
+        trained_models[[method]] <- model_file
+        cat("  Saved", method, "model to:", model_file, "\n")
     }
 }
 
-# Save AUC results
-auc_path <- file.path(output_dir, "benchmark_auc_results.rds")
-saveRDS(auc_results, file = auc_path)
-cat("\n  Saved AUC results to:", auc_path, "\n")
-
-# Create summary table
-auc_summary <- data.frame(
-    Model = character(),
-    Dataset = character(),
-    AUC = numeric(),
-    stringsAsFactors = FALSE
-)
-
-for (model_name in names(auc_results)) {
-    for (dataset_name in names(auc_results[[model_name]])) {
-        auc_summary <- rbind(auc_summary, data.frame(
-            Model = model_name,
-            Dataset = dataset_name,
-            AUC = auc_results[[model_name]][[dataset_name]],
-            stringsAsFactors = FALSE
-        ))
-    }
-}
-
-auc_summary_file <- file.path(output_dir, "auc_summary.tsv")
-write.table(auc_summary, auc_summary_file, sep="\t", row.names=FALSE, quote=FALSE)
-cat("  Saved AUC summary to:", auc_summary_file, "\n")
-
-# ============================================================================
-# GENERATE VISUALIZATIONS
-# ============================================================================
-
-cat("\n==============================================================\n")
-cat("Step 4: Generating Visualizations\n")
-cat("==============================================================\n\n")
-
-# 1. AUC distribution across all datasets
-cat("  Creating AUC distribution plot...\n")
-pdf(file.path(output_dir, "auc_distribution_all_datasets.pdf"), width = 12, height = 6)
-auc_vis_category_all(
-    res.ici,
-    dataset = names(list_train_vali_Data),
-    order = names(list_train_vali_Data)
-)
-dev.off()
-
-# 2. ROC curves for each method
-cat("  Creating ROC curves...\n")
-pdf(file.path(output_dir, "roc_curves_all_models.pdf"), width = 15, height = 12)
-plot_list <- list()
-for (model_name in methods) {
-    if (model_name %in% names(res.ici)) {
-        plot_list[[model_name]] <- roc_vis_category(
-            res.ici,
-            model_name = model_name,
-            dataset = names(list_train_vali_Data),
-            order = names(list_train_vali_Data),
-            anno_position = c(0.4, 0.25)
-        )
-    }
-}
-if (length(plot_list) > 0) {
-    gridExtra::grid.arrange(grobs = plot_list, ncol = 3)
-}
-dev.off()
-
-# 3. Performance comparison bar plot
-cat("  Creating performance comparison plot...\n")
-pdf(file.path(output_dir, "performance_comparison.pdf"), width = 10, height = 6)
-ggplot2::ggplot(auc_summary, ggplot2::aes(x = Model, y = AUC, fill = Dataset)) +
-    ggplot2::geom_bar(stat = "identity", position = "dodge") +
-    ggplot2::geom_text(ggplot2::aes(label = round(AUC, 3)),
-                       position = ggplot2::position_dodge(width = 0.9),
-                       vjust = -0.25, size = 3) +
-    ggplot2::theme_minimal(base_size = 12) +
-    ggplot2::theme(
-        legend.position = "right",
-        axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)
-    ) +
-    ggplot2::labs(
-        title = paste("Model Performance Comparison -", project, "-", tool),
-        y = "AUC",
-        fill = "Dataset"
-    ) +
-    ggplot2::ylim(0, 1)
-dev.off()
-
-# ============================================================================
-# SAVE BEST MODEL SELECTION
-# ============================================================================
-
-cat("\n==============================================================\n")
-cat("Step 5: Selecting Best Model\n")
-cat("==============================================================\n\n")
-
-# Calculate mean AUC across all datasets for each model
-mean_auc <- sapply(names(auc_results), function(model_name) {
-    aucs <- sapply(auc_results[[model_name]], function(x) x)
-    mean(aucs, na.rm = TRUE)
-})
-
-# Sort by mean AUC
-mean_auc_sorted <- sort(mean_auc, decreasing = TRUE)
-best_model <- names(mean_auc_sorted)[1]
-
-cat("Model ranking (by mean AUC across all datasets):\n")
-for (i in seq_along(mean_auc_sorted)) {
-    cat("  ", i, ".", names(mean_auc_sorted)[i], ":", round(mean_auc_sorted[i], 3), "\n")
-}
-cat("\nBest model:", best_model, "\n")
-
-# Save best model info
-best_model_info <- list(
-    best_model = best_model,
-    mean_auc = mean_auc_sorted[1],
-    all_model_performance = mean_auc_sorted
-)
-
-best_model_path <- file.path(output_dir, "best_model_info.rds")
-saveRDS(best_model_info, file = best_model_path)
-cat("  Saved best model info to:", best_model_path, "\n")
+# Save model list for easy loading
+model_list_file <- file.path(output_dir, "trained_models.rds")
+saveRDS(trained_models, model_list_file)
+cat("\n  Saved model list to:", model_list_file, "\n")
 
 # ============================================================================
 # CREATE IMPLEMENTATION GUIDE
 # ============================================================================
 
 cat("\n==============================================================\n")
-cat("Step 6: Creating Implementation Guide\n")
+cat("Step 4: Creating Implementation Guide\n")
 cat("==============================================================\n\n")
 
-implementation_script <- paste0(
-    "#!/usr/bin/env Rscript\n",
-    "# Implementation script for trained Mime model\n",
-    "# Use this script to apply the trained model to new datasets\n\n",
-    "# Load the trained model\n",
-    "trained_model <- readRDS('", model_save_path, "')\n",
-    "model_metadata <- readRDS('", metadata_path, "')\n\n",
-    "# Load your new dataset\n",
-    "# new_data <- read.delim('your_new_data.tsv')\n",
-    "# Ensure columns: ID, Var (Y/N), and gene expression columns\n\n",
-    "# Make predictions using the best model: ", best_model, "\n",
-    "# predictions <- predict_Mime_model(\n",
-    "#   model = trained_model[['", best_model, "']],\n",
-    "#   new_data = new_data,\n",
-    "#   genes = model_metadata$n_genes\n",
-    "# )\n\n",
-    "# The trained model was:\n",
-    "# - Project: ", project, "\n",
-    "# - Tool: ", tool, "\n",
-    "# - Training dataset: ", names(list_train_vali_Data)[1], "\n",
-    "# - Validation datasets: ", paste(names(list_train_vali_Data)[-1], collapse=", "), "\n",
-    "# - Number of genes: ", length(genelist), "\n",
-    "# - Training date: ", as.character(Sys.Date()), "\n",
-    "# - Mean AUC: ", round(mean_auc_sorted[1], 3), "\n\n"
+guide_file <- file.path(output_dir, "implementation_guide.txt")
+
+guide_content <- paste0(
+    "Mime Model Implementation Guide\n",
+    "================================\n\n",
+    "Project: ", project, "\n",
+    "Quantification Tool: ", tool, "\n",
+    "Training Dataset: Discovery (Dataset1)\n",
+    "Number of Features (Genes): ", length(genelist), "\n",
+    "Methods Trained: ", paste(methods, collapse = ", "), "\n",
+    "Seed: ", seed, "\n\n",
+    "Feature Selection:\n",
+    "  - Common up-regulated genes from discovery dataset\n",
+    "  - Detected by all 4 DEG tools (DESeq2, edgeR, limma-trend, limma-voom)\n",
+    "  - log2FC >= ", log2fc_threshold, ", padj < ", padj_threshold, "\n\n",
+    "Trained Models:\n"
 )
 
-implementation_script_path <- file.path(output_dir, "implement_model.R")
-writeLines(implementation_script, implementation_script_path)
-cat("  Created implementation script:", implementation_script_path, "\n")
+for (method in names(trained_models)) {
+    guide_content <- paste0(guide_content, "  - ", method, ": ", trained_models[[method]], "\n")
+}
+
+guide_content <- paste0(guide_content, "\n",
+    "Best Performing Model:\n",
+    "  See benchmark_summary.tsv for performance metrics\n\n",
+    "To Apply Models to New Data:\n",
+    "  1. Load the trained model:\n",
+    "       model <- readRDS('", model_list_file, "')\n",
+    "       trained_model <- readRDS(model$<method_name>)\n\n",
+    "  2. Prepare your new data:\n",
+    "       - Must have the same ", length(genelist), " genes as features\n",
+    "       - Expression values should be TPM or normalized counts\n",
+    "       - Samples should be in rows, genes in columns\n\n",
+    "  3. Use Mime::ML.Pred.Category.Sig.Single to predict:\n",
+    "       predictions <- ML.Pred.Category.Sig.Single(\n",
+    "           test_data = your_data,\n",
+    "           sig = genelist,\n",
+    "           model = trained_model\n",
+    "       )\n\n"
+)
+
+writeLines(guide_content, guide_file)
+cat("  Saved implementation guide to:", guide_file, "\n")
 
 # ============================================================================
-# SUMMARY
+# CREATE VISUALIZATIONS
 # ============================================================================
 
 cat("\n==============================================================\n")
-cat("Analysis Complete!\n")
+cat("Step 5: Creating Visualizations\n")
 cat("==============================================================\n\n")
 
-cat("Output files:\n")
-cat("  1. Trained models:", model_save_path, "\n")
-cat("  2. Model metadata:", metadata_path, "\n")
-cat("  3. AUC results:", auc_path, "\n")
-cat("  4. AUC summary:", auc_summary_file, "\n")
-cat("  5. Best model info:", best_model_path, "\n")
-cat("  6. Implementation script:", implementation_script_path, "\n")
-cat("  7. Visualizations:\n")
-cat("     - auc_distribution_all_datasets.pdf\n")
-cat("     - roc_curves_all_models.pdf\n")
-cat("     - performance_comparison.pdf\n\n")
+# Try to create plots (may fail if ggplot2 not available)
+tryCatch({
+    library(ggplot2)
+    library(gridExtra)
 
-cat("Best model:", best_model, "with mean AUC =", round(mean_auc_sorted[1], 3), "\n\n")
+    # AUC comparison plot
+    auc_data <- summary_stats[!is.na(summary_stats$AUC), ]
+    if (nrow(auc_data) > 0) {
+        p_auc <- ggplot(auc_data, aes(x = Method, y = AUC, fill = Dataset)) +
+            geom_bar(stat = "identity", position = "dodge") +
+            geom_text(aes(label = round(AUC, 3)), position = position_dodge(width = 0.9), vjust = -0.25) +
+            theme_minimal() +
+            labs(title = "AUC Comparison Across Methods and Datasets",
+                 y = "AUC") +
+            ylim(0.5, 1)
 
-cat("To use the trained model on new datasets:\n")
-cat("  1. Load the model: readRDS('", model_save_path, "')\n")
-cat("  2. Follow the implementation script: ", implementation_script_path, "\n")
-cat("  3. Apply to new data using the predict function\n\n")
+        ggsave(file.path(output_dir, "auc_comparison.pdf"), p_auc, width = 10, height = 6)
+        ggsave(file.path(output_dir, "auc_comparison.png"), p_auc, width = 10, height = 6, dpi = 300)
+        cat("  Saved AUC comparison plot\n")
+    }
+
+    cat("\n")
+}, error = function(e) {
+    cat("  Note: Could not create visualizations (ggplot2 may not be available)\n")
+    cat("  Error:", conditionMessage(e), "\n\n")
+})
+
+cat("==============================================================\n")
+cat("Mime Analysis Complete!\n")
+cat("==============================================================\n\n")
 
 sink()
 sink(type="message")
