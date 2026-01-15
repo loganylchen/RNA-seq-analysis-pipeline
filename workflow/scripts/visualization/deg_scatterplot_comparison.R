@@ -14,6 +14,7 @@ suppressPackageStartupMessages({
     library(readr)
     library(patchwork)
     library(stringr)
+    library(ggrepel)
 })
 
 # Get parameters from Snakemake
@@ -130,6 +131,8 @@ read_deg_data <- function(filepath) {
 # Read all DEG files and organize by tool and dataset
 cat("\n--- Loading DEG Data ---\n")
 deg_data_list <- list()
+deg_full_data <- list()  # Store full DEG data for top gene identification
+
 for (info in deg_info) {
     cat("  Loading", info$tool, "-", info$dataset, "\n")
     deg <- read_deg_data(info$file)
@@ -138,6 +141,8 @@ for (info in deg_info) {
         tool = info$tool,
         dataset = info$dataset
     )
+    # Store full data for top gene identification
+    deg_full_data[[paste(info$tool, info$dataset, sep = "_")]] <- deg
 }
 
 # Get unique tools and datasets
@@ -151,6 +156,28 @@ is_significant <- function(deg_data, gene_ids) {
     sig <- deg_data$padj < padj_threshold & abs(deg_data$log2FoldChange) >= log2fc_threshold
     names(sig) <- rownames(deg_data)
     return(sig[gene_ids])
+}
+
+# Function to get top 3 genes by lowest padj (regardless of significance threshold)
+# Tiebreaker: sorted by abs(log2FC) descending
+get_top_significant_genes <- function(deg_data, n = 3) {
+    # Use all genes, not just significant ones
+    all_genes <- deg_data
+
+    if (nrow(all_genes) == 0) {
+        return(character(0))
+    }
+
+    # Sort by padj (ascending), then by abs(log2FC) (descending)
+    top_genes_df <- all_genes %>%
+        as.data.frame() %>%
+        rownames_to_column("gene_id") %>%
+        mutate(abs_log2fc = abs(log2FoldChange)) %>%
+        arrange(padj, desc(abs_log2fc))
+
+    # Get top n genes
+    top_genes <- head(top_genes_df$gene_id, n)
+    return(top_genes)
 }
 
 # Function to prepare scatterplot data for a tool comparing two datasets
@@ -170,6 +197,8 @@ prepare_scatter_data <- function(deg1, deg2, dataset1_name, dataset2_name, tool_
         gene_id = common_genes,
         x_log2FC = deg1[common_genes, "log2FoldChange"],
         y_log2FC = deg2[common_genes, "log2FoldChange"],
+        x_padj = deg1[common_genes, "padj"],
+        y_padj = deg2[common_genes, "padj"],
         stringsAsFactors = FALSE
     )
 
@@ -217,10 +246,12 @@ for (tool in tools) {
     # Compare first dataset with each subsequent dataset
     dataset1_data <- tool_data[[1]]
     dataset1_name <- dataset1_data$dataset
+    dataset1_full <- deg_full_data[[paste(tool, dataset1_name, sep = "_")]]
 
     for (i in 2:length(tool_data)) {
         dataset2_data <- tool_data[[i]]
         dataset2_name <- dataset2_data$dataset
+        dataset2_full <- deg_full_data[[paste(tool, dataset2_name, sep = "_")]]
 
         scatter_df <- prepare_scatter_data(
             dataset1_data$data,
@@ -232,13 +263,23 @@ for (tool in tools) {
         )
 
         if (!is.null(scatter_df)) {
+            # Get top 3 significant genes from each dataset
+            top_genes_dataset1 <- get_top_significant_genes(dataset1_full, n = 3)
+            top_genes_dataset2 <- get_top_significant_genes(dataset2_full, n = 3)
+            all_top_genes <- unique(c(top_genes_dataset1, top_genes_dataset2))
+
+            # Mark which genes to label
+            scatter_df$label_gene <- ifelse(scatter_df$gene_id %in% all_top_genes,
+                                           scatter_df$gene_id, NA)
+
             key <- paste0(tool_normalized, "_", dataset1_name, "_vs_", dataset2_name)
             scatter_list[[key]] <- list(
                 data = scatter_df,
                 tool = tool,
                 dataset1 = dataset1_name,
                 dataset2 = dataset2_name,
-                color = tool_colors[tool_normalized]
+                color = tool_colors[tool_normalized],
+                top_genes = all_top_genes
             )
         }
     }
@@ -253,21 +294,19 @@ create_scatterplot <- function(scatter_obj) {
     dataset1 <- scatter_obj$dataset1
     dataset2 <- scatter_obj$dataset2
     tool_color <- scatter_obj$color
+    top_genes <- scatter_obj$top_genes
 
     cat("\nCreating scatterplot for", tool_name, "-", dataset1, "vs", dataset2, "...\n")
+    cat("  Top genes to label:", length(top_genes), "\n")
 
     # Calculate correlation
-    tryCatch(
-        {
-            cor_test <- cor.test(scatter_df$x_log2FC, scatter_df$y_log2FC,
-                                 method = "pearson", use = "complete.obs")
-        },
-        error = function(e) {
-            cat("  Warning: Correlation test failed:", e$message, "\n")
-            cor_test <<- list(estimate = NA, p.value = NA)
-        }
-    )
-    
+    cor_test <- tryCatch({
+        cor.test(scatter_df$x_log2FC, scatter_df$y_log2FC,
+                 method = "pearson", use = "complete.obs")
+    }, error = function(e) {
+        cat("  Warning: Correlation test failed:", conditionMessage(e), "\n")
+        list(estimate = NA, p.value = NA, conf.int = NA)
+    })
 
     # Update significance labels for this comparison
     dataset1_only <- paste(dataset1, "only")
@@ -288,6 +327,13 @@ create_scatterplot <- function(scatter_obj) {
     shape_names <- c(16, 16, 16, 17)
     names(shape_names) <- shape_values
 
+    # Calculate equal axis limits
+    all_values <- c(scatter_df$x_log2FC, scatter_df$y_log2FC)
+    limit_range <- range(all_values, na.rm = TRUE)
+    # Add small margin (5%)
+    margin <- 0.05 * diff(limit_range)
+    axis_limits <- c(limit_range[1] - margin, limit_range[2] + margin)
+
     # Create plot
     p <- ggplot(scatter_df, aes(x = x_log2FC, y = y_log2FC)) +
         geom_point(aes(shape = significant, color = significant), alpha = 0.6, size = 1.5) +
@@ -301,18 +347,28 @@ create_scatterplot <- function(scatter_obj) {
             name = "Significance",
             drop = FALSE
         ) +
+        coord_fixed(xlim = axis_limits, ylim = axis_limits, ratio = 1) +
         geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "grey50", size = 0.8) +
         geom_smooth(method = "lm", color = "darkgrey", se = TRUE, size = 0.5, alpha = 0.3) +
+        # Add text labels for top genes using ggrepel
+        geom_text_repel(
+            data = scatter_df[!is.na(scatter_df$label_gene), ],
+            aes(label = label_gene),
+            size = 2.5,
+            max.overlaps = 30,
+            box.padding = 0.5,
+            point.padding = 0.3,
+            segment.color = "grey50",
+            segment.size = 0.3,
+            force = 2,
+            min.segment.length = 0
+        ) +
         labs(
             title = paste(tools::toTitleCase(gsub("_", " ", tool_name)), ":",
                          dataset1, "vs", dataset2),
             x = paste0(dataset1, " Log2FC"),
             y = paste0(dataset2, " Log2FC")
         ) +
-        annotate("text", x = Inf, y = -Inf, hjust = 1.05, vjust = -0.5, size = 3,
-                 label = paste0("r = ", round(cor_test$estimate, 3),
-                              "\np < 2e-16"),
-                 color = "black") +
         theme_bw(base_size = 10) +
         theme(
             plot.title = element_text(face = "bold", hjust = 0.5, size = 12),
@@ -401,7 +457,7 @@ final_plot <- combined_plot +
         title = paste0(project, ": DEG Log2FC Comparison Across Datasets\n",
                       "Up-regulated genes (n=", length(up_genes), ")"),
         subtitle = paste0("Log2FC threshold >= ", log2fc_threshold, ", padj < ", padj_threshold,
-                         "\nTriangle shape = significant in both datasets"),
+                         "\nTriangle shape = significant in both datasets | Labels = top 3 genes by lowest padj"),
         theme = theme(
             plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
             plot.subtitle = element_text(size = 11, hjust = 0.5, color = "grey40")
@@ -431,7 +487,12 @@ for (key in names(scatter_list)) {
     cat("  Both significant:", sum(df$significant == "Both significant"), "\n")
     cat("  ", obj$dataset1, "only:", sum(grepl(paste0(obj$dataset1, "only"), df$significant)), "\n")
     cat("  ", obj$dataset2, "only:", sum(grepl(paste0(obj$dataset2, "only"), df$significant)), "\n")
-    cat("  Correlation:", round(cor(df$x_log2FC, df$y_log2FC, use = "complete.obs"), 3), "\n\n")
+    cat("  Top genes labeled:", length(obj$top_genes), "\n")
+    cat("    Top genes:", paste(head(obj$top_genes, 5), collapse = ", "), "\n")
+    if (!is.null(cor(df$x_log2FC, df$y_log2FC, use = "complete.obs"))) {
+        cat("  Correlation:", round(cor(df$x_log2FC, df$y_log2FC, use = "complete.obs"), 3), "\n")
+    }
+    cat("\n")
 }
 
 cat("==============================================================\n")
