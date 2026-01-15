@@ -56,7 +56,7 @@ list_train_vali_Data <- mime_datasets
 
 # Load and filter gene list - get common up-regulated genes from discovery dataset
 cat("\nLoading and filtering gene list from discovery dataset...\n")
-combined_deg <-  fread(gene_list_file, header=TRUE, stringsAsFactors=FALSE) 
+combined_deg <-  read.table(genelist_file, header=TRUE, stringsAsFactors=FALSE,sep='\t') 
 cat("  Loaded", nrow(combined_deg), "genes from combined DEG file\n")
 
 # Filter for common up-regulated genes detected by ALL 4 tools
