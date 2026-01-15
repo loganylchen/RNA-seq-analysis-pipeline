@@ -34,6 +34,7 @@ rule prepare_mime_dataset_response:
     input:
         expression="{project}/quantification/{tool}/{dataset}_TPM_matrix_corrected.txt",
         samples=get_info,
+        gene_list=get_mime_genelist,
     output:
         mime_rds="{project}/mime/{tool}/{dataset}_response_dataset.rds",
     log:
@@ -96,8 +97,8 @@ rule mime_response_analysis:
     params:
         project=config["project"],
         tool=get_tool,
-        log2fc_threshold=config.get("deg", {}).get("log2fc", 1),
-        padj_threshold=config.get("deg", {}).get("padj", 0.05),
+        log2fc_threshold=get_deg_log2fc,
+        padj_threshold=get_deg_padj,
         methods=config.get("mime", {}).get(
             "response_methods",
             [

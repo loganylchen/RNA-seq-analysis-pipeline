@@ -21,7 +21,15 @@ suppressPackageStartupMessages({
 # Get parameters from Snakemake
 samples_file <- snakemake@input[["samples"]]
 counts_file <- snakemake@input[["expression"]]
+gene_list_file <- snakemake@input[["gene_list"]]
+
 output_file <- snakemake@output[["mime_rds"]]
+
+
+
+gene_list <- fread(gene_list_file, header=TRUE, stringsAsFactors=FALSE) %>%
+    dplyr::filter(up_regulated_count==4) %>%
+    pull(gene_id)
 
 
 dataset <- snakemake@params[["dataset"]]
@@ -56,7 +64,8 @@ cat("  Loaded", nrow(samples_df), "samples for project", project, "\n")
 
 # Read count matrix
 cat("Reading count matrix...\n")
-counts_df <- read.delim(counts_file, header=TRUE, row.names = 1, check.names = FALSE)
+counts_df <- read.delim(counts_file, header=TRUE, row.names = 1, check.names = FALSE) %>%
+    dplyr::select(all_of(gene_list))
 cat("  Dimensions:", nrow(counts_df), "genes x", ncol(counts_df), "samples\n")
 
 # Transpose counts: genes as columns, samples as rows (Mime format)
@@ -146,7 +155,7 @@ cat("  Response rate:", mean(result_df$Var == "Y"), "\n")
 
 # Save to RDS file
 cat("\nSaving Mime-compatible dataset to:", output_file, "\n")
-saveRDS(result_df, file = output_file)
+saveRDS(result_df %>% select(ID,Var,all_of(gene_list)), file = output_file)
 
 cat("\n==============================================================\n")
 cat("Dataset preparation complete!\n")
