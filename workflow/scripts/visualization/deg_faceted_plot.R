@@ -55,7 +55,8 @@ cat("Loading gene ID to gene name mapping...\n")
 gene_name_file <- snakemake@input[["gene_name_map"]]
 
 if (file.exists(gene_name_file)) {
-    gene_name_map <- read.delim(gene_name_file, stringsAsFactors = FALSE)
+    gene_name_map <- read.delim(gene_name_file, stringsAsFactors = FALSE) %>%
+        select(gene_id, gene_name) %>% distinct()
     cat("  Loaded", nrow(gene_name_map), "gene mappings\n")
     # Create named vector for lookup
     gene_name_lookup <- setNames(gene_name_map$gene_name, gene_name_map$gene_id)
