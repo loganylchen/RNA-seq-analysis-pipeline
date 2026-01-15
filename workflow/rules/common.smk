@@ -291,6 +291,7 @@ def get_final_output():
                 f"{sample_project}/quantification/{tool}/{dataset}_TPM_matrix_corrected.txt",
                 f"{sample_project}/mime/{tool}/{dataset}_response_dataset.rds",
                 f"{sample_project}/visualization/{tool}_{dataset}_scatterplot_comparison.png",
+                f"{sample_project}/visualization/{tool}_{dataset}_faceted_plot.png",
             ]
 
         final_output += [
