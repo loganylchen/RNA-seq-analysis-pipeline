@@ -52,7 +52,7 @@ cat("  Samples file:", samples_file, "\n")
 cat("  Project:", project, "\n")
 cat("  Count matrix:", counts_file, "\n")
 cat("  Output:", output_file, "\n")
-
+cat("  gene_list:", paste(head(gene_list, 5), collapse = ", "), " ... (total", length(gene_list), "genes)\n")
 
 
 
@@ -64,13 +64,16 @@ cat("  Loaded", nrow(samples_df), "samples for project", project, "\n")
 
 # Read count matrix
 cat("Reading count matrix...\n")
-counts_df <- read.delim(counts_file, header=TRUE, row.names = 1, check.names = FALSE) %>%
-    dplyr::select(all_of(gene_list))
+counts_df <- read.delim(counts_file, header=TRUE, row.names = 1, check.names = FALSE) 
 cat("  Dimensions:", nrow(counts_df), "genes x", ncol(counts_df), "samples\n")
+cat(length(intersect(rownames(counts_df), gene_list)), "genes from gene_list found in count matrix\n")
+cat("total gene_list genes:", length(gene_list), "\n")
+cat("total genes in count matrix:", nrow(counts_df), "\n")
+cat("total samples in count matrix:", ncol(counts_df), "\n")
 
 # Transpose counts: genes as columns, samples as rows (Mime format)
 cat("Transforming count matrix...\n")
-expression_df <- as.data.frame(t(counts_df))
+expression_df <- as.data.frame(t(counts_df)) %>% dplyr::select(all_of(gene_list))
 expression_df$ID <- rownames(expression_df)
 cat("  Transposed to:", nrow(expression_df), "samples x", ncol(expression_df), "columns\n")
 

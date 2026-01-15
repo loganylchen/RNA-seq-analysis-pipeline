@@ -23,22 +23,18 @@ cat("==============================================================\n\n")
 combined_rds <- snakemake@input[["combined_rds"]]
 genelist_file <- snakemake@input[["genelist"]]
 output_dir <- snakemake@output[["directory"]]
-project <- snakemake@params[["project"]]
+
+
+
 tool <- snakemake@params[["tool"]]
-log2fc_threshold <- snakemake@params[["log2fc_threshold"]]
-padj_threshold <- snakemake@params[["padj_threshold"]]
-methods <- snakemake@params[["methods"]]
 seed <- snakemake@params[["seed"]]
 
+
 cat("Parameters:\n")
-cat("  Project:", project, "\n")
 cat("  Tool:", tool, "\n")
 cat("  Combined RDS:", combined_rds, "\n")
 cat("  Gene list file:", genelist_file, "\n")
-cat("  log2FC threshold:", log2fc_threshold, "\n")
-cat("  padj threshold:", padj_threshold, "\n")
 cat("  Output directory:", output_dir, "\n")
-cat("  Methods:", paste(methods, collapse=", "), "\n")
 cat("  Seed:", seed, "\n\n")
 
 # Create output directory
