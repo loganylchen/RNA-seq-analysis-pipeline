@@ -13,6 +13,7 @@ suppressPackageStartupMessages({
     library(readr)
     library(stringr)
     library(ggrepel)
+    library(tibble)
 })
 
 cat("==============================================================\n")
@@ -46,6 +47,24 @@ combined_deg <- read.delim(combined_deg_file, stringsAsFactors = FALSE)
 cat("  Loaded", nrow(combined_deg), "genes\n\n")
 
 # ============================================================================
+# LOAD GENE ID TO GENE NAME MAPPING
+# ============================================================================
+
+cat("Loading gene ID to gene name mapping...\n")
+gene_name_file <- "resources/gene_id_to_gene_name.tsv"
+
+if (file.exists(gene_name_file)) {
+    gene_name_map <- read.delim(gene_name_file, stringsAsFactors = FALSE)
+    cat("  Loaded", nrow(gene_name_map), "gene mappings\n")
+    # Create named vector for lookup
+    gene_name_lookup <- setNames(gene_name_map$gene_name, gene_name_map$gene_id)
+} else {
+    cat("  Warning: Gene name file not found, using gene IDs\n")
+    gene_name_lookup <- NULL
+}
+cat("\n")
+
+# ============================================================================
 # LOAD INDIVIDUAL DEG FILES AND PREPARE DATA
 # ============================================================================
 
@@ -54,7 +73,7 @@ cat("Loading individual DEG files...\n")
 # Function to parse file path and extract tool name
 parse_tool_from_path <- function(filepath) {
     parts <- strsplit(filepath, "/")[[1]]
-    # Tool is between "DEG" and the dataset name
+    # Tool is between "DEG" and the quantification tool/dataset
     deg_idx <- which(parts == "DEG")
     if (length(deg_idx) > 0) {
         return(parts[deg_idx + 1])
@@ -71,20 +90,19 @@ for (i in seq_along(deg_files)) {
 
     cat("  Loading:", tool, "-", basename(deg_file), "\n")
 
-    deg_data <- read.delim(deg_file, stringsAsFactors = FALSE)
+    deg_data <- read.delim(deg_file, stringsAsFactors = FALSE, row.names = 1)
 
     # Standardize column names across tools
     if ("log2FoldChange" %in% colnames(deg_data)) {
         deg_data$log2FC <- deg_data$log2FoldChange
-    }
-    if ("logFC" %in% colnames(deg_data)) {
+    } else if ("logFC" %in% colnames(deg_data)) {
         deg_data$log2FC <- deg_data$logFC
     }
+
     if ("FDR" %in% colnames(deg_data)) {
         deg_data$padj <- deg_data$FDR
-    }
-    if ("PValue" %in% colnames(deg_data)) {
-        deg_data$pvalue <- deg_data$PValue
+    } else if ("PValue" %in% colnames(deg_data)) {
+        deg_data$padj <- deg_data$PValue
     }
 
     # Add tool identifier
@@ -101,27 +119,22 @@ for (i in seq_along(deg_files)) {
             )
         )
 
-    # Gene ID column might vary
-    if ("gene_id" %in% colnames(deg_data)) {
-        deg_data$gene <- deg_data$gene_id
-    } else if ("rowname" %in% colnames(deg_data)) {
-        deg_data$gene <- deg_data$rowname
-    } else if ("X" %in% colnames(deg_data)) {
-        deg_data$gene <- deg_data$X
-    } else {
-        deg_data$gene <- rownames(deg_data)
-    }
+    # Add gene_id column from rownames
+    deg_data$gene_id <- rownames(deg_data)
 
     all_deg_data[[tool]] <- deg_data
+
+    cat("    Genes loaded:", nrow(deg_data), "\n")
+    cat("    Significant:", sum(deg_data$significant), "\n")
 }
 
-cat("\n")
+cat("\n  Tools loaded:", paste(names(all_deg_data), collapse = ", "), "\n\n")
 
 # ============================================================================
-# IDENTIFY TOP 3 GENES BY LOG2FC FOR EACH TOOL
+# IDENTIFY TOP 3 GENES BY ABSOLUTE LOG2FC FOR EACH TOOL
 # ============================================================================
 
-cat("Identifying top 3 genes by log2FC for each tool...\n")
+cat("Identifying top 3 genes by absolute log2FC for each tool...\n")
 
 top_genes_list <- list()
 
@@ -133,24 +146,24 @@ for (tool in names(all_deg_data)) {
         filter(significant & direction == "Up") %>%
         arrange(desc(log2FC)) %>%
         head(3) %>%
-        pull(gene)
+        pull(gene_id)
 
     # Get top 3 down-regulated genes
     top_down <- deg_data %>%
         filter(significant & direction == "Down") %>%
         arrange(log2FC) %>%
         head(3) %>%
-        pull(gene)
+        pull(gene_id)
 
     # Get top 3 by absolute log2FC (for general labeling)
     top_abs <- deg_data %>%
         arrange(desc(abs(log2FC))) %>%
         head(3) %>%
-        pull(gene)
+        pull(gene_id)
 
     top_genes_list[[tool]] <- unique(c(top_up, top_down, top_abs))
 
-    cat("  ", tools::toTitleCase(tool), ":", paste(head(top_genes_list[[tool]], 3), collapse = ", "), "\n")
+    cat("  ", tools::toTitleCase(gsub("_", " ", tool)), ":", length(top_genes_list[[tool]]), "genes\n")
 }
 
 cat("\n")
@@ -162,19 +175,46 @@ cat("\n")
 cat("Preparing data for plotting...\n")
 
 # Combine all DEG data
-combined_plot_data <- bind_rows(all_deg_data)
+combined_plot_data <- bind_rows(all_deg_data, .id = "source")
 
-# Calculate baseMean if not present (average of all samples if available)
+# Calculate expression if baseMean not available
 if (!"baseMean" %in% colnames(combined_plot_data)) {
-    # Use absolute log2FC as size aesthetic
-    combined_plot_data$baseMean <- abs(combined_plot_data$log2FC)
+    # Use a default value for visualization
+    combined_plot_data$baseMean <- 10
+    cat("  Warning: baseMean not found, using default value\n")
+}
+
+# Log10 transform expression (add small value to avoid log(0))
+combined_plot_data <- combined_plot_data %>%
+    mutate(
+        log10_expr = log10(baseMean + 1)
+    )
+
+# Add gene names
+if (!is.null(gene_name_lookup)) {
+    combined_plot_data <- combined_plot_data %>%
+        mutate(
+            gene_display = ifelse(
+                gene_id %in% names(gene_name_lookup),
+                gene_name_lookup[gene_id],
+                gene_id
+            )
+        )
+} else {
+    combined_plot_data$gene_display <- combined_plot_data$gene_id
 }
 
 # Add label column for top genes
 combined_plot_data <- combined_plot_data %>%
     mutate(
-        is_top_gene = gene %in% unlist(top_genes_list),
-        tool_label = tools::toTitleCase(gsub("_", " ", tool))
+        is_top_gene = gene_id %in% unlist(top_genes_list),
+        tool_label = case_when(
+            tool == "deseq2" ~ "DESeq2",
+            tool == "edger" ~ "edgeR",
+            tool == "limma_trend" ~ "limma-trend",
+            tool == "limma_voom" ~ "limma-voom",
+            TRUE ~ tools::toTitleCase(gsub("_", " ", tool))
+        )
     )
 
 # Create label text (only for top genes)
@@ -183,14 +223,15 @@ combined_plot_data <- combined_plot_data %>%
     mutate(
         gene_label = ifelse(
             is_top_gene,
-            gene,
+            gene_display,
             NA
         )
     ) %>%
     ungroup()
 
 cat("  Total genes in plot:", nrow(combined_plot_data), "\n")
-cat("  Genes to label:", sum(!is.na(combined_plot_data$gene_label)), "\n\n")
+cat("  Genes to label:", sum(!is.na(combined_plot_data$gene_label)), "\n")
+cat("  Tools in plot:", paste(unique(combined_plot_data$tool_label), collapse = ", "), "\n\n")
 
 # ============================================================================
 # CREATE FACETED PLOT
@@ -198,19 +239,11 @@ cat("  Genes to label:", sum(!is.na(combined_plot_data$gene_label)), "\n\n")
 
 cat("Creating faceted plot...\n")
 
-# Define colors for tools
-tool_colors <- c(
-    "deseq2" = "#E41A1C",
-    "edger" = "#377EB8",
-    "limma_trend" = "#4DAF4A",
-    "limma_voom" = "#984EA3"
-)
-
 # Define colors for direction
 direction_colors <- c("Up" = "#E41A1C", "Down" = "#377EB8", "NS" = "grey70")
 
 # Create the plot
-p <- ggplot(combined_plot_data, aes(x = baseMean, y = log2FC)) +
+p <- ggplot(combined_plot_data, aes(x = log10_expr, y = log2FC)) +
     # Color by significance/direction
     geom_point(
         aes(color = direction, alpha = !is_top_gene),
@@ -236,8 +269,8 @@ p <- ggplot(combined_plot_data, aes(x = baseMean, y = log2FC)) +
         segment.size = 0.3,
         force = 2
     ) +
-    # Facet by tool
-    facet_wrap(~ tool_label, ncol = 2, scales = "free") +
+    # Facet by tool in one row
+    facet_wrap(~ tool_label, nrow = 1, scales = "free_x") +
     # Color scale
     scale_color_manual(
         values = direction_colors,
@@ -268,7 +301,7 @@ p <- ggplot(combined_plot_data, aes(x = baseMean, y = log2FC)) +
     ) +
     labs(
         title = paste("Differential Expression Results -", project),
-        x = expression("Mean Expression (log"[2]*" baseMean)"),
+        x = expression("Mean Expression (log"[10]*" baseMean)"),
         y = expression("Log"[2]*" Fold Change"),
         color = "Regulation"
     )
@@ -279,12 +312,17 @@ p <- ggplot(combined_plot_data, aes(x = baseMean, y = log2FC)) +
 
 cat("Saving plot...\n")
 
+# Calculate dimensions based on number of tools
+n_tools <- length(unique(combined_plot_data$tool_label))
+plot_width <- 4 * n_tools
+plot_height <- 5
+
 # Save as PDF
 ggsave(
     filename = output_pdf,
     plot = p,
-    width = 14,
-    height = 12,
+    width = plot_width,
+    height = plot_height,
     units = "in",
     dpi = 300
 )
@@ -294,8 +332,8 @@ cat("  Saved PDF:", output_pdf, "\n")
 ggsave(
     filename = output_png,
     plot = p,
-    width = 14,
-    height = 12,
+    width = plot_width,
+    height = plot_height,
     units = "in",
     dpi = 300
 )
@@ -320,21 +358,40 @@ summary_table <- data.frame(
 for (tool in names(all_deg_data)) {
     deg_data <- all_deg_data[[tool]]
 
+    # Get gene names for top genes
+    top_up_gene <- deg_data %>%
+        filter(direction == "Up") %>%
+        arrange(desc(log2FC)) %>%
+        head(1) %>%
+        pull(gene_id)
+
+    top_down_gene <- deg_data %>%
+        filter(direction == "Down") %>%
+        arrange(log2FC) %>%
+        head(1) %>%
+        pull(gene_id)
+
+    # Convert to gene names if mapping available
+    if (!is.null(gene_name_lookup)) {
+        top_up_gene <- ifelse(top_up_gene %in% names(gene_name_lookup),
+                             gene_name_lookup[top_up_gene], top_up_gene)
+        top_down_gene <- ifelse(top_down_gene %in% names(gene_name_lookup),
+                               gene_name_lookup[top_down_gene], top_down_gene)
+    }
+
     summary_table <- rbind(summary_table, data.frame(
-        Tool = tools::toTitleCase(gsub("_", " ", tool)),
+        Tool = case_when(
+            tool == "deseq2" ~ "DESeq2",
+            tool == "edger" ~ "edgeR",
+            tool == "limma_trend" ~ "limma-trend",
+            tool == "limma_voom" ~ "limma-voom",
+            TRUE ~ tools::toTitleCase(gsub("_", " ", tool))
+        ),
         Total_DEGs = sum(deg_data$significant),
         Up_regulated = sum(deg_data$direction == "Up"),
         Down_regulated = sum(deg_data$direction == "Down"),
-        Top_up_gene = deg_data %>%
-            filter(direction == "Up") %>%
-            arrange(desc(log2FC)) %>%
-            head(1) %>%
-            pull(gene),
-        Top_down_gene = deg_data %>%
-            filter(direction == "Down") %>%
-            arrange(log2FC) %>%
-            head(1) %>%
-            pull(gene),
+        Top_up_gene = top_up_gene,
+        Top_down_gene = top_down_gene,
         stringsAsFactors = FALSE
     ))
 }
