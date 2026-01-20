@@ -74,6 +74,48 @@ def get_condition(wildcards, condition_type):
         )
 
 
+def get_condition_sample_list(wildcards, condition):
+    project = wildcards.project
+    dataset = wildcards.dataset
+    condition_label = get_condition(wildcards, condition)
+    dataset_samples = samples[
+        (samples["dataset_id"] == dataset)
+        & (samples["project_id"] == project)
+        & (samples["condition"] == condition_label)
+    ].index.tolist()
+    return dataset_samples
+
+
+def get_case_sample_list(wildcards):
+    return get_condition_sample_list(wildcards, "case")
+
+
+def get_control_sample_list(wildcards):
+    return get_condition_sample_list(wildcards, "control")
+
+
+def get_control_sample_bams(wildcards):
+    project = wildcards.project
+    dataset = wildcards.dataset
+    control_samples = get_control_sample_list(wildcards)
+    return expand(
+        "{project}/alignment/STAR/{sample}/{sample}.bam",
+        project=project,
+        sample=control_samples,
+    )
+
+
+def get_case_sample_bams(wildcards):
+    project = wildcards.project
+    dataset = wildcards.dataset
+    case_samples = get_case_sample_list(wildcards)
+    return expand(
+        "{project}/alignment/STAR/{sample}/{sample}.bam",
+        project=project,
+        sample=case_samples,
+    )
+
+
 def get_wildcards_element(wildcards, element):
     return getattr(wildcards, element)
 

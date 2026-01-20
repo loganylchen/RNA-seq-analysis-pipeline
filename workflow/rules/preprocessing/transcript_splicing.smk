@@ -1,15 +1,7 @@
 rule preparing_rmats:
     input:
-        case_bams=expand(
-            "{project}/alignment/STAR/{sample}/{sample}.bam",
-            project=project,
-            sample=discovery_case_samples.index.tolist(),
-        ),
-        control_bams=expand(
-            "{project}/alignment/STAR/{sample}/{sample}.bam",
-            project=project,
-            sample=discovery_control_samples.index.tolist(),
-        ),
+        case_bams=get_case_sample_bams,
+        control_bams=get_control_sample_bams,
     output:
         case_bam_list_f="{project}/transcript_splicing/rmats-temp/case.list",
         control_bam_list_f="{project}/transcript_splicing/rmats-temp/control.list",
