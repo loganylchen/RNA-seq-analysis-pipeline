@@ -3,10 +3,10 @@ rule preparing_rmats:
         case_bams=get_case_sample_bams,
         control_bams=get_control_sample_bams,
     output:
-        case_bam_list_f="{project}/transcript_splicing/rmats-temp/case.list",
-        control_bam_list_f="{project}/transcript_splicing/rmats-temp/control.list",
+        case_bam_list_f="{project}/transcript_splicing/rmats/{database}/rmats-temp/case.list",
+        control_bam_list_f="{project}/transcript_splicing/rmats/{database}/rmats-temp/control.list",
     log:
-        "logs/{project}/rmats_sample_list.log",
+        "logs/{project}/rmats_{database}_sample_list.log",
     threads: config["threads"].get("default", 1)
     resources:
         mem_mb=config["resources"]["mem_mb"].get("default", 4096),
@@ -18,16 +18,18 @@ rule preparing_rmats:
 
 rule splicing_rmats:
     input:
-        case_bam_list_f="{project}/transcript_splicing/rmats-temp/case.list",
-        control_bam_list_f="{project}/transcript_splicing/rmats-temp/control.list",
+        case_bam_list_f="{project}/transcript_splicing/rmats/{database}/rmats-temp/case.list",
+        control_bam_list_f="{project}/transcript_splicing/rmats/{database}/rmats-temp/control.list",
         gtf="{project}/assembly/stringtie/gffcompare.annotated.gtf",
     output:
-        outdir=directory("{project}/transcript_splicing/rmats/"),
-        ri_jcec="{project}/transcript_splicing/rmats/RI.MATS.JCEC.txt",
-        se_jcec="{project}/transcript_splicing/rmats/SE.MATS.JCEC.txt",
-        temp_dir=temp(directory("{project}/transcript_splicing/rmats_temp")),
+        outdir=directory("{project}/transcript_splicing/{database}/rmats/"),
+        ri_jcec="{project}/transcript_splicing/rmats/{database}/rmats/RI.MATS.JCEC.txt",
+        se_jcec="{project}/transcript_splicing/rmats/{database}/rmats/SE.MATS.JCEC.txt",
+        temp_dir=temp(
+            directory("{project}/transcript_splicing/rmats/{database}/rmats_temp")
+        ),
     log:
-        "logs/{project}/splicing_rmats.log",
+        "logs/{project}/splicing_rmats_{database}.log",
     container:
         (
             "docker://btrspg/rmatsturbo:4.3.0"
