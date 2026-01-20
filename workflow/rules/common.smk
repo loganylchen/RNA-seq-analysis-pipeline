@@ -384,7 +384,7 @@ def get_final_output():
         final_output += [
             f"{sample_project}/purity/PUREE_{dataset}_tumor_purities.tsv",
             f"{sample_project}/enrichment/clusterprofiler/{dataset}_go_enrichment.tsv",
-            f"{sample_project}/transcript_splicing/rmats/{database}/RI.MATS.JCEC.txt",
+            f"{sample_project}/transcript_splicing/rmats/{dataset}/RI.MATS.JCEC.txt",
             # f"{sample_project}/visualization/STAR_FC_{dataset}_pca.png",
         ]
     final_output += [
