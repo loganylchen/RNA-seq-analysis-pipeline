@@ -52,79 +52,77 @@ rule splicing_rmats:
         "--tmp {output.temp_dir} &>{log}"
 
 
-rule splicetools:
-    input:
-        ri_jcec="{project}/transcript_splicing/rmats/RI.MATS.JCEC.txt",
-        se_jcec="{project}/transcript_splicing/rmats/SE.MATS.JCEC.txt",
-        input_dir="{project}/transcript_splicing/rmats/",
-        annotation_bed12="{project}/assembly/stringtie/gffcompare.sorted.bed",
-        genome_fasta="resources/genome.fasta",
-        tpm_file="{project}/quantification/STAR_FC4splicetool/Discovery_TPM_matrix.txt",
-    output:
-        output_dir=directory("{project}/transcript_splicing/splicetools/"),
-    log:
-        "logs/{project}/splicetools.log",
-    container:
-        (
-            "docker://btrspg/splicetools:c9fd38227fcdf43d1e08e919480372751f2ee5a4"
-            if config["container"].get("splicetools", None) is None
-            else config["container"].get("splicetools", None)
-        )
-    params:
-        control_tpm_threshold=config["splicetools"].get("control_tpm_threshold", 1),
-        case_tpm_threshold=config["splicetools"].get("case_tpm_threshold", 1),
-        control_n=len(discovery_control_samples.index),
-        case_n=len(discovery_case_samples.index),
-        fdr=config["splicetools"].get("fdr", 0.05),
-    threads: config["threads"].get("splicetools", 4)
-    resources:
-        mem_mb=config["resources"]["mem_mb"].get("splicetools", 8192),
-    script:
-        "../../../scripts/utils/splicetools.sh"
+# rule splicetools:
+#     input:
+#         ri_jcec="{project}/transcript_splicing/rmats/RI.MATS.JCEC.txt",
+#         se_jcec="{project}/transcript_splicing/rmats/SE.MATS.JCEC.txt",
+#         input_dir="{project}/transcript_splicing/rmats/",
+#         annotation_bed12="{project}/assembly/stringtie/gffcompare.sorted.bed",
+#         genome_fasta="resources/genome.fasta",
+#         tpm_file="{project}/quantification/STAR_FC4splicetool/Discovery_TPM_matrix.txt",
+#     output:
+#         output_dir=directory("{project}/transcript_splicing/splicetools/"),
+#     log:
+#         "logs/{project}/splicetools.log",
+#     container:
+#         (
+#             "docker://btrspg/splicetools:c9fd38227fcdf43d1e08e919480372751f2ee5a4"
+#             if config["container"].get("splicetools", None) is None
+#             else config["container"].get("splicetools", None)
+#         )
+#     params:
+#         control_tpm_threshold=config["splicetools"].get("control_tpm_threshold", 1),
+#         case_tpm_threshold=config["splicetools"].get("case_tpm_threshold", 1),
+#         control_n=len(discovery_control_samples.index),
+#         case_n=len(discovery_case_samples.index),
+#         fdr=config["splicetools"].get("fdr", 0.05),
+#     threads: config["threads"].get("splicetools", 4)
+#     resources:
+#         mem_mb=config["resources"]["mem_mb"].get("splicetools", 8192),
+#     script:
+#         "../../../scripts/utils/splicetools.sh"
 
 
-rule analyze_rmats:
-    input:
-        rmats_dir="{project}/transcript_splicing/rmats/",
-    output:
-        output_dir=directory("{project}/transcript_splicing/rmats_analysis/"),
-        summary="{project}/transcript_splicing/rmats_analysis/summary_statistics.csv",
-    params:
-        fdr_threshold=config.get("rmats", {}).get("fdr_threshold", 0.05),
-        dpsi_threshold=config.get("rmats", {}).get("dpsi_threshold", 0.1),
-    container:
-        (
-            "docker://btrspg/deseq2:1.46.0"
-            if config["container"].get("deseq2", None) is None
-            else config["container"].get("deseq2", None)
-        )
-    threads: config["threads"].get("default", 1)
-    resources:
-        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
-    log:
-        "logs/{project}/analyze_rmats.log",
-    script:
-        "../../../scripts/analysis/splicing/rmats_analysis.R"
-
-
-rule analyze_splicetools:
-    input:
-        splicetools_dir="{project}/transcript_splicing/splicetools/",
-    output:
-        output_dir=directory("{project}/transcript_splicing/splicetools_analysis/"),
-        summary="{project}/transcript_splicing/splicetools_analysis/combined_summary.csv",
-    params:
-        fdr_threshold=config.get("splicetools", {}).get("fdr_threshold", 0.05),
-    container:
-        (
-            "docker://btrspg/python3:20251024"
-            if config["container"].get("python3", None) is None
-            else config["container"].get("python3", None)
-        )
-    threads: config["threads"].get("default", 1)
-    resources:
-        mem_mb=config["resources"]["mem_mb"].get("default", 4096),
-    log:
-        "logs/{project}/analyze_splicetools.log",
-    script:
-        "../../../scripts/utils/splicetools_analysis.py"
+# rule analyze_rmats:
+#     input:
+#         rmats_dir="{project}/transcript_splicing/rmats/",
+#     output:
+#         output_dir=directory("{project}/transcript_splicing/rmats_analysis/"),
+#         summary="{project}/transcript_splicing/rmats_analysis/summary_statistics.csv",
+#     params:
+#         fdr_threshold=config.get("rmats", {}).get("fdr_threshold", 0.05),
+#         dpsi_threshold=config.get("rmats", {}).get("dpsi_threshold", 0.1),
+#     container:
+#         (
+#             "docker://btrspg/deseq2:1.46.0"
+#             if config["container"].get("deseq2", None) is None
+#             else config["container"].get("deseq2", None)
+#         )
+#     threads: config["threads"].get("default", 1)
+#     resources:
+#         mem_mb=config["resources"]["mem_mb"].get("default", 4096),
+#     log:
+#         "logs/{project}/analyze_rmats.log",
+#     script:
+#         "../../../scripts/analysis/splicing/rmats_analysis.R"
+# rule analyze_splicetools:
+#     input:
+#         splicetools_dir="{project}/transcript_splicing/splicetools/",
+#     output:
+#         output_dir=directory("{project}/transcript_splicing/splicetools_analysis/"),
+#         summary="{project}/transcript_splicing/splicetools_analysis/combined_summary.csv",
+#     params:
+#         fdr_threshold=config.get("splicetools", {}).get("fdr_threshold", 0.05),
+#     container:
+#         (
+#             "docker://btrspg/python3:20251024"
+#             if config["container"].get("python3", None) is None
+#             else config["container"].get("python3", None)
+#         )
+#     threads: config["threads"].get("default", 1)
+#     resources:
+#         mem_mb=config["resources"]["mem_mb"].get("default", 4096),
+#     log:
+#         "logs/{project}/analyze_splicetools.log",
+#     script:
+#         "../../../scripts/utils/splicetools_analysis.py"
