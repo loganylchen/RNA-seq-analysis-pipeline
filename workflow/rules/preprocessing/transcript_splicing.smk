@@ -3,8 +3,8 @@ rule preparing_rmats:
         case_bams=get_case_sample_bams,
         control_bams=get_control_sample_bams,
     output:
-        case_bam_list_f="{project}/transcript_splicing/rmats/{dataset}/rmats-temp/case.list",
-        control_bam_list_f="{project}/transcript_splicing/rmats/{dataset}/rmats-temp/control.list",
+        case_bam_list_f="{project}/transcript_splicing/rmats-temp/{dataset}/case.list",
+        control_bam_list_f="{project}/transcript_splicing/rmats-temp/{dataset}/control.list",
     log:
         "logs/{project}/rmats_{dataset}_sample_list.log",
     threads: config["threads"].get("default", 1)
@@ -18,8 +18,8 @@ rule preparing_rmats:
 
 rule splicing_rmats:
     input:
-        case_bam_list_f="{project}/transcript_splicing/rmats/{dataset}/rmats-temp/case.list",
-        control_bam_list_f="{project}/transcript_splicing/rmats/{dataset}/rmats-temp/control.list",
+        case_bam_list_f="{project}/transcript_splicing/rmats-temp/{dataset}/case.list",
+        control_bam_list_f="{project}/transcript_splicing/rmats-temp/{dataset}/control.list",
         gtf="{project}/assembly/stringtie/gffcompare.annotated.gtf",
     output:
         outdir=directory("{project}/transcript_splicing/rmats/{dataset}/"),
