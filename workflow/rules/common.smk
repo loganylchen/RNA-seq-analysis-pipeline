@@ -365,8 +365,8 @@ def get_final_output():
         for tool in QUANTIFICATION_TOOLS:
 
             final_output += [
-                f"{sample_project}/mime/{tool}/combined_response_datasets.rds",
-                f"{sample_project}/mime/{tool}/response_analysis/",
+                # f"{sample_project}/mime/{tool}/combined_response_datasets.rds",
+                # f"{sample_project}/mime/{tool}/response_analysis/",
                 f"{sample_project}/DEG/deseq2/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/DEG/edger/{tool}/{dataset}_deg.tsv",
                 f"{sample_project}/DEG/limma_trend/{tool}/{dataset}_deg.tsv",
@@ -376,7 +376,7 @@ def get_final_output():
                 f"{sample_project}/DEG/{tool}_{dataset}_summary_thresholds.tsv",
                 f"{sample_project}/visualization/{tool}_{dataset}_upset.pdf",
                 f"{sample_project}/quantification/{tool}/{dataset}_TPM_matrix_corrected.txt",
-                f"{sample_project}/mime/{tool}/{dataset}_response_dataset.rds",
+                # f"{sample_project}/mime/{tool}/{dataset}_response_dataset.rds",
                 f"{sample_project}/visualization/{tool}_{dataset}_scatterplot_comparison.png",
                 f"{sample_project}/visualization/{tool}_{dataset}_faceted_plot.png",
             ]
