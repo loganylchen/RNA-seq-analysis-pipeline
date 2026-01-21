@@ -22,7 +22,7 @@ rule splicing_rmats:
         control_bam_list_f="{project}/transcript_splicing/rmats/{dataset}/rmats-temp/control.list",
         gtf="{project}/assembly/stringtie/gffcompare.annotated.gtf",
     output:
-        outdir=directory("{project}/transcript_splicing/{dataset}/rmats/"),
+        outdir=directory("{project}/transcript_splicing/rmats/{dataset}/"),
         ri_jcec="{project}/transcript_splicing/rmats/{dataset}/RI.MATS.JCEC.txt",
         se_jcec="{project}/transcript_splicing/rmats/{dataset}/SE.MATS.JCEC.txt",
         temp_dir=temp(
