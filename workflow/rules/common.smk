@@ -338,7 +338,6 @@ def get_qc_files():
             f"{sample_project}/qc/qualimap-rnaseq/{sample}/rnaseq_qc_results.txt",
             f"{sample_project}/quantification/salmon/{sample}/",
             f"{sample_project}/qc/kallisto/{sample}/kallisto.log",
-            f"{sample_project}/qc/hisat2/{sample}/{sample}.log",
             f"{sample_project}/qc/picard/{sample}/{sample}.alignment_summary_metrics.txt",
             f"{sample_project}/qc/picard/{sample}/{sample}.rnaseq_metrics.txt",
             f"{sample_project}/qc/picard/{sample}/{sample}.insert_size_metrics.txt",

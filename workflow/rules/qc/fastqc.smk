@@ -7,12 +7,12 @@ rule fastp:
         ),
         fq2="{project}/data/{sample}/{sample}_2.fastq.gz",
     output:
-        fq1=(
+        fq1=temp(
             "{project}/clean_data/{sample}_1.fastq.gz"
             if is_pe
             else "{project}/clean_data/{sample}.fastq.gz"
         ),
-        fq2="{project}/clean_data/{sample}_2.fastq.gz",
+        fq2=temp("{project}/clean_data/{sample}_2.fastq.gz"),
         html="{project}/report/fastp/{sample}.fastp.html",
         json="{project}/qc/fastp/{sample}/{sample}.fastp.json",
     log:
